@@ -1,1 +1,30 @@
+# Large compressed databases
 *.gz
+
+# HMM models
+*.hmm
+*.hmm.ssi
+
+# FASTA and alignment files (large)
+*.fasta
+*.afa
+
+# CD-HIT cluster files
+*.clstr
+
+# Domain hit tables
+*.tbl
+
+# Log files
+*.log
+nohup.out
+
+# Images (generated)
+*.png
+
+# Keep important small text files
+!filter_kdops.py
+!plot_length_hist.py
+!kdops_contaminants.txt
+!ids_*.txt
+!seed_ids_*.txt
