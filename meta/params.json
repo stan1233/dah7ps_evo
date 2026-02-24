@@ -4,8 +4,26 @@
         "kdops_score_margin": 0
     },
     "qc": {
-        "length_lower_percentile": 5,
-        "length_upper_percentile": 95,
+        "hmm_coverage_min": 0.70,
+        "length_windows": {
+            "Ia": {
+                "canonical_min": 300,
+                "canonical_max": 450
+            },
+            "Ib": {
+                "canonical_min": 280,
+                "canonical_max": 450
+            },
+            "II": {
+                "canonical_min": 320,
+                "canonical_max": 600
+            }
+        },
+        "hmm_lengths": {
+            "Ia": 355,
+            "Ib": 334,
+            "II": 471
+        },
         "cdhit_identity_phase1": 0.80,
         "cdhit_identity_seeds": 0.60
     },

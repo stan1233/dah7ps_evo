@@ -820,3 +820,202 @@ python scripts/filter_kdops.py \
 - `results/01_mining/hits_*_seqs.fasta` ✓
 - `results/01_mining/hits_Ib_clean.fasta` ✓
 - `results/01_mining/qc_mining_report.md` ✓
+
+---
+
+### 17:26 — Pre-Phase 2 门控检查（计划外追加）
+
+**背景：** 在 QC1 报告审阅后，用户指出在进入 Phase 2 前需做 2 个快速门控检查：(A) 三亚型 hits 集合交集统计；(B) Ib 边缘序列隔离。此步骤不在 SOP 原文中，是基于 QC1 结果的风险预判。
+
+**脚本编写：** `scripts/gate_checks.py`（新建）
+
+**精确命令：**
+
+```bash
+python3 scripts/gate_checks.py --workdir /home/tynan/0218
+```
+
+#### Gate A：三亚型 hits 交集统计
+
+**输入：** `hits_Ia_ids.txt`（10,071）、`hits_Ib_clean.fasta` 中提取的 ID（7,869）、`hits_II_ids.txt`（18,529）
+
+**结果：**
+
+| 交集 | 数量 | 占较小集百分比 |
+|------|------|---------------|
+| Ia ∩ Ib | 0 | 0.00% |
+| **Ia ∩ II** | **8,561** | **85.01%** |
+| Ib ∩ II | 0 | 0.00% |
+| Ia ∩ Ib ∩ II | 0 | 0.00% |
+
+**⚠ 重大发现：Ia 与 II 交集极高（85%）。** 即 10,071 条 Ia 命中中的 8,561 条也同时被 II 模型命中。这在生物学上合理（Ia 和 II 共享 TIM-barrel 核心，暮光区同源），但若不做 best-hit 归属，Phase 2 将出现大量重复计数和混亚型 seeds。
+
+**→ 判定：需要在 Phase 2.1 之前构建 best-hit subtype 归属表。**
+
+重叠 ID 列表写入：
+- `results/01_mining/overlap_Ia_II.txt`（8,561 条）
+- `results/01_mining/overlap_Ia_Ib.txt`（0 条）
+- `results/01_mining/overlap_Ib_II.txt`（0 条）
+
+#### Gate B：Ib 边缘序列隔离
+
+**输入：** `results/01_mining/kdops_filter_report_v41.tsv`
+
+**筛选条件：** verdict=KEEP 且 delta (DAH7PS−KDOPS) ∈ [0, 20]
+
+**结果：** 4 条边缘序列
+
+| ID | Delta |
+|----|-------|
+| UniRef90_A0A1I4NDE8 | 13.7 |
+| UniRef90_A0A806JZI9 | 14.8 |
+| UniRef90_X1MS81 | 16.0 |
+| UniRef90_A0ABT1SNH0 | 16.6 |
+
+**→ 已写入 `results/01_mining/kdops_borderline_ids.txt`。** 后续 seeds60 和 stepping stones 将排除这 4 条 ID，但允许它们保留在全量库中。
+
+**产出文件：**
+
+| 文件 | 说明 |
+|------|------|
+| `scripts/gate_checks.py` | 门控检查脚本（新建） |
+| `results/01_mining/overlap_Ia_II.txt` | Ia∩II 重叠 ID（8,561 条） |
+| `results/01_mining/kdops_borderline_ids.txt` | Ib 边缘 ID（4 条） |
+
+**下一步：** Phase 2.1 之前，需对 Ia∩II 的 8,561 条序列做 best-hit 归属（比较 model_Ia.hmm vs model_II.hmm 的 full-sequence score），将每条分配到得分最高的亚型。
+
+---
+
+### 05:05 — Gate A-2：Best-hit Ia vs II 亚型归属
+
+**背景：** Gate A 发现 Ia∩II = 8,561（85% of Ia）。必须做竞争打分归属，产出互斥 ID/FASTA 集合，否则 Phase 2 会重复计数。
+
+**脚本编写：** `scripts/assign_besthit_Ia_vs_II.py`（新建）
+
+**设计：** 3 档置信度分级
+- HIGH: |Δ bits| ≥ 20
+- MED: 10 ≤ |Δ bits| < 20
+- LOW: |Δ bits| < 10
+
+**精确命令：**
+
+```bash
+python3 scripts/assign_besthit_Ia_vs_II.py \
+  --ia_domtbl results/01_mining/hits_Ia.domtbl \
+  --ii_domtbl results/01_mining/hits_II.domtbl \
+  --overlap_ids results/01_mining/overlap_Ia_II.txt \
+  --ia_all_ids results/01_mining/hits_Ia_ids.txt \
+  --ii_all_ids results/01_mining/hits_II_ids.txt \
+  --outdir results/01_mining
+```
+
+**结果：**
+
+| 指标 | 数量 |
+|------|------|
+| Overlap 总数 | 8,561 |
+| → 归属 Ia | **8,561 (100%)** |
+| → 归属 II | 0 |
+| HIGH 置信度 | 8,561 (100.0%) |
+| MED 置信度 | 0 (0.0%) |
+| LOW 置信度 | 0 (0.0%) |
+
+**解读：** 全部重叠序列以 ≥20 bits 优势归属 Ia。这说明 II HMM 的交叉命中纯粹来自共享的 TIM-barrel 核心同源性，Ia HMM 始终更匹配。归属完全无歧义。
+
+**Go/No-Go 评估：** ✅ GO
+- Ia_final = 10,071（充足）
+- II_final = 9,968（充足，原 18,529 去掉 8,561 重叠后 + 0 归属回来 = 9,968）
+- LOW = 0（无需排除 seeds 的低置信序列）
+
+---
+
+### 05:10 — 生成互斥 FASTA（Phase 2 输入）
+
+**精确命令：**
+
+```python
+# Python 脚本：从 hits_II_seqs.fasta 中仅保留 hits_II_final_ids.txt 的序列
+# Ia: hits_Ia_seqs.fasta 保持不变（10,071 = 全部归属 Ia）
+# Ib: hits_Ib_clean.fasta 保持不变
+```
+
+**Phase 2 最终互斥输入集合：**
+
+| 文件 | 序列数 | 说明 |
+|------|--------|------|
+| `hits_Ia_seqs.fasta` | 10,071 | 原文件即为 final（全部 overlap 归属 Ia） |
+| `hits_Ib_clean.fasta` | 7,869 | KDOPS 过滤后不变 |
+| `hits_II_final_seqs.fasta` | 9,968 | 移除 8,561 条 Ia 归属后 |
+| **总计** | **27,908** | 三亚型互斥 |
+
+**产出文件：**
+
+| 文件 | 说明 |
+|------|------|
+| `scripts/assign_besthit_Ia_vs_II.py` | 竞争打分归属脚本（新建） |
+| `results/01_mining/besthit_Ia_vs_II.tsv` | 逐序列归属表（8,561 行） |
+| `results/01_mining/hits_Ia_final_ids.txt` | Ia 最终 ID（10,071） |
+| `results/01_mining/hits_II_final_ids.txt` | II 最终 ID（9,968） |
+| `results/01_mining/hits_IaII_lowconf_ids.txt` | LOW 置信 ID（0 条） |
+| `results/01_mining/hits_II_final_seqs.fasta` | II 最终互斥 FASTA |
+| `results/01_mining/qc_subtype_assignment.md` | QC1b 归属报告 |
+
+**✅ Gate A-2 完成。所有预门控通过，可进入 Phase 2.1。**
+
+---
+
+## 2026-02-25 Phase 2 执行日
+
+---
+
+### 05:45 — Phase 2.1：长度 + HMM 覆盖度三箱过滤
+
+**脚本编写：** `scripts/qc_length_coverage.py`（新建），参数更新至 `meta/params.json`
+
+**分类逻辑：**
+- **PASS_CANONICAL**: `cov_hmm ≥ 0.70` 且 `L_seq` 在亚型主峰窗口
+- **PASS_LONG**: `cov_hmm ≥ 0.70` 且 `L_seq` 偏长（融合域/转运肽）
+- **FRAG**: `cov_hmm < 0.70` 或 `L_seq < canonical_min`
+
+**精确命令：**
+
+```bash
+# Ia (HMM L=355, canonical 300-450)
+python3 scripts/qc_length_coverage.py \
+  --fasta results/01_mining/hits_Ia_seqs.fasta \
+  --domtbl results/01_mining/hits_Ia.domtbl \
+  --hmm_length 355 --subtype Ia \
+  --canonical_min 300 --canonical_max 450 \
+  --cov_min 0.70 --outdir results/02_qc
+
+# Ib (HMM L=334, canonical 280-450)
+python3 scripts/qc_length_coverage.py \
+  --fasta results/01_mining/hits_Ib_clean.fasta \
+  --domtbl results/01_mining/hits_Ib_vs_dah7ps_v41.domtbl \
+  --hmm_length 334 --subtype Ib \
+  --canonical_min 280 --canonical_max 450 \
+  --cov_min 0.70 --outdir results/02_qc
+
+# II (HMM L=471, canonical 320-600)
+python3 scripts/qc_length_coverage.py \
+  --fasta results/01_mining/hits_II_final_seqs.fasta \
+  --domtbl results/01_mining/hits_II.domtbl \
+  --hmm_length 471 --subtype II \
+  --canonical_min 320 --canonical_max 600 \
+  --cov_min 0.70 --outdir results/02_qc
+```
+
+**结果汇总：**
+
+| 亚型 | 总数 | PASS_CANONICAL | PASS_LONG | FRAG | FRAG% |
+|------|------|---------------|-----------|------|-------|
+| Ia | 10,071 | 9,022 (89.6%) | 182 (1.8%) | 867 (8.6%) | ✅ 符合 QC1 预期 ~7.7% |
+| Ib | 7,869 | 6,229 (79.2%) | 172 (2.2%) | 1,468 (18.7%) | ✅ 符合 QC1 预期 ~16% |
+| **II** | **9,968** | **6,411 (64.3%)** | **93 (0.9%)** | **3,464 (34.8%)** | **⚠ 远超 QC1 预期 ~6.8%** |
+
+**⚠ Type II FRAG 异常分析：**
+- FRAG 中位长度 = 390 aa（在 canonical 窗口 320–600 内！）
+- FRAG 最大 cov_hmm = 0.699（刚好低于 0.70 阈值）
+- **根因：** Type II 的 α2β3 内插片导致 hmmsearch 产生碎片化 domain hits（SOP ⚠ [CHECK-06]），单个最佳 domain 的 HMM 覆盖度被压低到 <0.70，但序列本身是完整的 Type II
+- **这正是 SOP Phase 3.6 要求 hit stitching 的原因**
+- **需要决策：** 是否为 Type II 实现 multi-domain stitching 来恢复覆盖度，或降低 II 的 cov 阈值
