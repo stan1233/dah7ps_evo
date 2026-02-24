@@ -12,12 +12,15 @@
 # CD-HIT cluster files
 *.clstr
 
-# Domain hit tables
+# Domain hit tables (raw and domtbl)
 *.tbl
+*.domtbl
 
 # Log files
 *.log
 nohup.out
+# Backup files
+*.bak
 
 # Images (generated)
 *.png

@@ -1,0 +1,56 @@
+{
+    "mining": {
+        "evalue_threshold": 1e-10,
+        "kdops_score_margin": 0
+    },
+    "qc": {
+        "length_lower_percentile": 5,
+        "length_upper_percentile": 95,
+        "cdhit_identity_phase1": 0.80,
+        "cdhit_identity_seeds": 0.60
+    },
+    "core_definition": {
+        "pad_residues": 20,
+        "lddt_min": "auto_inflection",
+        "gap_fraction_max": 0.30,
+        "hit_stitching": "auto",
+        "note": "lddt_min 由 FoldMason LDDT 分布拐点确定，记录于 QC2"
+    },
+    "msa": {
+        "hmmalign": {
+            "strip_insertions": true,
+            "strip_method": "esl-alimask --rf-is-mask",
+            "fallback_method": "a2m_drop_lowercase"
+        },
+        "full_length_stitch": {
+            "linker_align_method": "mafft_einsi",
+            "architecture_scope": "subtype_specific_homogeneous"
+        }
+    },
+    "phylogeny": {
+        "bootstrap_replicates": 1000,
+        "outgroup_prefix": "KDOPS_",
+        "root_model_baseline": "MFP",
+        "root_model_site_hetero": "LG+C20+F+G",
+        "root_model_site_hetero_alt": "EX_EHO+F+G"
+    },
+    "dca": {
+        "meff_min_main": 3.0,
+        "meff_ideal": 5.0,
+        "reweight_threshold": 0.8,
+        "regularization_le": 16.0,
+        "regularization_lh": 0.01,
+        "comparison": {
+            "downsample_reps": 20,
+            "target_meff": "min(group_meff)"
+        }
+    },
+    "af3": {
+        "apo_first": true,
+        "holo_requires_pocket": true
+    },
+    "asr": {
+        "altall_pp1": 0.80,
+        "altall_pp2": 0.20
+    }
+}

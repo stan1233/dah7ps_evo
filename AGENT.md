@@ -1,6 +1,6 @@
 # AGENT.md — DAH7PS 变构起源演化动力学重建（V4.1 SOP rev4 执行指南）
 
-> **本仓库的“唯一真相源（Single Source of Truth）”**：`dah7ps_v4_final_sop_4.md`  
+> **本仓库的“唯一真相源（Single Source of Truth）”**：`PLAN.md`（V4.1 SOP rev4）  
 > 本文件（AGENT.md）的作用是把 SOP 变成**可执行的、可验收的**任务清单与工程契约，确保自动化执行时不偏航、不“偷懒跳步”、不引入不可追溯的临时决定。
 
 ---
@@ -15,6 +15,7 @@
 6. **核心 MSA 禁止插入列膨胀**：核心映射必须走 `Stockholm → 剥离 Insert 列 → AFA`（SOP Phase 3.6）。禁止用 `hmmalign --outformat afa` 直接生成核心比对。
 7. **DCA 门槛是硬门槛**：主分析要求 `Meff/L ≥ 3.0`（理想 ≥ 5.0）。不满足则该模块/联合 DCA 禁跑、禁入 ICDC（SOP ⚠ [CHECK-03]）。
 8. **祖先 holo 条件必须门控**：对祖先节点必须先 Apo，再口袋/对接验证后才允许做 Holo（SOP ⚠ [CHECK-07]）。
+9. **实验记录必须同步更新**：每次执行任何分析操作（命令、脚本、数据处理），必须将精确命令、参数、输出文件、结果摘要和时间戳记录到 `log.md`。记录格式遵循 `log.md` 已有的结构化模板（日期分组 → 时间戳 → 命令块 → 输出表格）。禁止"先跑完再补记录"——每个步骤完成后立即追加到 `log.md`。
 
 ---
 
@@ -28,7 +29,7 @@
 - `results/`：所有中间产物与最终产物（按 SOP 目录分层）
 
 最小必备文件：
-- `dah7ps_v4_final_sop_4.md`
+- `PLAN.md`（V4.1 SOP rev4）
 - `meta/params.json`
 - `results/meta/software_versions.tsv`
 - `results/meta/model_files.tsv`（若使用外部模型文件，如 3Di）
