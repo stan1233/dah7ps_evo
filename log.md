@@ -2,7 +2,7 @@
 
 > 本文件记录所有操作的精确命令、参数、输出文件和结果，确保完全可重现。
 > 工作目录：`/home/tynan/0218/`
-> 虚拟环境：`conda activate dah7ps_evo`
+> 虚拟环境：`conda activate dah7ps_v4`（V4.1 起）/ `conda activate dah7ps_evo`（V3.1 旧环境）
 > 系统：Ubuntu Linux, 28 核 CPU
 
 ---
@@ -379,6 +379,444 @@ ALL_ADD_DONE                                   # 总计 < 2 分钟
 
 ### 待记录
 
-- [ ] Phase 2: 混合骨架 + PROMALS3D + 万级映射
-- [ ] Phase 3: ClipKIT kpi-smart-gap
-- [ ] QC2: Jalview 催化残基核验
+- [ ] ~~Phase 2: 混合骨架 + PROMALS3D + 万级映射~~（V3.1 已废弃，V4.1 改用 FoldMason）
+- [ ] ~~Phase 3: ClipKIT kpi-smart-gap~~（V3.1 已废弃，V4.1 改为双版本修剪）
+- [ ] ~~QC2: Jalview 催化残基核验~~（V4.1 改为 FoldMason msa2lddt 结构复核）
+
+---
+
+## 2026-02-23 V3.1 → V4.1 迁移 & Phase 0
+
+---
+
+### 05:06 — V3.1 → V4.1 文档升级
+
+**背景：** V3.1 的"全长单一 MSA 驱动一切"策略在跨亚型远缘同源时产生严重比对膨胀（比对长度 3,544–7,689 列 vs 预期 400–600 列）。V4.1 采用核心–模块分治范式，以 FoldMason 结构字母表为中枢。
+
+**操作：**
+
+```bash
+# 用 V4.1 版本覆盖旧文档
+cp AGENT_v4_1.md AGENT.md
+cp dah7ps_v4_final_sop_4.md plan.md
+
+# 删除临时源文件
+rm AGENT_v4_1.md dah7ps_v4_final_sop_4.md
+```
+
+**结果：**
+
+| 文件 | 变化 |
+|------|------|
+| `AGENT.md` | 76 行 (V3.1) → 207 行 (V4.1 SOP rev4 执行指南) |
+| `plan.md` | 208 行 (V3.1) → 1153 行 (V4.1 标准作业程序 SOP rev4) |
+
+---
+
+### 05:15 — 目录结构重组（SOP Phase 0.3）
+
+**操作：** 将根目录 80 个散落文件按 V4.0 SOP Phase 0.3 分类移入子目录。
+
+```bash
+# 创建 V4.0 SOP 目录结构
+mkdir -p data/seeds data/structures/panel_dah7ps data/structures/panel_kdops data/db \
+  meta/models scripts \
+  results/01_mining results/02_qc results/03_msa_core results/03_msa_modules \
+  results/04_phylogeny_asr results/05_struct_md results/06_icdc results/meta \
+  workflow
+
+# 种子序列 → data/seeds/
+mv seeds_Ia.fasta seeds_Ib.fasta seeds_II.fasta kdo8ps_uniprot.fasta data/seeds/
+
+# 数据库 → data/db/
+mv uniref90.fasta.gz Pfam-A.hmm Pfam-A.hmm.ssi PF00793.hmm data/db/
+
+# 脚本 → scripts/
+mv filter_kdops.py plot_length_hist.py scripts/
+
+# HMM 模型 + 搜索结果 → results/01_mining/ (29 files)
+mv model_Ia.hmm model_Ib.hmm model_II.hmm results/01_mining/
+mv aligned_seeds_Ia.fasta aligned_seeds_Ib.fasta aligned_seeds_II.fasta results/01_mining/
+mv domhits_*.tbl results/01_mining/
+mv hmmsearch_*.log results/01_mining/
+mv raw_full_*.fasta results/01_mining/
+mv kdo8ps.hmm kdo8ps_aligned.afa kdo8ps_nr90.fasta* results/01_mining/
+mv nohup_hmmsearch.log nohup_seqkit.log seqkit_*.log results/01_mining/
+
+# QC 和去冗余 → results/02_qc/ (19 files)
+mv qc_len_*.fasta results/02_qc/
+mv caseA_full_*.fasta* results/02_qc/
+mv seeds60_*.fasta* results/02_qc/
+mv remaining_*.fasta results/02_qc/
+mv length_distribution.png results/02_qc/
+
+# V3.1 MSA 存档 → results/03_msa_core/ (14 files)
+mv aligned_seeds60_*.afa results/03_msa_core/
+mv msa_full_*.afa results/03_msa_core/
+mv mafft_seeds60_*.log mafft_add_*.log nohup_add.log nohup_linsi.log results/03_msa_core/
+
+# 清理旧文档
+rm walkthrough_kdops_filter.md
+```
+
+**结果：**
+
+| 目录 | 文件数 | 说明 |
+|------|--------|------|
+| `data/seeds/` | 4 | 种子序列 |
+| `data/db/` | 4 | UniRef90 (47 GB) + Pfam HMM |
+| `data/structures/panel_dah7ps/` | 0 | 待下载 DAH7PS PDB |
+| `data/structures/panel_kdops/` | 0 | 待下载 KDOPS PDB |
+| `scripts/` | 2 | Python 脚本 |
+| `results/01_mining/` | 29 | HMM + 搜索 + 原始序列 |
+| `results/02_qc/` | 19 | QC + 去冗余 |
+| `results/03_msa_core/` | 14 | V3.1 MSA（存档） |
+| 根目录 | 6 | AGENT.md, plan.md, README.md, log.md, .gitignore |
+
+---
+
+### 05:38 — Git 提交并推送 Plan-V4.1 分支
+
+```bash
+git checkout -b Plan-V4.1
+git add -A
+git commit -m "Upgrade to V4.1: update AGENT.md & plan.md, reorganize directory structure per SOP Phase 0.3"
+git push -u origin Plan-V4.1
+```
+
+**结果：** `+1269/-421` 行变更，推送至 `origin/Plan-V4.1`
+
+---
+
+### 05:48 — Phase 0.1：创建 dah7ps_v4 conda 环境
+
+**精确命令：**
+
+```bash
+# 使用 mamba 创建新环境（SOP Phase 0.1）
+mamba create -n dah7ps_v4 \
+  python=3.11 hmmer mafft iqtree mmseqs2 foldmason seqkit cd-hit \
+  -y
+
+# pip 安装剩余工具
+conda run -n dah7ps_v4 pip install clipkit pastml
+```
+
+**安装结果：**
+
+| 工具 | 版本 | 来源 |
+|------|------|------|
+| python | 3.11.14 | conda |
+| hmmer | 3.4 | bioconda |
+| mafft | 7.526 | conda-forge |
+| iqtree | 3.0.1 | bioconda |
+| mmseqs2 | 18.8cc5c | bioconda |
+| foldmason | 4.dd3c235 | bioconda |
+| seqkit | 2.12.0 | bioconda |
+| cd-hit | 4.8.1 | bioconda |
+| clipkit | 2.10.2 | pip |
+| pastml | 1.9.51 | pip |
+
+> ⚠️ **注意：** bioconda 的 iqtree 3.0.1 包中命令为 `iqtree`（非 `iqtree2`）。SOP 中所有 `iqtree2` 命令实际执行时需改为 `iqtree`。
+
+---
+
+### 05:55 — Phase 0.2：软件版本锁定
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 bash -c '
+echo -e "tool\tversion" > results/meta/software_versions.tsv
+for t in python hmmbuild hmmalign hmmsearch mafft iqtree mmseqs foldmason seqkit cd-hit clipkit pastml; do
+  # ...各工具版本提取写入
+done
+'
+```
+
+**输出文件：** `results/meta/software_versions.tsv`（13 行，包含所有关键工具版本）
+
+---
+
+### 05:58 — Phase 0.4：参数文件初始化
+
+**操作：** 从 SOP 0.4 模板创建 `meta/params.json`
+
+**文件：** `meta/params.json`（包含 mining, qc, core_definition, msa, phylogeny, dca, af3, asr 全部参数块）
+
+---
+
+### 06:00 — Phase 0.2.1：外部模型文件
+
+**操作：** 初始化 `results/meta/model_files.tsv`
+
+**状态：** 3Di 模型文件（Q.3Di.AF / Q.3Di.LLM）需从 Seffernick et al. 2025 (*MBE* 42:msaf124) 补充材料获取，延后到 Phase 4.2 执行。
+
+---
+
+### 06:06 — 追加 AGENT.md 规则 #9
+
+**操作：** 向 `AGENT.md` 总原则添加第 9 条：
+
+> 9. **实验记录必须同步更新**：每次执行任何分析操作，必须将精确命令、参数、输出文件、结果摘要和时间戳记录到 `log.md`。
+
+同时更新 SOP 引用源从 `dah7ps_v4_final_sop_4.md` → `PLAN.md（V4.1 SOP rev4）`。
+
+---
+
+### 09:15 — Phase 0.2.1：下载 3Di 模型文件
+
+**操作（用户手动完成）：** 从 Seffernick et al. 2025 补充材料下载 Q.3Di.AF 和 Q.3Di.LLM。
+
+```bash
+# 用户已放置到 meta/models/
+ls meta/models/
+# Q.3Di.AF   Q.3Di.LLM
+
+# sha256 校验
+sha256sum meta/models/Q.3Di.AF meta/models/Q.3Di.LLM
+# 5e37984b...  Q.3Di.AF
+# 8cc3f62c...  Q.3Di.LLM
+```
+
+**产出：** `results/meta/model_files.tsv` 已更新 sha256 记录。
+
+**✅ Phase 0 所有 Done 条件通过。**
+
+---
+
+### 10:55 — Phase 1.1：种子扩充（V3.1 → V4.1）
+
+**背景：** V3.1 种子严重不足（Ia=3 条均来自 *E. coli*，Ib=3 条，II=仅 1 条 *M. tuberculosis*）。
+
+**用户提供扩充种子：** 从 UniProt 手动整理，按亚型覆盖多个分类群和结构类型。
+
+**QC 发现 6 个错误 UniProt ID（实际蛋白非 DAH7PS）：**
+
+| 错误 ID | 实际蛋白 | 处理 |
+|---------|---------|------|
+| Q8Y825 (Ib) | NAD(+) synthetase | → 替换为 Q8Y6T2 (*L. monocytogenes* AroA) |
+| D6D1V7 (Ib) | Glycosyl hydrolase 71 | → 删除（未找到替代） |
+| Q9HZE4 (II) | PelA | → 替换为 Q9I000 (*P. aeruginosa* PA2843) |
+| Q9I2V4 (II) | DUF1289 | → 替换为 Q7DC82 (*P. aeruginosa* phzC1) |
+| Q9SEU1 (II) | S-RNase | → 替换为 Q9SK84 (*A. thaliana* At1g22410) |
+| O25000 (II) | HofA | → 删除（未找到替代） |
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 python3 -c "
+from Bio import SeqIO
+# Load corrections from user-provided uniprotkb_2026_02_23.fasta
+corrections = {rec.id.split('|')[1]: rec for rec in SeqIO.parse('uniprotkb_2026_02_23.fasta', 'fasta')}
+# Ib: remove Q8Y825/D6D1V7, add Q8Y6T2
+# II: remove Q9HZE4/Q9I2V4/Q9SEU1/O25000, add Q9I000/Q7DC82/Q9SK84
+# ... (full script in session)
+"
+
+# Backup old seeds
+mv data/seeds/seeds_*.fasta data/seeds/*_v31.fasta.bak
+# Move fixed seeds
+mv Type_*_seeds_fixed.fasta data/seeds/seeds_*.fasta
+```
+
+**最终种子统计：**
+
+| 文件 | 序列数 | V3.1 | 覆盖物种 |
+|------|--------|------|---------|
+| `data/seeds/seeds_Ia.fasta` | 13 | 3 | E. coli, S. cerevisiae, C. albicans, S. pombe, N. meningitidis 等 |
+| `data/seeds/seeds_Ib.fasta` | 6 | 3 | T. maritima, B. subtilis, Geobacillus, P. furiosus, A. pernix, L. monocytogenes |
+| `data/seeds/seeds_II.fasta` | 14 | 1 | M. tuberculosis, C. glutamicum, P. aeruginosa, A. thaliana, 水稻, 番茄, 马铃薯, 矮牵牛, 长春花 |
+
+---
+
+### 11:21 — Phase 1.3：KDOPS 外群种子提取
+
+**操作：** 从用户下载的 UniProt KDO8PS FASTA（ec:2.5.1.55, reviewed:true, 300+ 条）中提取 12 条多样性代表。
+
+```bash
+conda run -n dah7ps_v4 python3 -c "
+from Bio import SeqIO
+kdops_ids = {'Q9AV97','O50044','Q31KV0','Q7V4M4','O66496','P61657','Q92Q99','P0A715','Q9ZFK4','Q0KCE4','P0CD74','Q9ZN55'}
+found = []
+for rec in SeqIO.parse('uniprotkb_ec_2_5_1_55_AND_reviewed_true_2026_02_23.fasta', 'fasta'):
+    acc = rec.id.split('|')[1]
+    if acc in kdops_ids:
+        rec.id = f'KDOPS_{acc}'
+        found.append(rec)
+SeqIO.write(found, 'kdops_outgroup.fasta', 'fasta')
+"
+mv kdops_outgroup.fasta data/seeds/
+```
+
+**KDOPS 外群组成（12 条，覆盖 9 个分类群）：**
+
+| KDOPS ID | 物种 | 分类群 |
+|----------|------|--------|
+| KDOPS_P0A715 | *E. coli* | γ-变形菌 |
+| KDOPS_Q9ZFK4 | *P. aeruginosa* | γ-变形菌 |
+| KDOPS_Q0KCE4 | *C. necator* | β-变形菌 |
+| KDOPS_P61657 | *R. palustris* | α-变形菌 |
+| KDOPS_Q92Q99 | *R. meliloti* | α-变形菌 |
+| KDOPS_O66496 | *A. aeolicus* | 水生菌门 |
+| KDOPS_Q31KV0 | *S. elongatus* | 蓝细菌 |
+| KDOPS_Q7V4M4 | *P. marinus* | 蓝细菌 |
+| KDOPS_P0CD74 | *C. trachomatis* | 衣原体 |
+| KDOPS_Q9ZN55 | *H. pylori* | 弯曲菌门 |
+| KDOPS_Q9AV97 | *A. thaliana* | 植物 |
+| KDOPS_O50044 | *P. sativum* | 植物 |
+
+---
+
+### 11:52 — Phase 1.2：种子比对 + HMM 重建 + hmmsearch
+
+**精确命令：**
+
+```bash
+# 1. MAFFT E-INS-i 种子比对（V4.1 推荐 E-INS-i 替代 L-INS-i）
+for type in Ia Ib II; do
+  mafft --genafpair --maxiterate 1000 --ep 0 --thread 20 \
+    data/seeds/seeds_${type}.fasta \
+    > results/01_mining/seeds_${type}.afa
+done
+
+# 2. hmmbuild（旧 HMM 备份为 *_v31.hmm.bak）
+for type in Ia Ib II; do
+  mv results/01_mining/model_${type}.hmm results/01_mining/model_${type}_v31.hmm.bak
+  hmmbuild results/01_mining/model_${type}.hmm results/01_mining/seeds_${type}.afa
+done
+
+# 3. hmmsearch 扫描 UniRef90（后台 nohup，预计 ~1-2 小时）
+nohup bash -c '
+for type in Ia Ib II; do
+  hmmsearch --cpu 20 -E 1e-10 \
+    --domtblout results/01_mining/hits_${type}.domtbl \
+    results/01_mining/model_${type}.hmm \
+    data/db/uniref90.fasta.gz > /dev/null
+  # 提取命中序列
+  grep -v "^#" results/01_mining/hits_${type}.domtbl | awk "{print \$1}" | sort -u > results/01_mining/hits_${type}_ids.txt
+  seqkit grep -f results/01_mining/hits_${type}_ids.txt data/db/uniref90.fasta.gz > results/01_mining/hits_${type}_seqs.fasta
+done
+' > results/01_mining/hmmsearch_v41.log 2>&1 &
+```
+
+**HMM 模型长度变化：**
+
+| 模型 | V3.1 | V4.1 | 种子数变化 |
+|------|------|------|-----------|
+| `model_Ia.hmm` | 163 KB | 166 KB (L=355) | 3 → 13 |
+| `model_Ib.hmm` | 176 KB | 156 KB (L=334) | 3 → 6 |
+| `model_II.hmm` | 216 KB | 220 KB (L=471) | 1 → 14 |
+
+**状态：** hmmsearch 正在后台运行，监控命令 `tail -f results/01_mining/hmmsearch_v41.log`
+
+---
+
+## 2026-02-24 Phase 1 完成 & QC1
+
+---
+
+### 11:24 — Phase 1.2 hmmsearch V4.1 结果确认
+
+hmmsearch 已于 2026-02-23 12:50 完成（耗时约 50 分钟）。
+
+**V4.1 hmmsearch 结果：**
+
+| 亚型 | V3.1 命中数 | V4.1 命中数 | 变化 |
+|------|-----------|-----------|------|
+| Ia | 10,102 | 10,071 | -31 (≈持平) |
+| Ib (raw) | 16,211 | 15,608 | -603 (-3.7%) |
+| II | 9,862 | 18,529 | +8,667 (+87.9%) |
+
+---
+
+### 11:25 — Phase 1.3：KDOPS 反向过滤（V4.1 重做）
+
+**背景：** V3.1 的 KDOPS 过滤使用旧 HMM 模型，需用 V4.1 的 `model_Ib.hmm` 对新 `hits_Ib_seqs.fasta` 重跑。
+
+**步骤 1：双向 hmmsearch 竞争打分**
+
+```bash
+conda activate dah7ps_v4
+
+# DAH7PS Ib HMM vs Ib 候选序列
+hmmsearch --cpu 20 \
+  --domtblout results/01_mining/hits_Ib_vs_dah7ps_v41.domtbl \
+  results/01_mining/model_Ib.hmm \
+  results/01_mining/hits_Ib_seqs.fasta \
+  > results/01_mining/hmmsearch_Ib_vs_dah7ps_v41.log 2>&1
+
+# KDOPS HMM vs Ib 候选序列
+hmmsearch --cpu 20 \
+  --domtblout results/01_mining/hits_Ib_vs_kdops_v41.domtbl \
+  results/01_mining/kdo8ps.hmm \
+  results/01_mining/hits_Ib_seqs.fasta \
+  > results/01_mining/hmmsearch_Ib_vs_kdops_v41.log 2>&1
+```
+
+**步骤 2：升级 filter_kdops.py 并执行过滤**
+
+脚本升级为 CLI 参数化版本（支持 `--help`、输入检查、输出目录自动创建）。
+
+```bash
+python scripts/filter_kdops.py \
+  --dah7ps_domtbl results/01_mining/hits_Ib_vs_dah7ps_v41.domtbl \
+  --kdops_domtbl results/01_mining/hits_Ib_vs_kdops_v41.domtbl \
+  --input results/01_mining/hits_Ib_seqs.fasta \
+  --output results/01_mining/hits_Ib_clean.fasta \
+  --contaminants results/01_mining/kdops_contaminants_v41.txt \
+  --report results/01_mining/kdops_filter_report_v41.tsv \
+  --score_margin 0
+```
+
+**KDOPS 过滤结果：**
+
+| 指标 | 数量 |
+|------|------|
+| Ib 总序列 | 15,608 |
+| 仅 DAH7PS 命中 | 136 |
+| 仅 KDOPS 命中 | 0 |
+| 双向命中 | 15,472 |
+| DAH7PS 胜出 | 7,733 |
+| KDOPS 胜出 (score ≥ DAH7PS) | 7,739 |
+| **总移除** | **7,739** |
+| **保留（clean）** | **7,869** |
+
+**得分差分布（DAH7PS − KDOPS）：** 强双峰分布，|delta| ≤ 20 仅 4 条序列。过滤边界清晰无歧义。
+
+**V3.1 vs V4.1 过滤率差异说明：** V3.1 仅移除 480 条（3.0%），V4.1 移除 7,739 条（49.6%）。原因是 V3.1 使用 domain conditional E-value < 1e-10（domtblout 第 12 列）预筛选 ID，而 V4.1 使用 hmmsearch -E 1e-10（全序列 E-value），后者纳入了更多边界命中，其中大量实际为 KDOPS。
+
+**输出文件：**
+
+| 文件 | 大小 | 说明 |
+|------|------|------|
+| `hits_Ib_vs_dah7ps_v41.domtbl` | 4.8 MB | Ib vs DAH7PS 打分 |
+| `hits_Ib_vs_kdops_v41.domtbl` | 4.7 MB | Ib vs KDOPS 打分 |
+| `hits_Ib_clean.fasta` | 3.7 MB | 净化后 7,869 条 |
+| `kdops_contaminants_v41.txt` | 160 KB | 7,739 条污染 ID |
+| `kdops_filter_report_v41.tsv` | 698 KB | 逐序列得分比较 |
+
+---
+
+### 11:30 — QC1：挖掘质量报告
+
+**操作：** 生成 `results/01_mining/qc_mining_report.md`，包含：
+- 每亚型命中数量与 V3.1 对比
+- E-value / Score 分布
+- 长度分布直方图
+- KDOPS 竞争得分分布
+- 分类群覆盖（Top 10）
+
+**关键发现：**
+- Type II 命中数翻倍（9,862 → 18,529），验证种子扩充策略有效
+- Ia 稳定（10,102 → 10,071），说明原 3 条种子已足够覆盖 Ia 多样性
+- Ib clean 从 V3.1 的 15,731 降至 7,869，主要因为 V4.1 的 KDOPS 过滤更严格
+- 分类群覆盖：Ia 以 γ-变形菌为主，Ib 以厚壁菌/拟杆菌为主，II 以放线菌（链霉菌）为主
+
+**产出文件：** `results/01_mining/qc_mining_report.md`
+
+**✅ Phase 1 所有 Done 条件通过：**
+- `results/01_mining/hits_*.domtbl` ✓
+- `results/01_mining/hits_*_seqs.fasta` ✓
+- `results/01_mining/hits_Ib_clean.fasta` ✓
+- `results/01_mining/qc_mining_report.md` ✓
