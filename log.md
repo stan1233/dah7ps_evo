@@ -1018,4 +1018,241 @@ python3 scripts/qc_length_coverage.py \
 - FRAG 最大 cov_hmm = 0.699（刚好低于 0.70 阈值）
 - **根因：** Type II 的 α2β3 内插片导致 hmmsearch 产生碎片化 domain hits（SOP ⚠ [CHECK-06]），单个最佳 domain 的 HMM 覆盖度被压低到 <0.70，但序列本身是完整的 Type II
 - **这正是 SOP Phase 3.6 要求 hit stitching 的原因**
-- **需要决策：** 是否为 Type II 实现 multi-domain stitching 来恢复覆盖度，或降低 II 的 cov 阈值
+
+---
+
+### 08:45 — Phase 2.1 修正：Type II multi-domain stitching
+
+**决策：** 实现 multi-domain stitching（而非降低阈值），保持 cov_min=0.70。
+
+**新建脚本：** `scripts/hmmer_utils.py`（可复用区间合并 + union coverage 函数，Phase 3.6 也用）
+
+**升级脚本：** `scripts/qc_length_coverage.py` 新增 `--cov_mode merged` 参数
+
+**Stitching 设计：**
+- 对每条序列收集所有 domain hits（过滤：i-Evalue ≤ 1e-5，HMM span ≥ 30 aa）
+- 在 HMM 坐标系上做区间并集（merge_gap=5）
+- 用合并后的 union coverage 替代单 domain coverage 做分类
+
+**精确命令：**
+
+```bash
+python3 scripts/qc_length_coverage.py \
+  --fasta results/01_mining/hits_II_final_seqs.fasta \
+  --domtbl results/01_mining/hits_II.domtbl \
+  --hmm_length 471 --subtype II \
+  --canonical_min 320 --canonical_max 600 \
+  --cov_min 0.70 \
+  --cov_mode merged --merge_gap 5 \
+  --outdir results/02_qc
+```
+
+**结果对比（修复前 → 后）：**
+
+| 指标 | cov_mode=best | cov_mode=merged | 变化 |
+|------|-------------|----------------|------|
+| PASS_CANONICAL | 6,411 (64.3%) | **8,457 (84.8%)** | +2,046 |
+| PASS_LONG | 93 (0.9%) | **140 (1.4%)** | +47 |
+| FRAG | 3,464 (34.8%) | **1,371 (13.8%)** | −2,093 |
+| Rescued by stitching | — | **2,093** | — |
+
+**验收通过：**
+1. ✅ rescued=2,093（大量完整 Type II 被成功恢复）
+2. ✅ FRAG 从 34.8% 降至 13.8%（回到合理范围）
+3. ✅ FRAG 中位长度 390→203 aa（真碎片）
+
+---
+
+### Phase 2.1 最终汇总
+
+| 亚型 | 总数 | PASS_CANONICAL | PASS_LONG | FRAG | cov_mode |
+|------|------|---------------|-----------|------|----------|
+| Ia | 10,071 | 9,022 (89.6%) | 182 (1.8%) | 867 (8.6%) | best |
+| Ib | 7,869 | 6,229 (79.2%) | 172 (2.2%) | 1,468 (18.7%) | best |
+| II | 9,968 | 8,457 (84.8%) | 140 (1.4%) | 1,371 (13.8%) | merged |
+| **合计** | **27,908** | **23,708** | **494** | **3,706** | — |
+
+**Phase 2.2 输入 = PASS_CANONICAL + PASS_LONG 合并：** Ia=9,204 / Ib=6,401 / II=8,597（总计 24,202）
+
+---
+
+### 08:50 — Phase 2.2：CD-HIT 80% 去冗余
+
+**精确命令：**
+
+```bash
+# 合并 PASS_CANONICAL + PASS_LONG
+cat results/02_qc/qc_pass_Ia.fasta results/02_qc/qc_long_Ia.fasta > results/02_qc/qc_all_pass_Ia.fasta
+cat results/02_qc/qc_pass_Ib.fasta results/02_qc/qc_long_Ib.fasta > results/02_qc/qc_all_pass_Ib.fasta
+cat results/02_qc/qc_pass_II.fasta results/02_qc/qc_long_II.fasta > results/02_qc/qc_all_pass_II.fasta
+
+# CD-HIT 80%
+conda run -n dah7ps_v4 cd-hit -i results/02_qc/qc_all_pass_Ia.fasta -o results/02_qc/nr80_Ia.fasta -c 0.80 -n 5 -M 4000 -T 20
+conda run -n dah7ps_v4 cd-hit -i results/02_qc/qc_all_pass_Ib.fasta -o results/02_qc/nr80_Ib.fasta -c 0.80 -n 5 -M 4000 -T 20
+conda run -n dah7ps_v4 cd-hit -i results/02_qc/qc_all_pass_II.fasta -o results/02_qc/nr80_II.fasta -c 0.80 -n 5 -M 4000 -T 20
+```
+
+**结果：**
+
+| 文件 | 序列数 | 平均长度 | 去冗余率 |
+|------|--------|---------|---------|
+| `nr80_Ia.fasta` | 3,521 | 385.4 | 61.7% (9,204→3,521) |
+| `nr80_Ib.fasta` | 3,073 | 356.8 | 52.0% (6,401→3,073) |
+| `nr80_II.fasta` | 3,079 | 464.8 | 64.2% (8,597→3,079) |
+| **总计** | **9,673** | — | 60.0% |
+
+---
+
+### 08:51 — Phase 2.3：CD-HIT 60% 种子提取
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 cd-hit -i results/02_qc/nr80_Ia.fasta -o results/02_qc/seeds60_Ia.fasta -c 0.60 -n 4 -M 4000 -T 20
+conda run -n dah7ps_v4 cd-hit -i results/02_qc/nr80_Ib.fasta -o results/02_qc/seeds60_Ib.fasta -c 0.60 -n 4 -M 4000 -T 20
+conda run -n dah7ps_v4 cd-hit -i results/02_qc/nr80_II.fasta -o results/02_qc/seeds60_II.fasta -c 0.60 -n 4 -M 4000 -T 20
+
+# 排除 Gate B 边缘 ID（4 条）
+conda run -n dah7ps_v4 seqkit grep -v -f results/01_mining/kdops_borderline_ids.txt \
+  results/02_qc/seeds60_Ib.fasta > results/02_qc/seeds60_Ib_clean.fasta
+mv results/02_qc/seeds60_Ib_clean.fasta results/02_qc/seeds60_Ib.fasta
+```
+
+**结果：**
+
+| 文件 | 序列数 | 平均长度 |
+|------|--------|---------|
+| `seeds60_Ia.fasta` | 581 | 482.8 |
+| `seeds60_Ib.fasta` | 648 | 374.9 |
+| `seeds60_II.fasta` | 649 | 516.5 |
+| **总计** | **1,878** | — |
+
+> Gate B 排除：seqkit 加载了 4 个 pattern，从 seeds60_Ib 中剔除边缘 KDOPS 序列
+
+---
+
+### 08:52 — Phase 2.4：MMseqs2 跨亚型 stepping stones
+
+**精确命令：**
+
+```bash
+cat results/02_qc/seeds60_Ia.fasta results/02_qc/seeds60_Ib.fasta results/02_qc/seeds60_II.fasta \
+  > results/02_qc/all_seeds_mixed.fasta
+
+conda run -n dah7ps_v4 mmseqs easy-cluster results/02_qc/all_seeds_mixed.fasta \
+  results/02_qc/stepping_stones /tmp/tmp_mmseqs \
+  --min-seq-id 0.4 -c 0.8 --cov-mode 1
+```
+
+**MMseqs2 级联聚类过程：**
+
+| 阶段 | 输入序列 | 聚类数 |
+|------|---------|--------|
+| linclust (初始) | 1,878 | 1,501 |
+| linclust (细化) | 1,501 | 647 |
+| cascaded step 0 (s=1) | 647 | 330 |
+| cascaded step 1 (s=2.5) | 330 | 266 |
+| cascaded step 2 (s=4) | 266 | **258** |
+
+**结果：** 258 个聚类代表序列 → `results/02_qc/stepping_stones_rep_seq.fasta`
+
+**⚠ 问题：** SOP 目标为 20–50 条 stepping stones（结构面板计算可行范围），当前 258 条远超目标。需要决策是否调整 `--min-seq-id` 参数或在 Phase 3.1 结构面板构建时再筛选。
+
+**产出文件：**
+
+| 文件 | 说明 |
+|------|------|
+| `results/02_qc/stepping_stones_rep_seq.fasta` | 258 条聚类代表 |
+| `results/02_qc/stepping_stones_cluster.tsv` | 聚类归属表 |
+| `results/02_qc/stepping_stones_all_seqs.fasta` | 全部序列（按聚类分组） |
+
+---
+
+### 09:30 — Phase 2.4 续：Stepping Stones 聚类分析
+
+**脚本编写：** `scripts/analyze_stepping_stones.py`（新建）
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 python3 scripts/analyze_stepping_stones.py --workdir /home/tynan/0218
+```
+
+**Per-subtype 分布：**
+
+| 亚型 | 代表数 | 占比 |
+|------|--------|------|
+| Ia | 104 | 40.3% |
+| Ib | 46 | 17.8% |
+| II | 108 | 41.9% |
+| **总计** | **258** | — |
+
+**跨亚型混簇分析：**
+
+- 纯单亚型簇：258（100%）
+- 跨亚型混合簇：0（0%）
+
+**聚类大小分布：** singleton=87, 2-5=95, 6-10=23, 11-20=33, >20=20（min=1, median=2, mean=7.3, max=126）
+
+**结论：** 40% 一致性下三亚型之间无桥接聚类，覆盖骨架洁净。
+
+---
+
+### 09:35 — Phase 2.4b：二次聚类实验（panel candidates 探索）
+
+**目的：** 尝试在 258 条 backbone 上用更低 min-seq-id 做二次聚类，目标压缩到 20-50 条。
+
+**精确命令：**
+
+```bash
+# 尝试 25% identity
+conda run -n dah7ps_v4 mmseqs easy-cluster results/02_qc/stepping_stones_rep_seq.fasta \
+  results/02_qc/panel_test_025 /tmp/tmp_mmseqs_panel \
+  --min-seq-id 0.25 -c 0.8 --cov-mode 1
+# → 183 clusters
+
+# 尝试 20% identity
+conda run -n dah7ps_v4 mmseqs easy-cluster results/02_qc/stepping_stones_rep_seq.fasta \
+  results/02_qc/panel_test_020 /tmp/tmp_mmseqs_test \
+  --min-seq-id 0.20 -c 0.8 --cov-mode 1
+# → 181 clusters
+```
+
+**结论：** DAH7PS 家族序列极度发散，纯序列聚类无法将 258 条压缩到 20-50 条。Phase 3.1 结构面板选择必须采用基于结构可用性的标准（PDB > AFDB > ESMFold），而非序列一致性聚类。
+
+**决策（用户认可）：分层使用（方案 2）**
+
+1. **Coverage Backbone（258 条）**：保留完整集合，用于覆盖度验证 / 空白分支发现
+   - 文件：`stepping_stones_rep_seq.fasta`
+2. **Structure Panel（目标 20-40 条）**：Phase 3.1 按优先级筛选
+   - P1：有实验 PDB 结构 → 直接入面板
+   - P2：AlphaFold DB 已有高置信预测（pLDDT >= 70）→ 入面板
+   - P3：无结构但覆盖关键分支空白 → ESMFold 预测，pLDDT >= 70 才入面板
+   - SOP 的 20-50 约束重新绑定到 Structure Panel 子集
+
+测试文件已清理（`rm panel_test_*`）。
+
+---
+
+### 09:45 — QC2 报告生成
+
+**操作：** 生成 `results/02_qc/qc_length_report.md`
+
+**报告内容：**
+1. Phase 2 输入与门控总结（Gate A/B）
+2. Phase 2.1 三箱过滤（含 Type II multi-domain stitching 效果）
+3. Phase 2.2 nr80 去冗余
+4. Phase 2.3 seeds60 种子提取
+5. Phase 2.4 两层 stepping stones 定义与验收
+6. Phase 2 全流程数据链与 Done 条件检查
+
+**产出文件：** `results/02_qc/qc_length_report.md`
+
+**✅ Phase 2 所有 Done 条件通过：**
+- `results/02_qc/nr80_*.fasta` ✓ (Ia=3,521 / Ib=3,073 / II=3,079)
+- `results/02_qc/qc_length_report.md` ✓
+- seeds60 ✓ (总计 1,878)
+- stepping stones coverage backbone ✓ (258 条, 零跨亚型混簇)
+- Gate A/B 风险已消解 ✓
+
+**Phase 2 正式关账。下一步：Phase 3.1 结构面板构建。**

@@ -42,20 +42,32 @@
 
 ## Phase 2：质量控制与去冗余
 
-### V3.1 已完成
+### Pre-Phase 2 门控（计划外追加）
 
-- [x] 2.1 长度过滤 → `results/02_qc/qc_len_*.fasta`
-- [x] 2.2 CD-HIT 80% 去冗余 → `results/02_qc/caseA_full_*.fasta`（Ia=3,473 / Ib=5,728 / II=3,064）
-- [x] 2.2 CD-HIT 60% 种子提取 → `results/02_qc/seeds60_*.fasta`（Ia=537 / Ib=963 / II=652）
+- [x] Gate A：三亚型 hits 交集统计 → Ia∩II = 8,561（85%）
+- [x] Gate A-2：Best-hit Ia vs II 竞争打分归属 → 全部归属 Ia（100% HIGH）
+- [x] Gate A-2：生成互斥 FASTA（Ia=10,071 / Ib=7,869 / II=9,968）
+- [x] Gate B：Ib 边缘 KDOPS 序列隔离（4 条标记 → `kdops_borderline_ids.txt`）
 
-### V4.1 新增要求
+### V4.1 执行
 
-- [ ] 2.1 片段序列分类（fragments bin）→ `results/02_qc/fragments_*.fasta`
-- [ ] 2.2 重命名产出为 `nr80_*.fasta`（SOP 命名规范）
-- [ ] 2.3 **跨亚型 stepping stones**：用 MMseqs2 替代 CD-HIT（<60% 一致性下敏感度更高）
-- [ ] 2.3 Stepping stones 覆盖度验证 + 报告 → `results/02_qc/stepping_stones_report.md`
-- [ ] 2.3 缺口分支的结构补充预测（ESMFold/ColabFold，pLDDT ≥ 70）
-- [ ] QC1 产出 `results/02_qc/qc_length_report.md`
+- [x] 2.1 长度 + HMM 覆盖度三箱过滤（`qc_length_coverage.py`）
+  - Ia/Ib: cov_mode=best, II: cov_mode=merged (multi-domain stitching)
+  - PASS 合计 24,202（Ia=9,204 / Ib=6,401 / II=8,597）
+  - Type II rescued by stitching: 2,093 条
+- [x] 2.2 CD-HIT 80% 去冗余 → `nr80_*.fasta`（Ia=3,521 / Ib=3,073 / II=3,079, 总计 9,673）
+- [x] 2.3 CD-HIT 60% 种子提取 → `seeds60_*.fasta`（Ia=581 / Ib=648 / II=649, 总计 1,878, Gate B 已排除）
+- [x] 2.4a MMseqs2 40% 跨亚型 stepping stones → Coverage Backbone 258 条（Ia=104 / Ib=46 / II=108, 零跨亚型混簇）
+- [x] 2.4b 二次聚类实验（25%→183, 20%→181）→ 确认需 Phase 3.1 结构优先级筛选
+- [x] QC2 产出 `results/02_qc/qc_length_report.md`
+
+### Stepping Stones 两层定义（决策记录）
+
+- **Coverage Backbone（258 条）**：`stepping_stones_rep_seq.fasta`，用于覆盖度验证
+- **Structure Panel（目标 20-40 条）**：Phase 3.1 按 PDB > AFDB > ESMFold 优先级筛选
+- SOP 的 20-50 约束重新绑定到 Structure Panel
+
+**Done 条件：** ✅ `nr80_*.fasta` + `qc_length_report.md` + seeds60 + stepping stones 均产出
 
 ---
 
