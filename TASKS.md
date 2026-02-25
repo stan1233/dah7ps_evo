@@ -73,11 +73,16 @@
 
 ## Phase 3：结构感知核心 MSA + 模块注释
 
-### 3.1 结构面板构建
+### 3.1 结构面板构建（Selection Contract 已锁定）
 
-- [ ] 3.1A 下载 DAH7PS 实验结构（1KFL, 1RZM, 3NV8, 5CKV 等）→ `data/structures/panel_dah7ps/`
-- [ ] 3.1A 补充 AlphaFold DB / ESMFold 预测结构（pLDDT ≥ 70）
-- [ ] 3.1A 目标：20-40 个 DAH7PS 结构覆盖三大亚型
+**Selection Contract**: N=30 (20–40), quota Ia=12/Ib=5/II=13 (±1; floors Ia≥8/Ib≥4/II≥8)
+Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region confidence, not full-length.
+
+- [ ] 3.1A-1 生成 `panel_candidates.tsv`（258 条 backbone 全量评估：PDB/AFDB/ESMFold 可得性）
+- [ ] 3.1A-2 PDB 结构下载（已知 DAH7PS 实验结构）→ `data/structures/panel_dah7ps/`
+- [ ] 3.1A-3 AFDB 结构下载（core pLDDT ≥ 70 的 stepping-stone reps）
+- [ ] 3.1A-4 ESMFold 补缺口（覆盖关键分支空白，core pLDDT ≥ 70 才入选）
+- [ ] 3.1A-5 按 Selection Contract 选出最终面板 → `panel_manifest.tsv`（含配额/分层抽样/锚点断言）
 - [ ] 3.1B 下载 KDOPS 外群结构 → `data/structures/panel_kdops/`
 
 ### 3.2-3.4 FoldMason 骨架与核心列

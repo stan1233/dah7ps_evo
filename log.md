@@ -1256,3 +1256,43 @@ conda run -n dah7ps_v4 mmseqs easy-cluster results/02_qc/stepping_stones_rep_seq
 - Gate A/B 风险已消解 ✓
 
 **Phase 2 正式关账。下一步：Phase 3.1 结构面板构建。**
+
+---
+
+### 11:05 — Phase 3.1 准备：Structure Panel Selection Contract 锁定
+
+**决策（用户与 AGENT 共同确认）：**
+
+经讨论，正式锁定 Phase 3.1A 的结构面板选择合同：
+
+**Selection Contract:**
+- Target N = 30（allowed 20–40）
+- 默认配额：Ia=12, Ib=5, II=13（±1 allowed；硬底线 Ia≥8, Ib≥4, II≥8）
+- 优先级：PDB > AFDB (core mean pLDDT≥70) > ESMFold (core mean pLDDT≥70)
+- 使用 core-region 置信度（非全长平均），避免 transit peptide 系统性排除植物型
+- core-region 覆盖度 ≥ 0.80
+- 每亚型至少 1 个锚点结构（PDB 优先）
+- 按簇大小分层抽样：≥30% 小簇(≤2), ≥30% 中等簇(3-10), ≥20% 大簇(>10)
+- 分类群多样性约束（软约束）
+
+**合同写入位置：**
+- `AGENT.md`：Phase 3.1A 新增 Selection Contract 执行规则（硬约束 + 软约束 + 产出清单）
+- `TASKS.md`：Phase 3.1 拆分为 6 个子任务（3.1A-1 到 3.1A-5 + 3.1B）
+- `meta/params.json`：新增 `structure_panel` 参数块（配额、优先级、分层抽样阈值）
+
+**脚本编写：** `scripts/select_structure_panel.py`（新建）
+- 输入：`panel_candidates.tsv`（258 行 backbone 全量评估表）+ `meta/params.json`
+- 输出：`panel_manifest.tsv`（最终入选面板清单）
+- 实现：优先级排序 + 配额/底线断言 + 簇唯一性断言 + 锚点约束 + 分层抽样验证
+- 支持 `--help`、输入检查、输出目录自动创建
+
+**产出文件：**
+
+| 文件 | 说明 |
+|------|------|
+| `AGENT.md` | 新增 Phase 3.1A Selection Contract |
+| `TASKS.md` | Phase 3.1 拆分为 6 个子任务 |
+| `meta/params.json` | 新增 structure_panel 参数块 |
+| `scripts/select_structure_panel.py` | 面板选择脚本（新建） |
+
+**下一步：** Phase 3.1A-1 生成 `panel_candidates.tsv`（需要查询 PDB/AFDB 结构可得性）。

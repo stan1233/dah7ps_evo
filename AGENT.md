@@ -79,8 +79,31 @@
 
 ### Phase 3：结构感知核心 MSA（FoldMason 骨架 → HMM 映射）+ 模块注释
 
-#### Phase 3.1–3.5：FoldMason 骨架与核心列定义
+#### Phase 3.1A：Structure Panel Selection Contract
+
+**面板规模与配额**
+- Target N = 30（allowed 20–40）
+- 默认配额：Ia=12, Ib=5, II=13（±1 allowed；硬底线 Ia≥8, Ib≥4, II≥8）
+- 每条序列必须来自不同 stepping-stone cluster（断言：不重复簇）
+
+**硬约束（必须满足）**
+1. 结构来源优先级：PDB > AFDB (core mean pLDDT≥70) > ESMFold (core mean pLDDT≥70)
+2. 质量门槛使用 **core-region** 置信度（非全长平均），避免 transit peptide / N端延伸系统性淘汰植物型
+3. core-region 覆盖度 ≥ 0.80（结构必须覆盖 HMM core 的大部分残基）
+4. 每亚型至少 1 个"锚点结构"（PDB 优先；无 PDB 则至少 1 个 AFDB 高置信）
+
+**软约束（尽量满足）**
+1. 按簇大小分层抽样：≥30% 来自小簇(size≤2)，≥30% 中等簇(3–10)，≥20% 大簇(>10)
+2. 分类群多样性：每亚型覆盖主要分类群（避免单一菌属过度代表）
+
+**产出**
+- `results/03_msa_core/panel_candidates.tsv`（258 条 backbone 全量评估表）
+- `results/03_msa_core/panel_manifest.tsv`（最终入选面板清单）
+- 结构文件 → `data/structures/panel_dah7ps/`
+
+#### Phase 3.1B–3.5：FoldMason 骨架与核心列定义
 **Done 条件**
+- `results/03_msa_core/panel_candidates.tsv` + `panel_manifest.tsv` 产出
 - `results/03_msa_core/skeleton_core_aa.fa`
 - `results/03_msa_core/skeleton_3di.fa`
 - `results/03_msa_core/core_columns.mask`

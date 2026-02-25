@@ -27,6 +27,39 @@
         "cdhit_identity_phase1": 0.80,
         "cdhit_identity_seeds": 0.60
     },
+    "structure_panel": {
+        "target_n": 30,
+        "allowed_range": [
+            20,
+            40
+        ],
+        "quota_default": {
+            "Ia": 12,
+            "Ib": 5,
+            "II": 13
+        },
+        "quota_flex": 1,
+        "quota_floors": {
+            "Ia": 8,
+            "Ib": 4,
+            "II": 8
+        },
+        "priority": [
+            "PDB",
+            "AFDB",
+            "ESMFold"
+        ],
+        "core_plddt_min": 70,
+        "core_coverage_min": 0.80,
+        "anchor_per_subtype": true,
+        "stratification_targets": {
+            "small_clusters_pct": 0.30,
+            "medium_clusters_pct": 0.30,
+            "large_clusters_pct": 0.20,
+            "small_max_size": 2,
+            "medium_max_size": 10
+        }
+    },
     "core_definition": {
         "pad_residues": 20,
         "lddt_min": "auto_inflection",
