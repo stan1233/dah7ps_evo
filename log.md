@@ -1296,3 +1296,68 @@ conda run -n dah7ps_v4 mmseqs easy-cluster results/02_qc/stepping_stones_rep_seq
 | `scripts/select_structure_panel.py` | 面板选择脚本（新建） |
 
 **下一步：** Phase 3.1A-1 生成 `panel_candidates.tsv`（需要查询 PDB/AFDB 结构可得性）。
+
+---
+
+### 15:35 — Phase 3.1A-1：生成 panel_candidates.tsv
+
+**脚本编写：** `scripts/build_panel_candidates.py`（新建）
+
+**精确命令：**
+
+```bash
+python3 scripts/build_panel_candidates.py --workdir /home/tynan/0218 --skip_download
+```
+
+**脚本设计：**
+1. 从本地数据构建骨架表（rep_id, subtype, cluster_id, cluster_size, seq_len）
+2. 通过 PDBe SIFTS API 查询 UniProt → PDB 映射
+3. 通过 AlphaFold DB API 查询结构可得性
+4. 所有 API 响应缓存到 `results/03_msa_core/structure_availability/raw/`
+5. `--skip_download` 模式：使用 AFDB 全长 pLDDT 作为 core pLDDT 的 fallback
+
+**结果：**
+
+| 指标 | Ia | Ib | II | 总计 |
+|------|-----|-----|------|------|
+| Stepping stone reps | 104 | 46 | 108 | 258 |
+| 有 AFDB | 72 | 27 | 55 | 154 |
+| AFDB global pLDDT≥70 | 60 | 27 | 47 | 134 |
+| 需要 ESMFold | 44 | 19 | 61 | 124 |
+| **有 PDB** | **0** | **0** | **0** | **0** |
+
+**⚠ PDB=0 分析：**
+
+已知 DAH7PS 实验结构（1KFL/P0AB91, 3NV8/Q9X0N2, 2B7O/P9WPB7 等 8 个 UniProt accession）全部不在 seeds60 / stepping stones 中。验证确认：这些 accession 在 UniRef90 数据库中被聚类到了其他代表 ID 下，因此不会作为 stepping-stone rep 出现。
+
+**这是 UniRef90 clustering 的正常行为，不是 pipeline bug。**
+
+处理方案待用户确认（两个选择）：
+- 方案 A：PDB 作为外置锚点（不占配额，30 AFDB + ~8 PDB ≈ 38 总计）
+- 方案 B：PDB 替换 manifest 中同亚型 AFDB 条目（严格保持 30）
+
+---
+
+### 15:50 — Phase 3.1A-1 续：Selection Script 验证
+
+**精确命令：**
+
+```bash
+python3 scripts/select_structure_panel.py \
+  --candidates_tsv results/03_msa_core/panel_candidates.tsv \
+  --params meta/params.json \
+  --manifest_tsv results/03_msa_core/panel_manifest.tsv
+```
+
+**结果：** 选中 30 条，完美匹配配额 Ia=12 / Ib=5 / II=13。全部来源 = AFDB。
+
+**产出文件：**
+
+| 文件 | 说明 |
+|------|------|
+| `scripts/build_panel_candidates.py` | 面板候选生成脚本（新建） |
+| `results/03_msa_core/panel_candidates.tsv` | 258 行 backbone 全量评估 |
+| `results/03_msa_core/panel_manifest.tsv` | 30 行最终面板（待 PDB 锚点决策） |
+| `results/03_msa_core/structure_availability/raw/` | ~500 个 API 响应缓存 JSON |
+
+**下一步：** 用户确认 PDB 锚点处理方案后，进入 Phase 3.1A-2（PDB 结构下载）。

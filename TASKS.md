@@ -78,7 +78,9 @@
 **Selection Contract**: N=30 (20–40), quota Ia=12/Ib=5/II=13 (±1; floors Ia≥8/Ib≥4/II≥8)
 Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region confidence, not full-length.
 
-- [ ] 3.1A-1 生成 `panel_candidates.tsv`（258 条 backbone 全量评估：PDB/AFDB/ESMFold 可得性）
+- [x] 3.1A-1 生成 `panel_candidates.tsv`（258 条 backbone 全量评估：PDB=0, AFDB=154, needs_ESMFold=124）
+- [x] 3.1A-1 Selection 验证 → `panel_manifest.tsv`（30 条：Ia=12/Ib=5/II=13，全 AFDB）
+- [ ] **待决策**：PDB 锚点处理方案（外置不占配额 vs 替换 AFDB 保持 N=30）
 - [ ] 3.1A-2 PDB 结构下载（已知 DAH7PS 实验结构）→ `data/structures/panel_dah7ps/`
 - [ ] 3.1A-3 AFDB 结构下载（core pLDDT ≥ 70 的 stepping-stone reps）
 - [ ] 3.1A-4 ESMFold 补缺口（覆盖关键分支空白，core pLDDT ≥ 70 才入选）
