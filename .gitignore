@@ -30,4 +30,5 @@ nohup.out
 !plot_length_hist.py
 !kdops_contaminants.txt
 !ids_*.txt
-!seed_ids_*.txt
+!seed_ids_*.txt__pycache__/
+__pycache__/
