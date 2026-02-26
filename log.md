@@ -118,6 +118,100 @@ seqkit grep -f ids_II.txt uniref90.fasta.gz > raw_full_II.fasta
 **漏洞 1（Jiao 2020）：** Type Iα 和 II 的变构元件是 TIM 桶内部插片，物理切除会断裂多肽链。
 **漏洞 2（Yokoyama 2025）：** KDOPS 是 Type Iβ 的姊妹枝，hmmsearch 必然捞出假阳性。
 
+---
+
+## 2026-02-25 运行记录
+
+---
+
+### 22:14 — 阅读 Phase 3.1A 相关文件与当前面板输出
+
+**精确命令：**
+
+```bash
+ls
+cat /Users/orion/Documents/0218/dah7ps_evo/AGENTS.md
+cat /Users/orion/Documents/0218/dah7ps_evo/AGENT.md
+rg -n "3.1A|panel_manifest|PDB" /Users/orion/Documents/0218/dah7ps_evo/PLAN.md /Users/orion/Documents/0218/dah7ps_evo/TASKS.md /Users/orion/Documents/0218/dah7ps_evo/README.md
+sed -n '300,380p' /Users/orion/Documents/0218/dah7ps_evo/PLAN.md
+sed -n '60,110p' /Users/orion/Documents/0218/dah7ps_evo/TASKS.md
+sed -n '1,120p' /Users/orion/Documents/0218/dah7ps_evo/log.md
+ls /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core
+head -n 5 /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_manifest.tsv
+ls /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/structure_availability
+ls /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/structure_availability/raw | head
+head -n 40 /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/structure_availability/raw/A0A0C1E1M3_pdb.json
+ls /Users/orion/Documents/0218/dah7ps_evo/data
+ls /Users/orion/Documents/0218/dah7ps_evo
+sed -n '1,200p' /Users/orion/Documents/0218/dah7ps_evo/scripts/build_panel_candidates.py
+sed -n '1,200p' /Users/orion/Documents/0218/dah7ps_evo/scripts/select_structure_panel.py
+head -n 1 /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.tsv
+ls /Users/orion/Documents/0218/dah7ps_evo/results/02_qc | head
+head -n 5 /Users/orion/Documents/0218/dah7ps_evo/results/02_qc/stepping_stones_cluster.tsv
+rg -n "stepping_stones_rep" -l /Users/orion/Documents/0218/dah7ps_evo/results
+rg -n "stepping_stones" /Users/orion/Documents/0218/dah7ps_evo/results -g"*.fasta" -g"*.fa" -g"*.faa" -g"*.fsa"
+ls /Users/orion/Documents/0218/dah7ps_evo/results/02_qc
+rg -n "pdb_ids|panel_manifest" /Users/orion/Documents/0218/dah7ps_evo/scripts
+sed -n '280,420p' /Users/orion/Documents/0218/dah7ps_evo/scripts/build_panel_candidates.py
+sed -n '1,120p' /Users/orion/Documents/0218/dah7ps_evo/README.md
+date "+%Y-%m-%d %H:%M:%S"
+```
+
+**结果摘要：**
+
+| 事项 | 结果 |
+|------|------|
+| `panel_manifest.tsv` | 30 条全为 AFDB，`pdb_ids` 为空 |
+| PDB 查询缓存 | `*_pdb.json` 显示 rep accession 无 PDB（示例 A0A0C1E1M3 not_found） |
+| 数据目录 | `data/` 不存在（当前仅有 `results/`, `scripts/`, `meta/`） |
+| 待决策 | `TASKS.md` 标记 “PDB 锚点处理方案” 未决 |
+
+---
+
+### 22:16 — 新增脚本：UniRef90 cluster → PDB 映射补齐
+
+**精确命令：**
+
+```bash
+cat <<'EOF' > /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py
+# (script body omitted)
+EOF
+chmod +x /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py
+```
+
+**输出文件：**
+
+| 文件 | 说明 |
+|------|------|
+| `scripts/augment_candidates_with_cluster_pdb.py` | 基于 UniProt REST API 的 cluster PDB 查询 + candidates 增强脚本 |
+
+---
+
+### 22:19 — 运行 cluster PDB 增强（网络受限失败）
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.tsv --out_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb.tsv --report_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/cluster_pdb_report.tsv
+head -n 5 /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/cluster_pdb_report.tsv
+date "+%Y-%m-%d %H:%M:%S"
+```
+
+**结果摘要：**
+
+| 事项 | 结果 |
+|------|------|
+| 处理条数 | 258 |
+| 新增 PDB 映射 | 0 |
+| 错误 | `error_<urlopen error [Errno 8] nodename nor servname pro...>`（无网络/DNS 解析失败） |
+
+**输出文件：**
+
+| 文件 | 说明 |
+|------|------|
+| `results/03_msa_core/panel_candidates.clusterpdb.tsv` | 未新增 PDB（全部保持原状态） |
+| `results/03_msa_core/cluster_pdb_report.tsv` | 记录每个 cluster 查询状态（当前为 error_*） |
+
 **KDOPS 反向过滤精确命令：**
 
 ```bash
@@ -1361,3 +1455,355 @@ python3 scripts/select_structure_panel.py \
 | `results/03_msa_core/structure_availability/raw/` | ~500 个 API 响应缓存 JSON |
 
 **下一步：** 用户确认 PDB 锚点处理方案后，进入 Phase 3.1A-2（PDB 结构下载）。
+
+---
+
+## 2026-02-25 API 联调与脚本修复记录
+
+---
+
+### 22:20 — API 可用性直连测试（UniProt / RCSB）
+
+**精确命令：**
+
+```bash
+curl -sS -o /tmp/uniprot_health.json -w "http=%{http_code} dns=%{time_namelookup} connect=%{time_connect} total=%{time_total}\n" "https://rest.uniprot.org/uniprotkb/search?query=accession:P0AB91&fields=accession,xref_pdb&format=json&size=1"
+curl -sS -o /tmp/rcsb_health.json -w "http=%{http_code} dns=%{time_namelookup} connect=%{time_connect} total=%{time_total}\n" -H "Content-Type: application/json" -d '{"query":{"type":"terminal","service":"sequence","parameters":{"evalue_cutoff":0.1,"identity_cutoff":0.9,"sequence_type":"protein","value":"MNNIRRVAIAAATNATDAAATGATVAVASANVVVNN"}},"return_type":"polymer_entity","request_options":{"results_content_type":["experimental"],"paginate":{"start":0,"rows":1}}}' https://search.rcsb.org/rcsbsearch/v2/query
+```
+
+**结果：**
+- UniProt API: HTTP 200（可达）
+- RCSB API: HTTP 204（无命中但接口可达）
+
+---
+
+### 22:24 — UniProt query 语法验证
+
+**精确命令：**
+
+```bash
+python3 - <<'PY'
+import json, urllib.parse, urllib.request
+q = "uniref_cluster_90:UniRef90_P0AB91 AND database:pdb"
+url = "https://rest.uniprot.org/uniprotkb/search?" + urllib.parse.urlencode({
+    "query": q, "fields": "accession,xref_pdb", "format": "json", "size": "3"
+})
+with urllib.request.urlopen(url, timeout=20) as r:
+    d = json.loads(r.read().decode())
+print(len(d.get("results", [])), d["results"][0].get("primaryAccession"))
+PY
+```
+
+**结果：**
+- `uniref_cluster_90:UniRef90_P0AB91 AND database:pdb` 返回命中（P0AB91）
+- 说明脚本 query 字段本身正确，非 API 语法错误。
+
+---
+
+### 22:30 — 最小复现实验（单条 P0AB91）
+
+**精确命令：**
+
+```bash
+cat > /tmp/panel_candidates_min.tsv <<'EOF2'
+rep_id\tsubtype\tcluster_id\tcluster_size\tseq_len\thas_pdb\tpdb_ids\thas_afdb\tafdb_global_plddt\tafdb_plddt_core\tafdb_core_cov\tneeds_esmf\tesmf_plddt_core\tesmf_core_cov
+UniRef90_P0AB91\tIa\tUniRef90_P0AB91\t1\t350\t0\t\t0\t0\t0\t0\t0\t0\t0
+EOF2
+
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py \
+  --candidates_tsv /tmp/panel_candidates_min.tsv \
+  --out_tsv /tmp/panel_candidates_min.out.tsv \
+  --report_tsv /tmp/panel_candidates_min.report.tsv \
+  --refresh --rate_limit 0
+```
+
+**结果：**
+- Processed=1, Added PDB mappings=1
+- 命中 PDB：`1GG1,1KFL,1N8F,1QR7,5CKS,7RUD,7RUE,8E0S,8E0T,8E0U,8E0V,8E0X,8E0Y,8E0Z`
+- 说明脚本核心流程可正常工作。
+
+---
+
+### 22:40 — 脚本修复（`scripts/augment_candidates_with_cluster_pdb.py`）
+
+**修复点：**
+1. `error_*` 缓存默认不再直接复用（自动重查 live API，避免离线失败缓存长期污染）
+2. UniProt 查询增加重试/退避（`--retries`, `--retry_backoff`）
+3. 新增 `--max_rows` 与 `--progress_every`（大批量运行可观察）
+4. 新增状态统计输出（`Status counts`）
+5. 修复 RCSB 204 场景：空响应不再触发 `JSONDecodeError`（返回空命中）
+
+**语法检查：**
+
+```bash
+python3 -m py_compile /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py
+```
+
+通过。
+
+---
+
+### 22:50 — 全量运行（仅 UniProt cluster 成员法，258 条）
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.tsv \
+  --out_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb.tsv \
+  --report_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/cluster_pdb_report.tsv \
+  --rate_limit 0.05 --progress_every 25
+```
+
+**结果：**
+- Processed=258
+- Added PDB mappings=0
+- Status counts: `not_found=258`
+
+**结论：**
+- 在当前 258 个 stepping-stone rep 对应的 UniRef90 cluster 中，按 `cluster member + UniProt PDB crossref` 策略没有可用 PDB。
+
+---
+
+### 23:02 — 全量运行（启用 RCSB fallback，258 条）
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.tsv \
+  --out_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb_rcsb.tsv \
+  --report_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/cluster_pdb_report_rcsb.tsv \
+  --use_rcsb --rcsb_identity 0.9 --rate_limit 0.05 --progress_every 25 --refresh
+```
+
+**结果：**
+- Processed=258
+- Added PDB mappings=3
+- Status counts: `not_found=258`（cluster member 路径全空；新增来自 RCSB fallback）
+
+**新增命中（`pdb_source=rcsb_seq`）：**
+- `UniRef90_A0A8S2AQE6` (II) → `5LBD`
+- `UniRef90_A0A2X3J117` (Ia) → `1GG1,1KFL,1N8F,1QR7,5CKS`
+- `UniRef90_A0ABX8I7S4` (Ia) → `6U8J`
+
+---
+
+### 23:10 — 基于新候选表重跑面板选择
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/select_structure_panel.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb_rcsb.tsv \
+  --params /Users/orion/Documents/0218/dah7ps_evo/meta/params.json \
+  --manifest_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_manifest.clusterpdb_rcsb.tsv
+```
+
+**结果：**
+- 30 条配额不变（Ia=12, Ib=5, II=13）
+- 结构来源：AFDB=27, PDB=3
+- PDB 分布：Ia=2, II=1, Ib=0
+- 硬约束通过：Ia/II 锚点提升为 PDB，Ib 仍为 AFDB 锚点。
+
+**新增输出文件：**
+- `results/03_msa_core/panel_candidates.clusterpdb.tsv`
+- `results/03_msa_core/cluster_pdb_report.tsv`
+- `results/03_msa_core/panel_candidates.clusterpdb_rcsb.tsv`
+- `results/03_msa_core/cluster_pdb_report_rcsb.tsv`
+- `results/03_msa_core/panel_manifest.clusterpdb_rcsb.tsv`
+
+
+---
+
+## 2026-02-26 更激进 PDB 补齐（RCSB 阈值扫描）
+
+---
+
+### 13:08 — 全量扫描：identity=0.85
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.tsv \
+  --out_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb_rcsb085.tsv \
+  --report_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/cluster_pdb_report_rcsb085.tsv \
+  --use_rcsb --rcsb_identity 0.85 --rate_limit 0.05 --progress_every 25 --refresh
+```
+
+**结果：**
+- Processed=258
+- Added PDB mappings=4
+- 新增命中（`pdb_source=rcsb_seq`）：
+  - `UniRef90_A0A8S2AQE6` (II) -> `5LBD`
+  - `UniRef90_A0A3M6BI03` (II) -> `5UXM,5UXN,5UXO`
+  - `UniRef90_A0A2X3J117` (Ia) -> `1GG1,1KFL,1N8F,1QR7,5CKS`
+  - `UniRef90_A0ABX8I7S4` (Ia) -> `6U8J`
+
+---
+
+### 13:23 — 基于 0.85 候选重选 30 条面板
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/select_structure_panel.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb_rcsb085.tsv \
+  --params /Users/orion/Documents/0218/dah7ps_evo/meta/params.json \
+  --manifest_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_manifest.clusterpdb_rcsb085.tsv
+```
+
+**结果：**
+- 总数与配额保持：Ia=12, Ib=5, II=13
+- 来源：AFDB=26, PDB=4
+- PDB 分布：Ia=2, II=2, Ib=0
+- 所有硬约束通过。
+
+---
+
+### 13:25 — 更激进扫描：identity=0.80
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.tsv \
+  --out_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb_rcsb080.tsv \
+  --report_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/cluster_pdb_report_rcsb080.tsv \
+  --use_rcsb --rcsb_identity 0.80 --rate_limit 0.05 --progress_every 25 --refresh
+```
+
+**结果：**
+- Processed=258
+- Added PDB mappings=4（与 0.85 相同）
+- 命中列表与 0.85 完全一致。
+
+---
+
+### 13:36 — 基于 0.80 候选重选 30 条面板
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/select_structure_panel.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb_rcsb080.tsv \
+  --params /Users/orion/Documents/0218/dah7ps_evo/meta/params.json \
+  --manifest_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_manifest.clusterpdb_rcsb080.tsv
+```
+
+**结果：**
+- 与 0.85 完全一致：AFDB=26, PDB=4，PDB 分布 Ia=2, II=2, Ib=0。
+
+---
+
+### 13:38 — 阈值对比汇总
+
+| RCSB identity | 全量新增 PDB | 新增分布 | manifest 中 PDB 数 | manifest PDB 分布 |
+|---|---:|---|---:|---|
+| 0.90 | 3 | Ia=2, II=1 | 3 | Ia=2, II=1 |
+| 0.85 | 4 | Ia=2, II=2 | 4 | Ia=2, II=2 |
+| 0.80 | 4 | Ia=2, II=2 | 4 | Ia=2, II=2 |
+
+**结论：**
+- 从 0.90 放宽到 0.85 有增益（+1）。
+- 继续放宽到 0.80 无额外增益。
+- 当前数据下，Ib 仍未补到 PDB 锚点。
+
+
+---
+
+### 13:39 — 继续激进补齐：Ib 定向测试 + 全量 0.70
+
+**Ib 定向 smoke test（46 条）：**
+
+```bash
+python3 - <<'PY'
+import csv
+inp='/Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.tsv'
+out='/tmp/panel_candidates_ib.tsv'
+with open(inp) as f, open(out,'w',newline='') as g:
+    r=csv.DictReader(f, delimiter='\t')
+    w=csv.DictWriter(g, fieldnames=r.fieldnames, delimiter='\t')
+    w.writeheader()
+    for row in r:
+        if row.get('subtype')=='Ib':
+            w.writerow(row)
+PY
+
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py \
+  --candidates_tsv /tmp/panel_candidates_ib.tsv \
+  --out_tsv /tmp/panel_candidates_ib.rcsb070.tsv \
+  --report_tsv /tmp/cluster_pdb_report_ib.rcsb070.tsv \
+  --use_rcsb --rcsb_identity 0.70 --rate_limit 0.05 --progress_every 10 --refresh
+```
+
+**结果：**
+- Ib 子集新增 1 条：`UniRef90_A0A150M4F4` -> `5J6F,3NVT,3TFC`
+- 证明 Ib 在 0.70 阈值下可回收 PDB 锚点。
+
+---
+
+### 13:45 — 全量运行：identity=0.70
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/augment_candidates_with_cluster_pdb.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.tsv \
+  --out_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb_rcsb070.tsv \
+  --report_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/cluster_pdb_report_rcsb070.tsv \
+  --use_rcsb --rcsb_identity 0.70 --rate_limit 0.05 --progress_every 25 --refresh
+```
+
+**结果：**
+- Processed=258
+- Added PDB mappings=10
+- 新增分布：Ia=5, Ib=1, II=4
+
+**新增命中列表（`pdb_source=rcsb_seq`）：**
+- II: `UniRef90_A0A8S2AQE6` -> `5LBD`
+- II: `UniRef90_A0A899G207` -> `5JPE,5JPF`
+- II: `UniRef90_A0A3M6BI03` -> `5UXM,5UXN,5UXO`
+- II: `UniRef90_A0AAD6REQ7` -> `5WAX`
+- Ia: `UniRef90_A0ABR0CAI6` -> `6U8J`
+- Ia: `UniRef90_A0A2X3J117` -> `1GG1,1KFL,1N8F,1QR7,5CKS`
+- Ia: `UniRef90_A0A370TWY2` -> `6U8J`
+- Ia: `UniRef90_A0ABX8I7S4` -> `6U8J,7YKC`
+- Ia: `UniRef90_A0A9P8T4T7` -> `6U8J,7YKC`
+- Ib: `UniRef90_A0A150M4F4` -> `5J6F,3NVT,3TFC`
+
+---
+
+### 13:55 — 基于 0.70 候选重选面板
+
+**精确命令：**
+
+```bash
+python3 /Users/orion/Documents/0218/dah7ps_evo/scripts/select_structure_panel.py \
+  --candidates_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_candidates.clusterpdb_rcsb070.tsv \
+  --params /Users/orion/Documents/0218/dah7ps_evo/meta/params.json \
+  --manifest_tsv /Users/orion/Documents/0218/dah7ps_evo/results/03_msa_core/panel_manifest.clusterpdb_rcsb070.tsv
+```
+
+**结果：**
+- 总数与配额保持：Ia=12, Ib=5, II=13
+- 来源：AFDB=20, PDB=10
+- PDB 分布：Ia=5, Ib=1, II=4
+- 三亚型锚点均为 PDB（包含 Ib）
+- 所有硬约束通过。
+
+---
+
+### 13:58 — 阈值最终对比（更新）
+
+| RCSB identity | 全量新增 PDB | 新增分布 | manifest 中 PDB 数 | manifest PDB 分布 |
+|---|---:|---|---:|---|
+| 0.90 | 3 | Ia=2, II=1 | 3 | Ia=2, II=1 |
+| 0.85 | 4 | Ia=2, II=2 | 4 | Ia=2, II=2 |
+| 0.80 | 4 | Ia=2, II=2 | 4 | Ia=2, II=2 |
+| 0.70 | 10 | Ia=5, Ib=1, II=4 | 10 | Ia=5, Ib=1, II=4 |
+
+**决策建议：**
+- 若目标是“更积极补 PDB 并确保 Ib 也有 PDB 锚点”，采用 `rcsb_identity=0.70`。
+
