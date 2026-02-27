@@ -91,7 +91,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 - [x] 3.2 FoldMason easy-msa → `results/03_msa_core/skeleton_aa.fa` (46 seqs = 30 AFDB + 16 PDB chains) + `skeleton_3di.fa` + `skeleton.html` (5.6M)
 - [/] 3.3 FoldMason refinemsa — ⚠ segfault（`createdb` 过滤 24 短链导致 DB-MSA 序列数不匹配；`msa2lddt` + `msa2lddtreport` 已跑成功作为替代质量评估）
-- [ ] 3.4 逐列 LDDT 核心列界定（`define_core_columns.py`）→ `skeleton_core_aa.fa` + `core_columns.mask`
+- [x] 3.4 逐列 LDDT 核心列界定（`define_core_columns.py`）→ `skeleton_core_aa.fa` + `core_columns.mask`（core_len=521, lddt_min=0.1814 auto_inflection, gap_max=0.30, pad=20）
 
 ### 3.5-3.6 亚型内骨架与全量映射
 
@@ -169,7 +169,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 ## 脚本开发（SOP 引用但尚未实现）
 
 - [ ] `scripts/extract_core_domains.py`（含 hit stitching）
-- [ ] `scripts/define_core_columns.py`（LDDT 拐点法）
+- [x] `scripts/define_core_columns.py`（LDDT 拐点法）— 已实现并通过 QC
 - [ ] `scripts/annotate_modules.py`（多证据融合 + 双版本矩阵）
 - [ ] `scripts/extract_module_seqs.py`
 - [ ] `scripts/extract_linkers.py`

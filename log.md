@@ -1484,3 +1484,64 @@ conda run -n dah7ps_v4 foldmason msa2lddtreport \
 两个命令均成功执行。`skeleton_lddt_report.html` 可用于 Phase 3.4 逐列 LDDT 核心列界定。
 
 **下一步：** Phase 3.4（逐列 LDDT 核心列界定）或先修复 refinemsa 问题（可能需要重建 createdb 仅从 AFDB 单链文件，排除多链 PDB）。
+
+---
+
+### 10:20 — Phase 3.4：逐列 LDDT 核心列界定
+
+**脚本编写：** `scripts/define_core_columns.py`（新建）
+
+**设计：**
+- 从 `skeleton_lddt_report.html` 中解析 `"scores"` JSON 数组（per-column LDDT）
+- 使用 auto_inflection（knee point）方法自动确定 LDDT 阈值
+- 结合 gap_fraction_max=0.30 做基础核心列筛选
+- 对连续核心块做 ±20 列 padding（不扩展到 score=-1 的 unscored 列）
+- 同时输出 3Di 核心比对、per-column TSV、QC 报告
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 python scripts/define_core_columns.py \
+  --msa results/03_msa_core/skeleton_aa.fa \
+  --lddt-report results/03_msa_core/skeleton_lddt_report.html \
+  --msa-3di results/03_msa_core/skeleton_3di.fa \
+  --params meta/params.json \
+  --outdir results/03_msa_core \
+  --prefix skeleton
+```
+
+**结果：**
+
+| 指标 | 数值 |
+|------|------|
+| MSA 序列数 (N) | 46 |
+| 比对长度 (L) | 1966 |
+| 有效评分列 (score≥0) | 1735 |
+| msaLDDT | 0.2391 |
+| **LDDT 阈值 (auto_inflection knee)** | **0.1814** |
+| **基础核心列 (before padding)** | **302** |
+| **最终核心列 (after ±20 padding)** | **521** ✅ (目标 400–600) |
+| 每序列非 gap 残基 min/med/max | 266 / 358 / 447 |
+
+**QC 验收：**
+1. ✅ core_len=521，落在目标范围 400–600 内
+2. ✅ 显著小于 V3.1 的 >3000 膨胀水平
+3. ✅ 每序列非 gap 残基合理（med=358，接近 DAH7PS 典型核心长度）
+
+**产出文件：**
+
+| 文件 | 说明 |
+|------|------|
+| `scripts/define_core_columns.py` | 核心列定义脚本（新建） |
+| `results/03_msa_core/core_columns.mask` | 1966 位 0/1 掩码 |
+| `results/03_msa_core/skeleton_core_aa.fa` | 核心 AA MSA（46 seqs × 521 cols） |
+| `results/03_msa_core/skeleton_core_3di.fa` | 核心 3Di MSA（46 seqs × 521 cols） |
+| `results/03_msa_core/core_columns.tsv` | 逐列 LDDT/gap/keep 表（1966 行） |
+| `results/03_msa_core/qc_core_definition.md` | QC 报告 |
+
+**✅ Phase 3.4 Done 条件通过：**
+- `skeleton_core_aa.fa` ✓
+- `skeleton_core_3di.fa` ✓
+- `core_columns.mask` ✓
+
+**下一步：** Phase 3.6 — 构建 core HMM (`hmmbuild`) → 全量核心映射。
