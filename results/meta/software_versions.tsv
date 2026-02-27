@@ -1,0 +1,13 @@
+tool	version
+python	3.11.14
+hmmbuild	3.4
+hmmalign	3.4
+hmmsearch	3.4
+mafft	7.526
+iqtree	3.0.1
+mmseqs	18.8cc5c
+foldmason	4.dd3c235
+seqkit	2.12.0
+cd-hit	4.8.1
+clipkit	2.10.2
+pastml	1.9.51

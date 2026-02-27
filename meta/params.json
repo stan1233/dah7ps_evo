@@ -1,0 +1,107 @@
+{
+    "mining": {
+        "evalue_threshold": 1e-10,
+        "kdops_score_margin": 0
+    },
+    "qc": {
+        "hmm_coverage_min": 0.70,
+        "length_windows": {
+            "Ia": {
+                "canonical_min": 300,
+                "canonical_max": 450
+            },
+            "Ib": {
+                "canonical_min": 280,
+                "canonical_max": 450
+            },
+            "II": {
+                "canonical_min": 320,
+                "canonical_max": 600
+            }
+        },
+        "hmm_lengths": {
+            "Ia": 355,
+            "Ib": 334,
+            "II": 471
+        },
+        "cdhit_identity_phase1": 0.80,
+        "cdhit_identity_seeds": 0.60
+    },
+    "structure_panel": {
+        "target_n": 30,
+        "allowed_range": [
+            20,
+            40
+        ],
+        "quota_default": {
+            "Ia": 12,
+            "Ib": 5,
+            "II": 13
+        },
+        "quota_flex": 1,
+        "quota_floors": {
+            "Ia": 8,
+            "Ib": 4,
+            "II": 8
+        },
+        "priority": [
+            "PDB",
+            "AFDB",
+            "ESMFold"
+        ],
+        "core_plddt_min": 70,
+        "core_coverage_min": 0.80,
+        "anchor_per_subtype": true,
+        "stratification_targets": {
+            "small_clusters_pct": 0.30,
+            "medium_clusters_pct": 0.30,
+            "large_clusters_pct": 0.20,
+            "small_max_size": 2,
+            "medium_max_size": 10
+        }
+    },
+    "core_definition": {
+        "pad_residues": 20,
+        "lddt_min": "auto_inflection",
+        "gap_fraction_max": 0.30,
+        "hit_stitching": "auto",
+        "note": "lddt_min 由 FoldMason LDDT 分布拐点确定，记录于 QC2"
+    },
+    "msa": {
+        "hmmalign": {
+            "strip_insertions": true,
+            "strip_method": "esl-alimask --rf-is-mask",
+            "fallback_method": "a2m_drop_lowercase"
+        },
+        "full_length_stitch": {
+            "linker_align_method": "mafft_einsi",
+            "architecture_scope": "subtype_specific_homogeneous"
+        }
+    },
+    "phylogeny": {
+        "bootstrap_replicates": 1000,
+        "outgroup_prefix": "KDOPS_",
+        "root_model_baseline": "MFP",
+        "root_model_site_hetero": "LG+C20+F+G",
+        "root_model_site_hetero_alt": "EX_EHO+F+G"
+    },
+    "dca": {
+        "meff_min_main": 3.0,
+        "meff_ideal": 5.0,
+        "reweight_threshold": 0.8,
+        "regularization_le": 16.0,
+        "regularization_lh": 0.01,
+        "comparison": {
+            "downsample_reps": 20,
+            "target_meff": "min(group_meff)"
+        }
+    },
+    "af3": {
+        "apo_first": true,
+        "holo_requires_pocket": true
+    },
+    "asr": {
+        "altall_pp1": 0.80,
+        "altall_pp2": 0.20
+    }
+}

@@ -12,12 +12,15 @@
 # CD-HIT cluster files
 *.clstr
 
-# Domain hit tables
+# Domain hit tables (raw and domtbl)
 *.tbl
+*.domtbl
 
 # Log files
 *.log
 nohup.out
+# Backup files
+*.bak
 
 # Images (generated)
 *.png
@@ -27,4 +30,6 @@ nohup.out
 !plot_length_hist.py
 !kdops_contaminants.txt
 !ids_*.txt
-!seed_ids_*.txt
+!seed_ids_*.txt__pycache__/
+__pycache__/
+tmp_foldmason/
