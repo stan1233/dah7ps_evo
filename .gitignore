@@ -32,3 +32,4 @@ nohup.out
 !ids_*.txt
 !seed_ids_*.txt__pycache__/
 __pycache__/
+tmp_foldmason/

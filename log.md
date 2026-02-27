@@ -1361,3 +1361,126 @@ python3 scripts/select_structure_panel.py \
 | `results/03_msa_core/structure_availability/raw/` | ~500 个 API 响应缓存 JSON |
 
 **下一步：** 用户确认 PDB 锚点处理方案后，进入 Phase 3.1A-2（PDB 结构下载）。
+
+---
+
+## 2026-02-27 Phase 3.1A-2/3 + Phase 3.2 执行
+
+---
+
+### 04:36 — Phase 3.1A-2：PDB 锚点下载（线路 A：外置不占配额）
+
+**决策：** 采用线路 A，PDB 实验结构作为外置锚点，不占 panel_manifest.tsv 的 30 条配额。
+
+**精确命令：**
+
+```bash
+for pdb in 1KFL 1RZM 3NV8 5CKV 2B7O; do
+  curl -L -s -o "data/structures/panel_dah7ps/PDB-${pdb}.cif" \
+    "https://files.rcsb.org/download/${pdb}.cif"
+done
+```
+
+**输出文件：**
+
+| 文件 | 大小 | 亚型 |
+|------|------|------|
+| `PDB-1KFL.cif` | 2.3 MB | Iα |
+| `PDB-1RZM.cif` | 609 KB | Iβ |
+| `PDB-3NV8.cif` | 1.4 MB | II |
+| `PDB-5CKV.cif` | 1.4 MB | II |
+| `PDB-2B7O.cif` | 832 KB | Iα |
+
+---
+
+### 04:40 — Phase 3.1A-3：AFDB 面板结构下载（30 条）
+
+**精确命令：** Python 脚本解析 `panel_manifest.tsv`，对每条 rep_id 调用 AFDB API（`https://alphafold.ebi.ac.uk/api/prediction/{accession}`），下载 PDB 文件。限速 0.2s/请求。
+
+```bash
+python3 - <<'PY'
+import csv, json, time, urllib.request
+from pathlib import Path
+# ... (完整脚本见 session)
+# 对 panel_manifest.tsv 中 30 条，逐条从 AFDB API 下载 PDB 文件
+PY
+```
+
+**结果：** 30 条全部下载成功，0 错误。
+
+**文件清单重要示例（30 个 AF-*.pdb）：**
+
+| 文件 | 亚型 | 说明 |
+|------|------|------|
+| `AF-A0A0C1E1M3-F1-model_v4.pdb` | II | cluster_size=3 |
+| `AF-K2G4Z0-F1-model_v4.pdb` | Ia | cluster_size=1 |
+| `AF-Q04VK0-F1-model_v4.pdb` | Ib | cluster_size=2 |
+| ... 共 30 个 | | |
+
+**目录总文件数确认：** 35 = 30 AFDB + 5 PDB ✓（在 SOP 20-40 范围内）
+
+---
+
+### 04:54 — Phase 3.2：FoldMason easy-msa 生成结构骨架
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 foldmason easy-msa \
+  data/structures/panel_dah7ps/* \
+  results/03_msa_core/skeleton tmp_foldmason \
+  --report-mode 1
+```
+
+**输出文件：**
+
+| 文件 | 大小 | 说明 |
+|------|------|------|
+| `results/03_msa_core/skeleton_aa.fa` | 90 KB | AA 序列骨架比对，46 序列 |
+| `results/03_msa_core/skeleton_3di.fa` | 90 KB | 3Di 字母表比对 |
+| `results/03_msa_core/skeleton.nw` | 1.1 KB | 引导树 |
+| `results/03_msa_core/skeleton.html` | 5.6 MB | 交互式逐列 LDDT 可视化 |
+
+**注意：** 46 序列 = 30 AFDB 单链 + 16 PDB 多链拆分（1KFL×8链 + 1RZM×2 + 3NV8×2 + 5CKV×2 + 2B7O×2）。FoldMason 自动拆分多链 PDB/mmCIF 为独立条目，这是预期行为。
+
+---
+
+### 04:55 — Phase 3.3：FoldMason createdb + refinemsa
+
+**createdb 成功：**
+
+```bash
+conda run -n dah7ps_v4 foldmason createdb \
+  data/structures/panel_dah7ps/* results/03_msa_core/panelDb
+```
+
+结果：处理 35 个输入文件 → 70 entries（含多链拆分），其中 24 个 too short 被忽略，有效 46 entries。
+
+**refinemsa 失败（segfault）：**
+
+```bash
+conda run -n dah7ps_v4 foldmason refinemsa \
+  results/03_msa_core/panelDb \
+  results/03_msa_core/skeleton_aa.fa \
+  results/03_msa_core/skeleton_refined_aa.fa \
+  --refine-iters 1000
+# Exit code 139 (segfault)
+# 10 iterations 也同样 segfault
+```
+
+**根因分析：** `createdb` 过滤了 24 个短链（来自多链 PDB），导致 panelDb 中有效条目数 < skeleton_aa.fa 中的 46 序列。refinemsa 在序列匹配时访问越界导致 segfault。
+
+**替代方案：** 使用 `msa2lddt` + `msa2lddtreport` 评估原始骨架质量：
+
+```bash
+conda run -n dah7ps_v4 foldmason msa2lddt \
+  results/03_msa_core/panelDb results/03_msa_core/skeleton_aa.fa
+
+conda run -n dah7ps_v4 foldmason msa2lddtreport \
+  results/03_msa_core/panelDb results/03_msa_core/skeleton_aa.fa \
+  results/03_msa_core/skeleton_lddt_report.html
+```
+
+两个命令均成功执行。`skeleton_lddt_report.html` 可用于 Phase 3.4 逐列 LDDT 核心列界定。
+
+**下一步：** Phase 3.4（逐列 LDDT 核心列界定）或先修复 refinemsa 问题（可能需要重建 createdb 仅从 AFDB 单链文件，排除多链 PDB）。

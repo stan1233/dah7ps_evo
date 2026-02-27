@@ -80,17 +80,17 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 - [x] 3.1A-1 生成 `panel_candidates.tsv`（258 条 backbone 全量评估：PDB=0, AFDB=154, needs_ESMFold=124）
 - [x] 3.1A-1 Selection 验证 → `panel_manifest.tsv`（30 条：Ia=12/Ib=5/II=13，全 AFDB）
-- [ ] **待决策**：PDB 锚点处理方案（外置不占配额 vs 替换 AFDB 保持 N=30）
-- [ ] 3.1A-2 PDB 结构下载（已知 DAH7PS 实验结构）→ `data/structures/panel_dah7ps/`
-- [ ] 3.1A-3 AFDB 结构下载（core pLDDT ≥ 70 的 stepping-stone reps）
-- [ ] 3.1A-4 ESMFold 补缺口（覆盖关键分支空白，core pLDDT ≥ 70 才入选）
-- [ ] 3.1A-5 按 Selection Contract 选出最终面板 → `panel_manifest.tsv`（含配额/分层抽样/锚点断言）
-- [ ] 3.1B 下载 KDOPS 外群结构 → `data/structures/panel_kdops/`
+- [x] **决策已定**：选择线路 A（PDB 作为外置锚点，不占 30 条配额）
+- [x] 3.1A-2 PDB 锚点结构下载 (1KFL, 1RZM, 3NV8, 5CKV, 2B7O) → `data/structures/panel_dah7ps/PDB-*.cif`
+- [x] 3.1A-3 AFDB 结构下载（30 条，core pLDDT ≥ 70，0 errors）→ `data/structures/panel_dah7ps/AF-*.pdb`
+- [-] 3.1A-4 ESMFold 补缺口 → 不需要（30 AFDB 全部满足质量门槛）
+- [x] 3.1A-5 最终面板 = 30 AFDB + 5 PDB 外置锚点 = 35 结构（在 SOP 20-40 范围内）
+- [ ] 3.1B 下载 KDOPS 外群结构 → `data/structures/panel_kdops/`（Phase 4.1 再做）
 
 ### 3.2-3.4 FoldMason 骨架与核心列
 
-- [ ] 3.2 FoldMason easy-msa → `results/03_msa_core/skeleton_aa.fa` + `skeleton_3di.fa`
-- [ ] 3.3 FoldMason refinemsa 迭代优化（1000 轮）
+- [x] 3.2 FoldMason easy-msa → `results/03_msa_core/skeleton_aa.fa` (46 seqs = 30 AFDB + 16 PDB chains) + `skeleton_3di.fa` + `skeleton.html` (5.6M)
+- [/] 3.3 FoldMason refinemsa — ⚠ segfault（`createdb` 过滤 24 短链导致 DB-MSA 序列数不匹配；`msa2lddt` + `msa2lddtreport` 已跑成功作为替代质量评估）
 - [ ] 3.4 逐列 LDDT 核心列界定（`define_core_columns.py`）→ `skeleton_core_aa.fa` + `core_columns.mask`
 
 ### 3.5-3.6 亚型内骨架与全量映射
