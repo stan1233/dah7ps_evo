@@ -1545,3 +1545,150 @@ conda run -n dah7ps_v4 python scripts/define_core_columns.py \
 - `core_columns.mask` ✓
 
 **下一步：** Phase 3.6 — 构建 core HMM (`hmmbuild`) → 全量核心映射。
+
+---
+
+## 2026-03-02 Phase 3.6 执行
+
+---
+
+### 05:25 — Phase 3.6-1：构建 core HMM
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 hmmbuild --amino --informat afa --symfrac 0.0 \
+  results/03_msa_core/core_global.hmm results/03_msa_core/skeleton_core_aa.fa
+
+conda run -n dah7ps_v4 hmmstat results/03_msa_core/core_global.hmm
+```
+
+**结果：**
+
+| 指标 | 数值 |
+|------|------|
+| 输入序列 (N) | 46 |
+| 比对长度 (alen) | 521 |
+| **模型长度 (mlen/M)** | **521** ✅ |
+| eff_nseq | 6.24 |
+| re/pos | 0.590 |
+
+**✅ 验收点 A 通过：** HMM 模型长度 M=521，与 Phase 3.4 定义的 core_len 完全一致。`--symfrac 0.0` 确保所有列作为 match state。
+
+---
+
+### 05:28 — Phase 3.6-2：合并 nr80 输入
+
+**精确命令：**
+
+```bash
+cat results/02_qc/nr80_Ia.fasta results/02_qc/nr80_Ib.fasta results/02_qc/nr80_II.fasta \
+  > results/03_msa_core/nr80_all.fasta
+```
+
+**结果：** 9,673 条序列（Ia=3,521 + Ib=3,073 + II=3,079）✅
+
+---
+
+### 05:30 — Phase 3.6-3：Core domain 提取（含 hit stitching）
+
+**脚本编写：** `scripts/extract_core_domains.py`（新建）
+
+**设计：**
+- 调用 `hmmsearch --domtblout` 对 nr80_all 全量序列搜索 core HMM
+- 使用 `hmmer_utils.py` 做 domtblout 解析与区间合并
+- Hit stitching 在 HMM 坐标空间进行（merge_gap=5）
+- 覆盖度过滤 ≥ 0.70（来自 params.json）
+- 提取 stitched envelope 区域作为 core-only 子序列
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 python scripts/extract_core_domains.py \
+  --hmm results/03_msa_core/core_global.hmm \
+  --fasta results/03_msa_core/nr80_all.fasta \
+  --params meta/params.json \
+  --out_fasta results/03_msa_core/all_core_only.fasta \
+  --out_tsv results/03_msa_core/core_domain_coords.tsv \
+  --ievalue 1e-5 --hmm_span_min 30 --merge_gap 5 --cpu 8
+```
+
+**结果：**
+
+| 指标 | 数量 |
+|------|------|
+| 输入序列 | 9,673 |
+| 有合格 hit | 9,619 |
+| 无合格 hit | 54 |
+| 覆盖度不足 (< 0.70) | 226 |
+| **通过输出** | **9,393** |
+| Stitched (>1 hit merged) | 1,069 (11.4%) |
+
+**✅ 验收点 B 通过：** 9,393/9,673 序列通过（97.1%），hit stitching 确认必要。
+
+**产出文件：**
+
+| 文件 | 大小 | 说明 |
+|------|------|------|
+| `all_core_only.fasta` | 3.4 MB | 9,393 条 core-only 子序列 |
+| `core_domain_coords.tsv` | 504 KB | 9,393 行坐标表 |
+| `core_domain_coords_domtblout.txt` | — | hmmsearch 中间 domtblout |
+
+---
+
+### 05:45 — Phase 3.6-4：hmmalign → Stockholm → esl-alimask → AFA
+
+**精确命令：**
+
+```bash
+# 1) Stockholm 输出（不走 --outformat afa 捷径）
+conda run -n dah7ps_v4 hmmalign --amino --outformat Stockholm \
+  results/03_msa_core/core_global.hmm results/03_msa_core/all_core_only.fasta \
+  > results/03_msa_core/core_global.sto
+
+# 2) RF 掩码剥离 insert 列
+conda run -n dah7ps_v4 esl-alimask --rf-is-mask \
+  results/03_msa_core/core_global.sto \
+  > results/03_msa_core/core_global_matchonly.sto
+
+# 3) 转 aligned FASTA
+conda run -n dah7ps_v4 esl-reformat afa \
+  results/03_msa_core/core_global_matchonly.sto \
+  > results/03_msa_core/core_global_matchonly.afa
+```
+
+**最终比对验证：**
+
+| 指标 | 数值 |
+|------|------|
+| 序列数 | 9,393 |
+| **比对列数 (L)** | **521** ✅ |
+| 非 gap 残基 min | 198 |
+| 非 gap 残基 median | 345 |
+| 非 gap 残基 max | 471 |
+| 非 gap 残基 mean | 336.2 |
+
+**✅ 验收点 C 通过：** 列数 L=521，与 core_len 完全一致，无 insert 列膨胀。
+
+**产出文件：**
+
+| 文件 | 大小 | 说明 |
+|------|------|------|
+| `core_global.sto` | 73 MB | 完整 Stockholm（含 insert 列） |
+| `core_global_matchonly.sto` | 12 MB | 纯 match 列 Stockholm |
+| `core_global_matchonly.afa` | 5.0 MB | 最终核心比对 |
+
+**AGENT §0.6 合规确认：** 整条路径走 Stockholm → `esl-alimask --rf-is-mask` → AFA，未使用 `hmmalign --outformat afa` 捷径。
+
+---
+
+### 05:55 — Phase 3.6-5：QC 报告
+
+**产出文件：** `results/03_msa_core/qc_core_alignment.md`
+
+**✅ Phase 3.6 所有 Done 条件通过：**
+- `results/03_msa_core/core_global_matchonly.afa` ✓（9,393 seqs × 521 cols）
+- 核心列数 521，在目标 400–600 范围内，显著小于 V3.1 的 >3000 ✓
+- `results/03_msa_core/qc_core_alignment.md` ✓
+
+**下一步：** Phase 3.7 — 双版本修剪（`core_tree.afa` + `core_asr.afa`）。

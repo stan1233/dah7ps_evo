@@ -96,10 +96,10 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 ### 3.5-3.6 亚型内骨架与全量映射
 
 - [ ] 3.5 亚型内种子 E-INS-i 骨架 → `results/03_msa_core/seeds60_*_einsi.afa`
-- [ ] 3.6 核心 HMM 构建 → `core_global.hmm`
-- [ ] 3.6 `extract_core_domains.py`（含 hit stitching [CHECK-06]）→ `all_core_only.fasta` + `core_domain_coords.tsv`
-- [ ] 3.6 hmmalign → Stockholm → esl-alimask 剥离 Insert → `core_global_matchonly.afa`
-- [ ] QC2 产出 `results/03_msa_core/qc_core_alignment.md`
+- [x] 3.6 核心 HMM 构建 → `core_global.hmm`（L=521, --symfrac 0.0）
+- [x] 3.6 `extract_core_domains.py`（含 hit stitching [CHECK-06]）→ `all_core_only.fasta`（9,393 seqs）+ `core_domain_coords.tsv`
+- [x] 3.6 hmmalign → Stockholm → esl-alimask 剥离 Insert → `core_global_matchonly.afa`（9,393 seqs × 521 cols）
+- [x] QC2 产出 `results/03_msa_core/qc_core_alignment.md`
 
 ### 3.7 双版本修剪
 
@@ -168,7 +168,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 ## 脚本开发（SOP 引用但尚未实现）
 
-- [ ] `scripts/extract_core_domains.py`（含 hit stitching）
+- [x] `scripts/extract_core_domains.py`（含 hit stitching）— hmmsearch + stitching + coverage filter, 已通过 Phase 3.6 QC
 - [x] `scripts/define_core_columns.py`（LDDT 拐点法）— 已实现并通过 QC
 - [ ] `scripts/annotate_modules.py`（多证据融合 + 双版本矩阵）
 - [ ] `scripts/extract_module_seqs.py`
