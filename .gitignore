@@ -33,3 +33,6 @@ nohup.out
 !seed_ids_*.txt__pycache__/
 __pycache__/
 tmp_foldmason/
+
+# Stockholm alignment files (large intermediate)
+*.sto
