@@ -1692,3 +1692,78 @@ conda run -n dah7ps_v4 esl-reformat afa \
 - `results/03_msa_core/qc_core_alignment.md` ✓
 
 **下一步：** Phase 3.7 — 双版本修剪（`core_tree.afa` + `core_asr.afa`）。
+
+---
+
+## 2026-03-02
+
+### 08:57 — Phase 3.6-fix：端部 gap 死区诊断 & Padding 修复
+
+**问题诊断：**
+
+端部 gap 率分析揭示核心 MSA 的 N 端和 C 端存在严重 gap 死区：
+- N 端：前 6 列 gap ≈100%，前 27 列 gap >30%。`hmm_from` 中位数 = 20
+- C 端：后 13 列 gap >88%，后 18 列 gap >30%。`hmm_to` 中位数 = 504
+
+**脚本修改（`scripts/extract_core_domains.py`）：**
+
+三处改动：
+1. **Fix B（padding）**：新增 `--pad` 参数，默认从 `params.json` 读取 `core_definition.pad_residues = 20`
+2. **Fix A（连续提取）**：多段序列改为提取 `padded_start` 到 `padded_end` 连续区域
+3. **Fix C（TSV 新列）**：新增 `env_segments`, `raw_env_start`, `raw_env_end`, `pad_left`, `pad_right`
+
+**执行命令：**
+
+```bash
+# 备份旧文件
+mkdir -p results/03_msa_core/backup_nopad
+cp results/03_msa_core/{all_core_only.fasta,core_global.sto,core_global_matchonly.sto,core_global_matchonly.afa,core_domain_coords.tsv} results/03_msa_core/backup_nopad/
+
+# 重跑核心域提取（pad=20）
+conda run -n dah7ps_v4 python scripts/extract_core_domains.py \
+  --hmm results/03_msa_core/core_global.hmm \
+  --fasta results/03_msa_core/nr80_all.fasta \
+  --params meta/params.json \
+  --out_fasta results/03_msa_core/all_core_only.fasta \
+  --out_tsv results/03_msa_core/core_domain_coords.tsv \
+  --ievalue 1e-5 --hmm_span_min 30 --merge_gap 5 --cpu 8
+
+# 重跑 hmmalign → esl-alimask → AFA
+conda run -n dah7ps_v4 hmmalign --amino --outformat Stockholm \
+  results/03_msa_core/core_global.hmm results/03_msa_core/all_core_only.fasta \
+  > results/03_msa_core/core_global.sto
+
+conda run -n dah7ps_v4 esl-alimask --rf-is-mask \
+  results/03_msa_core/core_global.sto \
+  > results/03_msa_core/core_global_matchonly.sto
+
+conda run -n dah7ps_v4 esl-reformat afa \
+  results/03_msa_core/core_global_matchonly.sto \
+  > results/03_msa_core/core_global_matchonly.afa
+```
+
+**结果：** 9,393 seqs × 521 cols（不变），1,069 stitched。
+
+**gap 率改善——远低于预期（仅 ~1 个百分点）：**
+
+| 位置 | OLD | NEW | Δ |
+|------|-----|-----|---|
+| col 7 (N端) | 0.9109 | 0.8937 | -0.0172 |
+| col 18 (N端) | 0.6010 | 0.5898 | -0.0112 |
+| col 504 (C端) | 0.3524 | 0.3421 | -0.0103 |
+| col 509 (C端) | 0.8769 | 0.8649 | -0.0120 |
+
+**根因分析：**
+
+| 指标 | 值 | 含义 |
+|------|-----|------|
+| `raw_env_start ≤ 20` | 6,000/9,393 (64%) | envelope 已靠近序列 N 端，无上游残基可 pad |
+| `pad_right = 0` | 3,485/9,393 (37%) | envelope 终点即序列末端 |
+| mean pad_left | 10.1 (请求 20) | 平均只获得一半请求 padding |
+| mean pad_right | 4.1 (请求 20) | C 端 padding 更受限 |
+
+**结论：** 端部 gap 死区是**真实的生物学变异**（序列本身缺少对应区域），非提取截断产物。Phase 3.7 ClipKIT `kpic-smart-gap` 会自然移除这些高 gap 列。
+
+**净收益：** TSV `env_segments` 列为 Phase 3.9 linker 提取提供精确坐标；连续提取策略更正确；padding 本身无害（被 esl-alimask 剥离）。
+
+**下一步：** Phase 3.7 — 双版本修剪（`core_tree.afa` + `core_asr.afa`）。

@@ -11177,5 +11177,5 @@ UniRef90_A0A841H812    -            294 skeleton_core_aa     -            521   
 # Target file:     results/03_msa_core/nr80_all.fasta
 # Option settings: hmmsearch --domtblout results/03_msa_core/core_domain_coords_domtblout.txt --noali --cpu 8 results/03_msa_core/core_global.hmm results/03_msa_core/nr80_all.fasta 
 # Current dir:     /home/tynan/0218
-# Date:            Mon Mar  2 05:30:22 2026
+# Date:            Mon Mar  2 08:59:11 2026
 # [ok]
