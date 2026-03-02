@@ -85,6 +85,7 @@ def extract_core_domains(
     hmm_span_min=30,
     merge_gap=5,
     coverage_min=0.70,
+    pad=20,
     cpu=4,
 ):
     """Main extraction pipeline."""
@@ -147,14 +148,24 @@ def extract_core_domains(
         env_intervals = [(d["env_from"], d["env_to"]) for d in domains]
         env_merged = merge_intervals(env_intervals, merge_gap=0)
 
-        # Extract and concatenate stitched region(s)
-        # (seq coords are 1-based in HMMER, Python is 0-based)
-        core_start = env_merged[0][0]
-        core_end = env_merged[-1][1]
-        extracted_parts = []
-        for s, e in env_merged:
-            extracted_parts.append(seq[s - 1 : e])
-        core_seq = "".join(extracted_parts)
+        # Raw (unpadded) envelope boundaries
+        raw_env_start = env_merged[0][0]
+        raw_env_end = env_merged[-1][1]
+
+        # env_segments string for Phase 3.9 linker extraction
+        env_segments_str = ";".join(f"{s}-{e}" for s, e in env_merged)
+
+        # Apply padding: expand outward to give hmmalign context
+        # for recovering terminal match states (Fix B)
+        padded_start = max(1, raw_env_start - pad)
+        padded_end = min(seq_len, raw_env_end + pad)
+        pad_left = raw_env_start - padded_start
+        pad_right = padded_end - raw_env_end
+
+        # Extract continuous region from padded_start to padded_end
+        # (includes any internal insertions like α2β3 as-is;
+        #  hmmalign will mark them as insert states, esl-alimask strips them)
+        core_seq = seq[padded_start - 1 : padded_end]
 
         # HMM coverage range
         hmm_from = hmm_merged[0][0]
@@ -166,8 +177,8 @@ def extract_core_domains(
             {
                 "seq_id": seqid,
                 "seq_len": seq_len,
-                "core_start": core_start,
-                "core_end": core_end,
+                "core_start": padded_start,
+                "core_end": padded_end,
                 "hmm_from": hmm_from,
                 "hmm_to": hmm_to,
                 "coverage": f"{coverage:.4f}",
@@ -175,6 +186,11 @@ def extract_core_domains(
                 "n_env_segments": len(env_merged),
                 "stitched_flag": "Y" if stitched else "N",
                 "core_residues": len(core_seq),
+                "env_segments": env_segments_str,
+                "raw_env_start": raw_env_start,
+                "raw_env_end": raw_env_end,
+                "pad_left": pad_left,
+                "pad_right": pad_right,
             }
         )
 
@@ -205,6 +221,11 @@ def extract_core_domains(
         "n_env_segments",
         "stitched_flag",
         "core_residues",
+        "env_segments",
+        "raw_env_start",
+        "raw_env_end",
+        "pad_left",
+        "pad_right",
     ]
     with open(out_tsv, "w") as f:
         f.write("\t".join(tsv_header) + "\n")
@@ -265,6 +286,12 @@ def main():
         help="Min HMM coverage to retain (default: from params or 0.70)",
     )
     parser.add_argument(
+        "--pad",
+        type=int,
+        default=None,
+        help="Padding residues to add to each side of envelope (default: from params core_definition.pad_residues or 20)",
+    )
+    parser.add_argument(
         "--cpu", type=int, default=4, help="CPUs for hmmsearch (default: 4)"
     )
 
@@ -276,20 +303,32 @@ def main():
             print(f"[ERROR] File not found: {p}", file=sys.stderr)
             sys.exit(1)
 
-    # Read coverage threshold
+    # Read coverage threshold and pad from params
     coverage_min = 0.70
+    pad = 20
     if args.params and os.path.isfile(args.params):
         with open(args.params) as f:
             params = json.load(f)
         coverage_min = params.get("qc", {}).get("hmm_coverage_min", 0.70)
+        pad = params.get("core_definition", {}).get("pad_residues", 20)
         print(
             f"[extract_core_domains] coverage_min from params.json: {coverage_min}",
+            file=sys.stderr,
+        )
+        print(
+            f"[extract_core_domains] pad from params.json: {pad}",
             file=sys.stderr,
         )
     if args.coverage_min is not None:
         coverage_min = args.coverage_min
         print(
             f"[extract_core_domains] coverage_min override: {coverage_min}",
+            file=sys.stderr,
+        )
+    if args.pad is not None:
+        pad = args.pad
+        print(
+            f"[extract_core_domains] pad override: {pad}",
             file=sys.stderr,
         )
 
@@ -302,6 +341,7 @@ def main():
         hmm_span_min=args.hmm_span_min,
         merge_gap=args.merge_gap,
         coverage_min=coverage_min,
+        pad=pad,
         cpu=args.cpu,
     )
 
