@@ -1767,3 +1767,90 @@ conda run -n dah7ps_v4 esl-reformat afa \
 **净收益：** TSV `env_segments` 列为 Phase 3.9 linker 提取提供精确坐标；连续提取策略更正确；padding 本身无害（被 esl-alimask 剥离）。
 
 **下一步：** Phase 3.7 — 双版本修剪（`core_tree.afa` + `core_asr.afa`）。
+
+---
+
+### 10:30 Phase 3.7 — 双版本修剪
+
+**输入：** `core_global_matchonly.afa`（9,393 seqs × 521 cols）
+
+#### Step 1：ClipKIT kpic-smart-gap → `core_tree.afa`
+
+```bash
+conda run -n dah7ps_v4 clipkit \
+  results/03_msa_core/core_global_matchonly.afa \
+  -m kpic-smart-gap \
+  -o results/03_msa_core/core_tree.afa \
+  --complementary
+```
+
+**结果：** 9,393 seqs × **436 cols**（移除 85 列 = 16.3%）
+
+- `core_tree.afa.complement`（被剔除的 85 列）已生成，tree(436) + complement(85) = 521 ✓
+- Head gap rate：col 1 = 0.7752（原始 col 1 gap ≈ 1.0 的极端死区已被移除）
+- Tail gap rate：col 436 = 0.7402
+
+#### Step 2：Minimal trim → `core_asr.afa`
+
+```bash
+cp minimal_trim.py scripts/minimal_trim.py  # 使用预备的版本
+conda run -n dah7ps_v4 python scripts/minimal_trim.py \
+  --input results/03_msa_core/core_global_matchonly.afa \
+  --output results/03_msa_core/core_asr.afa \
+  --gap_col_threshold 0.95
+```
+
+**结果：** 9,393 seqs × **472 cols**（移除 49 列 = 9.4%）
+
+- Kept columns: mean gap = 0.2885, max gap = 0.9478
+- 同时生成 `core_asr.cols.tsv`（521 行逐列报告：col/gap_fraction/kept）
+
+**被移除的 49 列分布：**
+
+| 区域              | 列号（1-based）          | gap 范围          |
+|-------------------|--------------------------|-------------------|
+| N端死区           | 1–6                      | 0.9724–1.0000     |
+| 内部高 gap        | 85, 228                  | 0.9971–0.9982     |
+| α2β3 插片区（II） | 243–263                  | 0.9515–0.9837     |
+| 内部              | 298–301, 315             | 0.9561–0.9974     |
+| 内部              | 362–364, 413, 463        | 0.9546–0.9960     |
+| C端死区           | 512–521                  | 0.9559–1.0000     |
+
+#### Step 3：诊断交叉比较
+
+| 比对                        | 序列数  | 列数 | 削减比例 |
+|-----------------------------|---------|------|----------|
+| `core_global_matchonly.afa` | 9,393   | 521  | —        |
+| `core_tree.afa`             | 9,393   | 436  | −16.3%   |
+| `core_asr.afa`              | 9,393   | 472  | −9.4%    |
+
+**预期对比：**
+
+- `core_tree.afa`：预期 350–450 cols → 实际 **436** ✓（落在预期范围内）
+- `core_asr.afa`：预期 505–510 cols → 实际 **472**（低于预期，因为 α2β3 insert 区 cols 243–263 的 21 列和散布内部高 gap 列也被移除——0.95 阈值比预估更积极）
+
+#### Step 4：FoldMason msa2lddt 结构复核
+
+```bash
+# 提取 30 条面板子集
+seqkit grep -f /tmp/panel_ids.txt results/03_msa_core/core_tree.afa \
+  > results/03_msa_core/core_tree_struct_subset.fa  # 30 seqs
+
+conda run -n dah7ps_v4 foldmason msa2lddt \
+  results/03_msa_core/panelDb \
+  results/03_msa_core/core_tree_struct_subset.fa
+```
+
+**结果：** ❌ `Invalid database read for id=18446744073709551615` — panelDb 包含 46 结构但子集仅 30 条，ID lookup 溢出。与 Phase 3.3 createdb segfault 同源问题。**不阻塞 Phase 3.8。**
+
+#### 产出文件清单
+
+| 文件 | 大小 | 说明 |
+|------|------|------|
+| `core_tree.afa` | 4.2 MB | 树推断版（kpic-smart-gap，436 cols） |
+| `core_tree.afa.complement` | — | 被 ClipKIT 剔除的 85 列（审计用） |
+| `core_asr.afa` | 4.5 MB | ASR/DCA 版（gap > 0.95 移除，472 cols） |
+| `core_asr.cols.tsv` | 7.7 KB | 逐列 gap 率 + 保留标记（521 行） |
+| `core_tree_struct_subset.fa` | — | 面板子集（30 seqs，msa2lddt 未通过） |
+
+**下一步：** Phase 3.8 — 模块注释。

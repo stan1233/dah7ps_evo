@@ -103,9 +103,9 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 ### 3.7 双版本修剪
 
-- [ ] 3.7 ClipKIT kpic-smart-gap → `core_tree.afa`
-- [ ] 3.7 Minimal trim → `core_asr.afa`
-- [ ] 3.7 FoldMason msa2lddt 结构复核
+- [x] 3.7 ClipKIT kpic-smart-gap → `core_tree.afa`（9,393 seqs × 436 cols, --complementary 生成 .complement 审计文件）
+- [x] 3.7 Minimal trim (gap > 0.95) → `core_asr.afa`（9,393 seqs × 472 cols）+ `core_asr.cols.tsv`
+- [-] 3.7 FoldMason msa2lddt 结构复核 — panelDb lookup 溢出（DB=46 vs subset=30 ID 不匹配），不阻塞 Phase 3.8
 
 ### 3.8 模块注释
 
@@ -189,7 +189,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 - [ ] `scripts/dca_significance.py`
 - [ ] `scripts/extract_crossdomain_couplings.py`
 - [ ] `scripts/qc_length.py`
-- [ ] `scripts/minimal_trim.py`
+- [x] `scripts/minimal_trim.py`（gap-fraction 列修剪 + 逐列报告 TSV）
 - [ ] `scripts/extract_struct_subset.py`
 - [ ] `scripts/drop_a2m_insertions.py`（fallback 用）
 - [ ] `scripts/subset_msa_by_ids.py`
