@@ -1841,16 +1841,34 @@ conda run -n dah7ps_v4 foldmason msa2lddt \
   results/03_msa_core/core_tree_struct_subset.fa
 ```
 
-**结果：** ❌ `Invalid database read for id=18446744073709551615` — panelDb 包含 46 结构但子集仅 30 条，ID lookup 溢出。与 Phase 3.3 createdb segfault 同源问题。**不阻塞 Phase 3.8。**
+**结果：** ❌ 首次运行失败：`Invalid database read for id=18446744073709551615`
+
+**根因分析（非 "DB 超集不支持子集查询"）：** `panelDb.lookup` 的 key 是 `AF-<ACC>-F1-model_v4` / `PDB-<CHAIN>` 格式，但 `core_tree_struct_subset.fa` 的 header 是 `UniRef90_<ACC>` 格式。ID 命名空间不匹配 → lookup 返回 -1 → 被当作 UINT64_MAX 溢出。此外，seqkit grep 的 `[INFO] ... 30 patterns loaded` 日志行也污染了 FASTA。
+
+**修复：** 清洗 `[INFO]` 行 + 映射 `UniRef90_<ACC>` → `AF-<ACC>-F1-model_v4`
+
+```bash
+python3 - <<'PY'  # 输出 core_tree_struct_subset.foldmason.fa（清洗 + ID 重映射）
+...
+PY
+
+conda run -n dah7ps_v4 foldmason msa2lddt \
+  results/03_msa_core/panelDb \
+  results/03_msa_core/core_tree_struct_subset.foldmason.fa
+```
+
+**修复后结果：** ✅ **Average MSA LDDT = 0.2638**（436/436 cols），64ms 完成。
 
 #### 产出文件清单
 
 | 文件 | 大小 | 说明 |
 |------|------|------|
 | `core_tree.afa` | 4.2 MB | 树推断版（kpic-smart-gap，436 cols） |
-| `core_tree.afa.complement` | — | 被 ClipKIT 剔除的 85 列（审计用） |
+| `core_tree.afa.complement` | 996 KB | 被 ClipKIT 剔除的 85 列（审计用） |
 | `core_asr.afa` | 4.5 MB | ASR/DCA 版（gap > 0.95 移除，472 cols） |
-| `core_asr.cols.tsv` | 7.7 KB | 逐列 gap 率 + 保留标记（521 行） |
-| `core_tree_struct_subset.fa` | — | 面板子集（30 seqs，msa2lddt 未通过） |
+| `core_asr.cols.tsv` | 7.6 KB | 逐列 gap 率 + 保留标记（521 行） |
+| `core_tree_struct_subset.foldmason.fa` | — | 面板子集（30 seqs，ID 已映射为 AF- key） |
+
+**结构复核 LDDT 评价：** 0.2638 是跨所有 436 列的平均值（含高 gap 列和 variable loop）。Phase 3.4 骨架定义时选的核心列 LDDT 阈值是 0.1814（auto_inflection），所以 0.2638 > 0.1814，修剪后的 core_tree.afa 质量在预期范围内。
 
 **下一步：** Phase 3.8 — 模块注释。
