@@ -109,10 +109,13 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 ### 3.8 模块注释
 
-- [ ] 3.8 `annotate_modules.py` → `module_presence_absence_strict.tsv` + `_relaxed.tsv`
-- [ ] 3.8 模块边界稳健性 QC（三证据一致性 + 双版本矩阵）
-- [ ] 3.8 `extract_module_seqs.py` → 各模块序列 + `*_domain_coords.tsv`
-- [ ] 3.8 模块 MSA（MAFFT E-INS-i）→ `ACT_msa.afa` 等
+- [x] 3.8 模块 HMM 库构建 → `data/db/module_hmms/modules.hmm`（ACT/CM_1/CM_2 从 Pfam-A.hmm 提取 + hmmpress）
+- [x] 3.8 C-tail 提取 → `c_tails.fasta`（1,490 seqs）+ `hmmsearch` → `module_hits.domtbl`（481 hits: ACT=69, CM_2=411, CM_1=1）
+- [x] 3.8 `annotate_modules.py` → `module_presence_absence_strict.tsv`（9,393 rows）+ `_relaxed.tsv` + `boundary_robustness.md`
+- [x] 3.8 Strict: N_ext=3,130 / α2β3=172 / ACT=47 / CM=408 / C_tail=360；Relaxed: 4,429 / 263 / 60 / 412 / 1,018
+- [x] 3.8 Strict⊆Relaxed 一致性验证通过（0 violations）
+- [x] 3.8 `extract_module_seqs.py` → 5 模块序列 + `*_domain_coords.tsv`（坐标合法性 0 errors）
+- [x] 3.8 模块 MSA → ACT(47×142), CM(408×266), α2β3(172×582), N_ext(3,130×8,153 --auto), C_tail(360×3,617 E-INS-i)
 
 ### 3.9 Profile-anchored Stitching
 
@@ -170,8 +173,8 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 - [x] `scripts/extract_core_domains.py`（含 hit stitching）— hmmsearch + stitching + coverage filter, 已通过 Phase 3.6 QC
 - [x] `scripts/define_core_columns.py`（LDDT 拐点法）— 已实现并通过 QC
-- [ ] `scripts/annotate_modules.py`（多证据融合 + 双版本矩阵）
-- [ ] `scripts/extract_module_seqs.py`
+- [x] `scripts/annotate_modules.py`（坐标 + HMM 双证据融合 + strict/relaxed 双版本矩阵 + boundary_robustness.md）
+- [x] `scripts/extract_module_seqs.py`（C-tail 提取模式 + 按 matrix 逐模块提取模式）
 - [ ] `scripts/extract_linkers.py`
 - [ ] `scripts/stitch_full_length_msa.py`（含 core 列不变断言）
 - [ ] `scripts/prepare_dca_input.py`（含 Meff/L 门控）
@@ -190,7 +193,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 - [ ] `scripts/extract_crossdomain_couplings.py`
 - [ ] `scripts/qc_length.py`
 - [x] `scripts/minimal_trim.py`（gap-fraction 列修剪 + 逐列报告 TSV）
-- [ ] `scripts/extract_struct_subset.py`
+- [x] `scripts/extract_struct_subset.py`（MSA 子集提取 + UniRef→AF header 重映射 + FASTA 清洗）
 - [ ] `scripts/drop_a2m_insertions.py`（fallback 用）
 - [ ] `scripts/subset_msa_by_ids.py`
 
