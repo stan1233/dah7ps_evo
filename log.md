@@ -1872,3 +1872,166 @@ conda run -n dah7ps_v4 foldmason msa2lddt \
 **结构复核 LDDT 评价：** 0.2638 是跨所有 436 列的平均值（含高 gap 列和 variable loop）。Phase 3.4 骨架定义时选的核心列 LDDT 阈值是 0.1814（auto_inflection），所以 0.2638 > 0.1814，修剪后的 core_tree.afa 质量在预期范围内。
 
 **下一步：** Phase 3.8 — 模块注释。
+
+---
+
+## 2026-03-03 — Phase 3.8：模块注释与模块数据集构建
+
+### 06:00 — 模块 HMM 库构建
+
+```bash
+# 从本地 Pfam-A.hmm 提取 ACT/CM_1/CM_2 三个 HMM profile
+for acc in PF01842 PF01817 PF07736; do
+  awk -v acc="$acc" '/^HMMER/{p=0}/^ACC/{if($2~acc)p=1}p' Pfam-A.hmm
+done > data/db/module_hmms/modules.hmm
+
+hmmpress data/db/module_hmms/modules.hmm
+```
+
+**产出：** `data/db/module_hmms/modules.hmm` + `.h3f/.h3i/.h3m/.h3p`（ACT + CM_1 + CM_2 = 3 profiles）
+
+### 06:10 — C-tail 提取
+
+```bash
+python scripts/extract_module_seqs.py --extract-tails \
+  --coords results/03_msa_core/core_domain_coords.tsv \
+  --sequences results/02_qc/nr80_Ia.fasta results/02_qc/nr80_Ib.fasta results/02_qc/nr80_II.fasta \
+  --output results/03_msa_modules/c_tails.fasta \
+  --min-tail 10
+```
+
+| 参数 | 值 |
+|------|-----|
+| `--min-tail` | 10 aa（relaxed 阈值，确保 HMM 扫描覆盖面） |
+| 输入 coords | 9,393 条 |
+| 输入 seqs | 9,673 条（Ia=3,521 + Ib=3,073 + II=3,079） |
+
+**结果：** 1,490 sequences written, 7,903 skipped (< 10 aa)
+
+### 06:15 — HMM 扫描 C-tails
+
+```bash
+hmmsearch --domtblout results/03_msa_modules/module_hits.domtbl \
+  --noali -E 1e-3 --cpu 20 \
+  data/db/module_hmms/modules.hmm \
+  results/03_msa_modules/c_tails.fasta \
+  > results/03_msa_modules/hmmsearch_modules.log
+```
+
+**结果：** 481 domain hits for 473 sequences
+
+| HMM profile | Hits |
+|-------------|------|
+| CM_2 | 411 |
+| ACT | 69 |
+| CM_1 | 1 |
+
+### 06:18 — 模块注释（annotate_modules.py）
+
+```bash
+python scripts/annotate_modules.py \
+  --coords results/03_msa_core/core_domain_coords.tsv \
+  --domtbl results/03_msa_modules/module_hits.domtbl \
+  --outdir results/03_msa_modules \
+  --params meta/params.json
+```
+
+| 阈值参数 | Strict | Relaxed |
+|---------|--------|---------|
+| N_ext | ≥ 25 aa | ≥ 10 aa |
+| α2β3 insert | gap ≥ 5 aa | gap ≥ 1 aa |
+| ACT_domain | i-Evalue ≤ 1e-5 | i-Evalue ≤ 1e-3 |
+| CM_domain | i-Evalue ≤ 1e-5 | i-Evalue ≤ 1e-3 |
+| C_tail | ≥ 25 aa & no HMM hit | ≥ 10 aa & no HMM hit |
+
+**产出：**
+
+| 文件 | 行数 |
+|------|------|
+| `module_presence_absence_strict.tsv` | 9,393 |
+| `module_presence_absence_relaxed.tsv` | 9,393 |
+| `boundary_robustness.md` | QC report |
+
+**模块计数：**
+
+| Module | Strict | Relaxed | Δ |
+|--------|--------|---------|---|
+| N_ext | 3,130 (33.3%) | 4,429 (47.2%) | +1,299 |
+| α2β3_insert | 172 (1.8%) | 263 (2.8%) | +91 |
+| ACT_domain | 47 (0.5%) | 60 (0.6%) | +13 |
+| CM_domain | 408 (4.3%) | 412 (4.4%) | +4 |
+| C_tail | 360 (4.0%) | 1,018 (10.8%) | +658 |
+
+**Bug 修复：** C_tail strict⊆relaxed 违反 16 例 — 根因：strict 版用 strict-level HMM 排除，relaxed 版用 relaxed-level HMM 排除。当 ACT i-Evalue 在 1e-5 到 1e-3 之间时，strict ACT=0→strict C_tail=1 但 relaxed ACT=1→relaxed C_tail=0。修复：两版均用 relaxed-level HMM 排除，保证单调性。修复后 violations=0。
+
+Boundary confidence：high=7,434 (79.1%), medium=1,957 (20.8%), low=2 (0.0%)
+
+### 06:20 — 模块序列提取
+
+```bash
+python scripts/extract_module_seqs.py --extract-modules \
+  --coords results/03_msa_core/core_domain_coords.tsv \
+  --matrix results/03_msa_modules/module_presence_absence_strict.tsv \
+  --sequences results/02_qc/nr80_Ia.fasta results/02_qc/nr80_Ib.fasta results/02_qc/nr80_II.fasta \
+  --domtbl results/03_msa_modules/module_hits.domtbl \
+  --outdir results/03_msa_modules
+```
+
+**产出：** 5 模块 FASTA + 5 坐标 TSV，序列计数与 matrix 完全匹配。
+
+### 06:24–09:26 — 模块 MSA 构建
+
+```bash
+# ACT, CM, α2β3: MAFFT E-INS-i
+mafft --genafpair --maxiterate 1000 --ep 0 --thread 20 \
+  results/03_msa_modules/${mod}_seqs.fasta \
+  > results/03_msa_modules/${mod}_msa.afa
+
+# N_ext (3,130 seqs): E-INS-i 太重 (O(n²) pairwise, 2.5h 仅完成 1 对)
+# 降级为 --auto (FFT-NS-2)
+mafft --auto --thread 20 \
+  results/03_msa_modules/N_ext_seqs.fasta \
+  > results/03_msa_modules/N_ext_msa.afa
+
+# C_tail (360 seqs): E-INS-i
+# 注意：MAFFT E-INS-i pairwise 阶段 (pairlocalalign/dvtditr) 内部硬限 8 线程
+# 该限制为 bioconda MAFFT 7.526 编译时锁定，无法通过 --thread 参数覆盖
+# progressive alignment (tbfast) 阶段正常使用 20 线程
+mafft --genafpair --maxiterate 1000 --ep 0 --thread 20 \
+  results/03_msa_modules/C_tail_seqs.fasta \
+  > results/03_msa_modules/C_tail_msa.afa
+```
+
+**MSA 结果：**
+
+| Module | Seqs | Cols | Algorithm | 耗时 |
+|--------|------|------|-----------|------|
+| ACT_domain | 47 | 142 | E-INS-i | <1 min |
+| CM_domain | 408 | 266 | E-INS-i | <1 min |
+| α2β3_insert | 172 | 582 | E-INS-i | <1 min |
+| N_ext | 3,130 | 8,153 | --auto (FFT-NS-2) | ~2 min |
+| C_tail | 360 | 3,617 | E-INS-i | ~8 min |
+
+### 09:38 — 验证（全部通过 ✅）
+
+```bash
+python3 /tmp/verify_phase38.py
+```
+
+| 检查项 | 结果 |
+|--------|------|
+| Strict matrix = 9,393 rows | ✅ |
+| Relaxed matrix = 9,393 rows | ✅ |
+| Strict ⊆ Relaxed: 0 violations | ✅ |
+| 5 模块序列计数匹配 matrix | ✅ |
+| 坐标合法性 (1 ≤ from ≤ to ≤ seq_len): 0 errors | ✅ |
+
+### 09:44 — Git commit & push
+
+```
+4b5a1b9 Phase 3.8: module annotation & dataset construction
+17 files changed, 23797 insertions(+), 7 deletions(-)
+→ Phase-3.7-trimming branch
+```
+
+**下一步：** Phase 3.9 — Profile-anchored Stitching。

@@ -35,6 +35,12 @@
 - `meta/`：参数、软件版本、外部模型文件（`meta/models/`）
 - `scripts/`：所有可执行脚本（必须提供 `--help`、参数检查、可复现输出）
 - `results/`：所有中间产物与最终产物（按 SOP 目录分层）
+  - `results/03_msa_core/` — 核心 MSA 及其 QC（skeleton, core_global, core_tree, core_asr, coords, panelDb 等）
+  - `results/03_msa_modules/` — 模块注释矩阵、模块序列、模块 MSA（Phase 3.8 产出）
+  - `results/03_msa_full/` — 亚型内全长拼接 MSA + linker + column_map（Phase 3.9 产出）
+  - **禁止**跨目录混放：核心比对不得出现在 `03_msa_modules/`，反之亦然。
+
+**ACT 低 prevalence 策略决策（2026-03-03）：** ACT strict = 47 seqs（L=142），Meff/L 预计 ≈ 0.2–0.3，远低于 [CHECK-03] 的 3.0 门控。**ACT 的独立模块 DCA 和 core↔ACT 联合 DCA 均排除出主 ICDC 证据链。** ACT 变构证据依赖：(1) PastML 离散性状 ASR (Phase 4.6)，(2) MD DCCM (Phase 5.4)，(3) 结构比较。ACT DCA 结果仅作为补充材料/探索性附录。
 
 最小必备文件：
 - `PLAN.md`（V4.1 SOP rev4）

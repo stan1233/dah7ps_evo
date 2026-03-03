@@ -144,6 +144,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 ## Phase 5：结构预测与多聚体 MD
 
+- [ ] 5.0 资源预算约束：祖先节点 ≤ 8，AF3 ≤ 16，MD ≤ 120 GPU-days，单体对照 ≤ 3 节点
 - [ ] 5.1 候选祖先集合定义（Pre-gain / Post-gain / 对照）
 - [ ] 5.2 Apo AF3 四聚体预测（每个祖先节点）
 - [ ] 5.2a Apo-first 门控 [CHECK-07]：口袋检测 → 对接 → holo 权限
@@ -158,6 +159,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 - [ ] 6.1.1 核心层 DCA 输入准备（`prepare_dca_input.py`，Meff/L ≥ 3.0 门控）
 - [ ] 6.1.2 模块层 DCA 输入（Meff/L < 3 自动跳过 [CHECK-03]）
+  - ⚠ **ACT 降级**：ACT strict=47 (L=142)，Meff/L ≈ 0.2–0.3，远低于 3.0。ACT DCA 排除出主 ICDC 证据链，仅作探索性附录。
 - [ ] 6.1.3 亚型内联合 DCA 输入
 - [ ] 6.2.1 核心层 plmc DCA
 - [ ] 6.2.2 模块层 DCA
