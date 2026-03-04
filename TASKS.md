@@ -103,16 +103,19 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 ### 3.7 双版本修剪
 
-- [ ] 3.7 ClipKIT kpic-smart-gap → `core_tree.afa`
-- [ ] 3.7 Minimal trim → `core_asr.afa`
-- [ ] 3.7 FoldMason msa2lddt 结构复核
+- [x] 3.7 ClipKIT kpic-smart-gap → `core_tree.afa`（9,393 seqs × 436 cols, --complementary 生成 .complement 审计文件）
+- [x] 3.7 Minimal trim (gap > 0.95) → `core_asr.afa`（9,393 seqs × 472 cols）+ `core_asr.cols.tsv`
+- [-] 3.7 FoldMason msa2lddt 结构复核 — ✅ 修复 ID 映射后成功（Average LDDT = 0.2638, 436/436 cols）
 
 ### 3.8 模块注释
 
-- [ ] 3.8 `annotate_modules.py` → `module_presence_absence_strict.tsv` + `_relaxed.tsv`
-- [ ] 3.8 模块边界稳健性 QC（三证据一致性 + 双版本矩阵）
-- [ ] 3.8 `extract_module_seqs.py` → 各模块序列 + `*_domain_coords.tsv`
-- [ ] 3.8 模块 MSA（MAFFT E-INS-i）→ `ACT_msa.afa` 等
+- [x] 3.8 模块 HMM 库构建 → `data/db/module_hmms/modules.hmm`（ACT/CM_1/CM_2 从 Pfam-A.hmm 提取 + hmmpress）
+- [x] 3.8 C-tail 提取 → `c_tails.fasta`（1,490 seqs）+ `hmmsearch` → `module_hits.domtbl`（481 hits: ACT=69, CM_2=411, CM_1=1）
+- [x] 3.8 `annotate_modules.py` → `module_presence_absence_strict.tsv`（9,393 rows）+ `_relaxed.tsv` + `boundary_robustness.md`
+- [x] 3.8 Strict: N_ext=3,130 / α2β3=172 / ACT=47 / CM=408 / C_tail=360；Relaxed: 4,429 / 263 / 60 / 412 / 1,018
+- [x] 3.8 Strict⊆Relaxed 一致性验证通过（0 violations）
+- [x] 3.8 `extract_module_seqs.py` → 5 模块序列 + `*_domain_coords.tsv`（坐标合法性 0 errors）
+- [x] 3.8 模块 MSA → ACT(47×142), CM(408×266), α2β3(172×582), N_ext(3,130×8,153 --auto), C_tail(360×3,617 E-INS-i)
 
 ### 3.9 Profile-anchored Stitching
 
@@ -141,6 +144,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 ## Phase 5：结构预测与多聚体 MD
 
+- [ ] 5.0 资源预算约束：祖先节点 ≤ 8，AF3 ≤ 16，MD ≤ 120 GPU-days，单体对照 ≤ 3 节点
 - [ ] 5.1 候选祖先集合定义（Pre-gain / Post-gain / 对照）
 - [ ] 5.2 Apo AF3 四聚体预测（每个祖先节点）
 - [ ] 5.2a Apo-first 门控 [CHECK-07]：口袋检测 → 对接 → holo 权限
@@ -155,6 +159,7 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 - [ ] 6.1.1 核心层 DCA 输入准备（`prepare_dca_input.py`，Meff/L ≥ 3.0 门控）
 - [ ] 6.1.2 模块层 DCA 输入（Meff/L < 3 自动跳过 [CHECK-03]）
+  - ⚠ **ACT 降级**：ACT strict=47 (L=142)，Meff/L ≈ 0.2–0.3，远低于 3.0。ACT DCA 排除出主 ICDC 证据链，仅作探索性附录。
 - [ ] 6.1.3 亚型内联合 DCA 输入
 - [ ] 6.2.1 核心层 plmc DCA
 - [ ] 6.2.2 模块层 DCA
@@ -170,8 +175,8 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 - [x] `scripts/extract_core_domains.py`（含 hit stitching）— hmmsearch + stitching + coverage filter, 已通过 Phase 3.6 QC
 - [x] `scripts/define_core_columns.py`（LDDT 拐点法）— 已实现并通过 QC
-- [ ] `scripts/annotate_modules.py`（多证据融合 + 双版本矩阵）
-- [ ] `scripts/extract_module_seqs.py`
+- [x] `scripts/annotate_modules.py`（坐标 + HMM 双证据融合 + strict/relaxed 双版本矩阵 + boundary_robustness.md）
+- [x] `scripts/extract_module_seqs.py`（C-tail 提取模式 + 按 matrix 逐模块提取模式）
 - [ ] `scripts/extract_linkers.py`
 - [ ] `scripts/stitch_full_length_msa.py`（含 core 列不变断言）
 - [ ] `scripts/prepare_dca_input.py`（含 Meff/L 门控）
@@ -189,8 +194,8 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 - [ ] `scripts/dca_significance.py`
 - [ ] `scripts/extract_crossdomain_couplings.py`
 - [ ] `scripts/qc_length.py`
-- [ ] `scripts/minimal_trim.py`
-- [ ] `scripts/extract_struct_subset.py`
+- [x] `scripts/minimal_trim.py`（gap-fraction 列修剪 + 逐列报告 TSV）
+- [x] `scripts/extract_struct_subset.py`（MSA 子集提取 + UniRef→AF header 重映射 + FASTA 清洗）
 - [ ] `scripts/drop_a2m_insertions.py`（fallback 用）
 - [ ] `scripts/subset_msa_by_ids.py`
 

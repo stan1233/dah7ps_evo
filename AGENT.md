@@ -16,6 +16,14 @@
 7. **DCA 门槛是硬门槛**：主分析要求 `Meff/L ≥ 3.0`（理想 ≥ 5.0）。不满足则该模块/联合 DCA 禁跑、禁入 ICDC（SOP ⚠ [CHECK-03]）。
 8. **祖先 holo 条件必须门控**：对祖先节点必须先 Apo，再口袋/对接验证后才允许做 Holo（SOP ⚠ [CHECK-07]）。
 9. **实验记录必须同步更新**：每次执行任何分析操作（命令、脚本、数据处理），必须将精确命令、参数、输出文件、结果摘要和时间戳记录到 `log.md`。记录格式遵循 `log.md` 已有的结构化模板（日期分组 → 时间戳 → 命令块 → 输出表格）。禁止"先跑完再补记录"——每个步骤完成后立即追加到 `log.md`。
+10. **CPU 核心全利用**：本机为 28 核 CPU。所有支持多线程/多进程的工具必须显式设置为 **20 线程**（留 8 核给系统和 I/O），确保充分利用计算资源。具体映射：
+    - `mafft --thread 20`（**禁止** `--thread -1`，该选项实际只用 8 核）
+    - `hmmsearch / hmmalign --cpu 20`
+    - `iqtree -T 20`（或 `-nt 20`）
+    - `mmseqs ... --threads 20`
+    - `cd-hit -T 20`
+    - `foldmason` 默认检测核数，但若有 `--threads` 参数则设为 20
+    - Python 脚本中涉及 `multiprocessing` / `concurrent.futures` 的 `max_workers=20`
 
 ---
 
@@ -27,6 +35,12 @@
 - `meta/`：参数、软件版本、外部模型文件（`meta/models/`）
 - `scripts/`：所有可执行脚本（必须提供 `--help`、参数检查、可复现输出）
 - `results/`：所有中间产物与最终产物（按 SOP 目录分层）
+  - `results/03_msa_core/` — 核心 MSA 及其 QC（skeleton, core_global, core_tree, core_asr, coords, panelDb 等）
+  - `results/03_msa_modules/` — 模块注释矩阵、模块序列、模块 MSA（Phase 3.8 产出）
+  - `results/03_msa_full/` — 亚型内全长拼接 MSA + linker + column_map（Phase 3.9 产出）
+  - **禁止**跨目录混放：核心比对不得出现在 `03_msa_modules/`，反之亦然。
+
+**ACT 低 prevalence 策略决策（2026-03-03）：** ACT strict = 47 seqs（L=142），Meff/L 预计 ≈ 0.2–0.3，远低于 [CHECK-03] 的 3.0 门控。**ACT 的独立模块 DCA 和 core↔ACT 联合 DCA 均排除出主 ICDC 证据链。** ACT 变构证据依赖：(1) PastML 离散性状 ASR (Phase 4.6)，(2) MD DCCM (Phase 5.4)，(3) 结构比较。ACT DCA 结果仅作为补充材料/探索性附录。
 
 最小必备文件：
 - `PLAN.md`（V4.1 SOP rev4）

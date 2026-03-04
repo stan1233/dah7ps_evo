@@ -805,6 +805,17 @@ done
 
 # 第五步：结构重建与多聚体动力学实验
 
+### 资源预算与停止规则（强制）
+
+| 参数 | 上限 | 停止规则 |
+|------|------|----------|
+| 祖先节点数 | ≤ 8（3 Pre-gain + 3 Post-gain + 2 Control） | 超 8 → 按 SH-like support 排序只取 top-8 |
+| AF3 预测 | ≤ 16 结构（8 apo + ≤8 holo，holo 需 CHECK-07 通过） | ipTM < 0.5 → 直接丢弃，不进 MD |
+| MD 总 GPU·时 | ≤ 120 GPU-days（500ns×3rep×8node×4条件 ≈ 96，留 25% buffer） | 单条 500ns 内 RMSD 不收敛 → 延至 1μs×1rep，仍不收敛 → 废弃 |
+| 单体对照 | 仅 ≤ 3 个有明确变构通讯假设的节点做单体 | 其余只跑四聚体 |
+
+**停止决策树：** 达到预算上限后，优先完成“变构节点配对”（Pre-gain vs Post-gain），丢弃对照节点。若 GPU 预算耗尽，所有剩余节点仅做 Apo 四聚体（最低要求）。
+
 ## 5.1 候选祖先集合定义
 
 至少包含三类祖先：
@@ -927,6 +938,10 @@ python scripts/prepare_dca_input.py   --input results/03_msa_core/core_asr.afa  
 
 # 6.1.2 模块层 DCA 输入（仅在携带模块的子集内做）
 # ⚠ [CHECK-03] Meff/L < 3.0 → 自动跳过该模块 DCA（禁止把噪声耦联写入网络）
+# ⚠ ACT DCA 降级声明（2026-03-03）：ACT strict 仅 47 序列（L=142），
+#   Meff/L 预计 ≈ 0.2–0.3，远低于 3.0 门控。ACT 独立模块 DCA 及 core↔ACT
+#   联合 DCA 均排除出主 ICDC 证据链。ACT 变构证据依赖 PastML (4.6) +
+#   MD DCCM (5.4) + 结构比较。ACT DCA 结果仅作为补充材料/探索性附录。
 for module in ACT N_ext; do
   python scripts/prepare_dca_input.py     --input results/03_msa_modules/${module}_msa.afa     --gap_col_max 0.60     --gap_row_max 0.50     --meff_min 3.0     --skip_if_insufficient     --output results/06_icdc/${module}_dca.afa     --stats results/06_icdc/${module}_dca_stats.tsv
 done
