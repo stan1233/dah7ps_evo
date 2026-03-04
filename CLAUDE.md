@@ -34,17 +34,19 @@ No top-level test suite exists. Correctness is validated via QC assertion script
 
 ### Phase Execution Order (V5.0)
 
-| Phase | Status | Key Output |
-|-------|--------|------------|
-| 0 — Environment | ✅ | `meta/params.json`, `results/meta/software_versions.tsv` |
-| 1 — HMM Mining | ✅ | `results/01_mining/` — 9,673 NR80 sequences |
-| 2 — QC & Dedup | ✅ | `results/02_qc/nr80_*.fasta` (Ia=3521, Ib=3073, II=3079) |
-| 3.1–3.8 — Core MSA + Module Annotation | ✅ | `results/03_msa_core/core_asr.afa` (9393×472), `results/03_msa_modules/` |
-| 3.9 — Full-length Stitching | ✅ | `results/03_msa_full/msa_full_Ib_v4.afa` (47×1040) |
-| **4 — Phylogeny + ASR** | ⬜ **NEXT** | `results/04_phylogeny_asr/` |
-| 5 — Structural Validation | ⬜ | `results/05_struct_valid/` |
-| 6 — Core DCA | ⬜ | `results/06_dca/` |
-| 7 — Paper Blueprint | ⬜ | Narrative + Fig 1–6 |
+**Current progress and next steps: see `TASKS.md`.** Key outputs per phase for orientation:
+
+| Phase | Key Output |
+|-------|------------|
+| 0 — Environment | `meta/params.json`, `results/meta/software_versions.tsv` |
+| 1 — HMM Mining | `results/01_mining/` — nr80 total 9,673 seqs |
+| 2 — QC & Dedup | `results/02_qc/nr80_*.fasta` (Ia=3521, Ib=3073, II=3079) |
+| 3.1–3.8 — Core MSA + Modules | `results/03_msa_core/core_asr.afa` (9393×472), `results/03_msa_modules/` |
+| 3.9 — Full-length Stitching | `results/03_msa_full/msa_full_Ib_v4.afa` (47×1040) |
+| 4 — Phylogeny + ASR | `results/04_phylogeny_asr/` |
+| 5 — Structural Validation | `results/05_struct_valid/` |
+| 6 — Core DCA | `results/06_dca/` |
+| 7 — Paper Blueprint | Narrative + Fig 1–6 |
 
 ### Core MSA Pipeline (Phases 3.1–3.6)
 
@@ -148,12 +150,6 @@ ACT strict = 47 seqs (L=142), Meff/L ≈ 0.2–0.3. ACT DCA is excluded from the
 | Full-length stitched MSA not found | Wrong path | Must be in `results/03_msa_full/`, not `results/03_msa_core/` |
 | Coordinate mapping mismatch | PDB insertion codes, ClipKIT trimming shifts, or GROMACS topology offset | Inspect each source of numbering change in `coordinate_mapper.py` |
 
-## Scripts Status
+## Scripts
 
-**Completed (Phase 3.9):**
-- `select_sequences.py` — filter sequences by subtype FASTA + module presence/absence matrix
-- `extract_linkers.py` — extract C-flank (and optionally N-flank) from full-length FASTA using core coords
-- `stitch_full_length_msa.py` — stitch core + module + linker MSAs; hard-asserts core columns unchanged
-
-**Pending (Phase 4+):**
-`prune_tree.py`, `assert_tip_match.py`, `adjudicate_assembly.py`, `prepare_dca_input.py`, `qc_root_stability.py`, `compare_trees.py`, `aggregate_gap_blocks.py`, `compute_meff.py`, `dca_significance.py`, `coordinate_mapper.py`
+All scripts in `scripts/` follow the same interface contract (see Running Scripts above). For the complete list of completed vs pending scripts, see `TASKS.md` → "脚本开发" section.
