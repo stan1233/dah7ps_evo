@@ -6,7 +6,7 @@
 
 How did allosteric regulation evolve on top of the conserved TIM barrel catalytic core in DAH7PS? How did allosteric signals establish physical communication with the barrel?
 
-## V4.1 Core Strategy
+## V5.0 Core Strategy
 
 | Component | Approach |
 |-----------|----------|
@@ -15,9 +15,20 @@ How did allosteric regulation evolve on top of the conserved TIM barrel catalyti
 | **Core MSA** | hmmalign profile mapping → Stockholm → esl-alimask strip inserts → match-only AFA |
 | **Module Annotation** | Coordinate-based (N_ext, α2β3, C_tail) + HMM-based (ACT, CM) → strict/relaxed matrices |
 | **Smart Trimming** | Dual-version: ClipKIT kpic-smart-gap (tree) + minimal gap trim (ASR/DCA) |
-| **ASR** | Nested ASR + AltAll ensemble sampling (PP₁=0.80, PP₂=0.20) |
-| **Dynamics** | AlphaFold 3 → GROMACS MD ≥500ns×3 → RMSF/DCCM |
-| **Integration** | ICDC: DCA co-evolution × DCCM dynamic correlation |
+| **Phylogeny & ASR** | KDOPS-rooted core tree (MFP + LG+C20 LBA check) + pruned ingroup ASR + nested full-length ASR + PastML module trait ASR |
+| **Structural Validation** | Assembly adjudication (dimer vs tetramer) → AF3 Apo native-oligomer → validation MD ≥200 ns × 2 rep (V5.0: no Holo) |
+| **Core DCA** | plmc on core MSA (Meff/L >> 5) → contact validation + functional site enrichment |
+| **Integration** | ICDC demoted to Discussion outlook (V5.0): qualitative convergence of core DCA × ancestral structure × limited MD |
+
+## V5.0 Key Changes (vs V4.1)
+
+- **Phase 5 reduced**: 8 nodes × 2×2 factorial MD → 2–4 nodes × Apo-only × native-oligomer validation MD
+- **Assembly adjudication (new)**: oligomeric state explicitly determined per ancestor node via literature survey + parallel AF3 dimer/tetramer + PISA scoring; no default tetramer [CHECK-08]
+- **Tree–alignment tip consistency (new)**: KDOPS outgroup pruned from rooted tree before ASR; tip-set identity asserted [Phase 4.3]
+- **Phase 6 focused**: core-layer DCA only as main evidence; module/joint DCA → optional exploration (ACT Meff/L ≈ 0.2–0.3)
+- **ICDC demoted**: from Phase 6 main conclusion → Discussion "Cross-Evidence Convergence Outlook"
+- **Phase 7 added**: paper narrative blueprint with figure list and ICDC positioning
+- **Path discipline**: full-length stitched MSA output unified to `results/03_msa_full/`
 
 ## Dataset
 
@@ -28,7 +39,7 @@ How did allosteric regulation evolve on top of the conserved TIM barrel catalyti
 | II   | 9,862 | 3,064 | 3,079 | — |
 | **Total** | — | — | **9,673** | **9,393** |
 
-Core MSA: 9,393 seqs × 521 cols (match-only), trimmed to 436 cols (tree) / 472 cols (ASR).
+Core MSA: 9,393 seqs × 521 cols (match-only), trimmed to 436 cols (tree) / 472 cols (ASR/DCA).
 
 ## Key Vulnerability Fixes
 
@@ -40,8 +51,12 @@ Core MSA: 9,393 seqs × 521 cols (match-only), trimmed to 436 cols (tree) / 472 
 - **V4.1**: FoldMason structural skeleton → LDDT-based core column definition
 - **V4.1**: hmmalign + Stockholm strip-inserts eliminates MSA inflation
 - **V4.1**: Module annotation decouples allosteric elements from core
-- **V4.1**: Apo-first gating prevents AF3 "modern ligand hallucination" [CHECK-07]
 - **V4.1**: Meff/L ≥ 3.0 hard gate prevents DCA artifacts [CHECK-03]
+- **V5.0**: Assembly adjudication prevents wrong oligomeric state in ancestral structure prediction [CHECK-08]
+- **V5.0**: Tree pruning ensures ASR tree–alignment tip-set consistency [Phase 4.3]
+- **V5.0**: Apo-only prediction eliminates "modern ligand hallucination" risk
+- **V5.0**: Core-only DCA focuses on information-rich layer; module DCA demoted to exploration
+- **V5.0**: ICDC demoted to Discussion outlook — avoids overclaiming without full MD network
 
 ## Environment
 
