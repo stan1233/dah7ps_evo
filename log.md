@@ -2035,3 +2035,81 @@ python3 /tmp/verify_phase38.py
 ```
 
 **下一步：** Phase 3.9 — Profile-anchored Stitching。
+---
+
+## 2026-03-04 — Phase 3.9：Profile-anchored Stitching（Iβ-ACT 全长缝合 MSA）
+
+### 背景与坐标分析
+
+- ACT domain 作为 insert states 嵌入于 core HMM envelope 内部（n_env_segments=1 对全部 47 条）
+- 所有 47 条 Iβ-ACT 序列的 C-flank（raw_env_end+1 到 seq_len）：min=94, median=299, max=348 aa
+- N-flank（1 到 raw_env_start-1）：min=1, median=45, max=92 aa
+
+### 新增脚本
+
+- `scripts/select_sequences.py` — 按亚型 FASTA + 模块矩阵筛选序列 ID
+- `scripts/extract_linkers.py` — 提取 C-flank（linker）和 N-flank 序列
+- `scripts/stitch_full_length_msa.py` — 拼接 core+module+linker，含 core 列不变断言
+
+### 执行记录
+
+```bash
+# Step 1
+python scripts/select_sequences.py \
+  --presence_table results/03_msa_modules/module_presence_absence_strict.tsv \
+  --subtype_fasta  results/02_qc/nr80_Ib.fasta \
+  --require_module ACT_domain \
+  --output         results/03_msa_full/Ib_ACT.ids
+# → 9393 sequences in table → 47 pass all filters
+
+# Step 2
+python scripts/extract_linkers.py \
+  --full_length_fasta results/02_qc/nr80_Ib.fasta \
+  --seq_ids           results/03_msa_full/Ib_ACT.ids \
+  --core_coords       results/03_msa_core/core_domain_coords.tsv \
+  --output            results/03_msa_full/Ib_ACT_linkers.fasta \
+  --output_nflank     results/03_msa_full/Ib_ACT_nflanks.fasta
+# → C-flank: n=47 min=94 median=299 max=348
+
+# Step 3: E-INS-i linker alignment
+mafft --genafpair --maxiterate 1000 --ep 0 --thread 20 \
+  results/03_msa_full/Ib_ACT_linkers.fasta \
+  > results/03_msa_full/Ib_ACT_linkers_einsi.afa \
+  2>results/03_msa_full/mafft_Ib_ACT_linkers.log
+# → 47 seqs × 426 cols
+
+# Step 4: Stitch
+python scripts/stitch_full_length_msa.py \
+  --seq_ids          results/03_msa_full/Ib_ACT.ids \
+  --core_msa         results/03_msa_core/core_asr.afa \
+  --module_msa       results/03_msa_modules/ACT_domain_msa.afa \
+  --module_name      ACT \
+  --linker_msa       results/03_msa_full/Ib_ACT_linkers_einsi.afa \
+  --output           results/03_msa_full/msa_full_Ib_v4.afa \
+  --emit_column_map  results/03_msa_full/msa_full_Ib_column_map.tsv \
+  --assert_core_columns_unchanged
+```
+
+### 产出
+
+| 文件 | 内容 |
+|------|------|
+| `results/03_msa_full/Ib_ACT.ids` | 47 条 Iβ-ACT 序列 ID |
+| `results/03_msa_full/Ib_ACT_linkers.fasta` | C-flank 原始序列 |
+| `results/03_msa_full/Ib_ACT_linkers_einsi.afa` | C-flank E-INS-i 对齐（47×426） |
+| `results/03_msa_full/msa_full_Ib_v4.afa` | **全长缝合 MSA（47 seqs × 1040 cols）** |
+| `results/03_msa_full/msa_full_Ib_column_map.tsv` | 列坐标映射表 |
+
+### 列坐标分段
+
+| 段 | 来源 | 列范围 | 列数 |
+|----|------|--------|------|
+| core | core_asr.afa | 1–472 | 472 |
+| module:ACT | ACT_domain_msa.afa | 473–614 | 142 |
+| linker:C-flank | Ib_ACT_linkers_einsi.afa | 615–1040 | 426 |
+
+### QC2b 断言
+
+✅ ASSERT PASS：core 列数与 core_asr.afa 完全一致（472 cols），全部 47 条序列逐列相等。
+
+**下一步：** Phase 4 — 系统发育与分层 ASR。

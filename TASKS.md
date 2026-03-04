@@ -100,13 +100,14 @@
 - [x] 3.8 Strict⊆Relaxed 一致性验证通过
 - [x] 3.8 模块 MSA → ACT(47×142), CM(408×266), α2β3(172×582), N_ext(3,130×8,153), C_tail(360×3,617)
 
-### 3.9 Profile-anchored Stitching [待执行]
+### 3.9 Profile-anchored Stitching ✅
 
-- [ ] 3.9.1 定义亚型与架构子集 → `results/03_msa_full/Ib_ACT.ids`
-- [ ] 3.9.2 提取 linker 片段 → `results/03_msa_full/Ib_ACT_linkers.fasta`
-- [ ] 3.9.3 亚型内 linker E-INS-i 对齐 → `results/03_msa_full/Ib_ACT_linkers_einsi.afa`
-- [ ] 3.9.4 `stitch_full_length_msa.py` → `results/03_msa_full/msa_full_Ib_v4.afa` + `results/03_msa_full/msa_full_Ib_column_map.tsv`（断言 core 列不变）
-  - ⚠ 产出路径统一在 `results/03_msa_full/`，禁止放 `results/03_msa_core/`
+- [x] 3.9.1 定义亚型与架构子集 → `results/03_msa_full/Ib_ACT.ids`（47 条）
+- [x] 3.9.2 提取 linker 片段 → `results/03_msa_full/Ib_ACT_linkers.fasta`（C-flank，min=94,median=299,max=348 aa）
+- [x] 3.9.3 亚型内 linker E-INS-i 对齐 → `results/03_msa_full/Ib_ACT_linkers_einsi.afa`（47×426）
+- [x] 3.9.4 `stitch_full_length_msa.py` → `results/03_msa_full/msa_full_Ib_v4.afa`（47×1040）+ `results/03_msa_full/msa_full_Ib_column_map.tsv`
+  - ✅ QC2b 断言通过：core 段 472 列与 core_asr.afa 完全一致
+  - 列分段：core(1–472) | ACT(473–614) | C-flank(615–1040)
 
 ---
 
@@ -186,9 +187,9 @@
 - [x] `scripts/extract_struct_subset.py`
 
 ### 待开发
-- [ ] `scripts/extract_linkers.py`
-- [ ] `scripts/stitch_full_length_msa.py`（含 core 列不变断言，输出到 `results/03_msa_full/`）
-- [ ] `scripts/select_sequences.py`
+- [x] `scripts/extract_linkers.py` ✅
+- [x] `scripts/stitch_full_length_msa.py`（含 core 列不变断言，输出到 `results/03_msa_full/`）✅
+- [x] `scripts/select_sequences.py` ✅
 - [ ] `scripts/prune_tree.py`（V5.0 新增：prune KDOPS → 保留根位置）
 - [ ] `scripts/assert_tip_match.py`（V5.0 新增：树–比对 tip 集一致性断言）
 - [ ] `scripts/adjudicate_assembly.py`（V5.0 新增：装配体判定）

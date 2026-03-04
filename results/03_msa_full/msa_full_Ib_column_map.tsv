@@ -1,0 +1,4 @@
+segment	source	col_start	col_end	n_cols
+core	core_asr.afa	1	472	472
+module:ACT	ACT_domain_msa.afa	473	614	142
+linker:C-flank	Ib_ACT_linkers_einsi.afa	615	1040	426
