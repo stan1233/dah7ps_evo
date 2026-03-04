@@ -1,29 +1,25 @@
-# AGENT.md — DAH7PS 变构起源演化动力学重建（V4.1 SOP rev4 执行指南）
+# AGENT.md — DAH7PS 变构起源演化动力学重建（V5.0 SOP rev5 执行指南）
 
-> **本仓库的“唯一真相源（Single Source of Truth）”**：`PLAN.md`（V4.1 SOP rev4）  
-> 本文件（AGENT.md）的作用是把 SOP 变成**可执行的、可验收的**任务清单与工程契约，确保自动化执行时不偏航、不“偷懒跳步”、不引入不可追溯的临时决定。
+> **本仓库的"唯一真相源（Single Source of Truth）"**：`PLAN.md`（V5.0 SOP rev5）
+> 本文件（AGENT.md）的作用是把 SOP 变成**可执行的、可验收的**任务清单与工程契约，确保自动化执行时不偏航、不"偷懒跳步"、不引入不可追溯的临时决定。
 
 ---
 
 ## 0. 总原则（必须遵守）
 
-1. **严格按 SOP 的 Phase 顺序执行**：除非某 Phase 明确标注“可选/备选”，否则不得跳过或重排。
+1. **严格按 SOP 的 Phase 顺序执行**：除非某 Phase 明确标注"可选/备选"，否则不得跳过或重排。
 2. **所有阈值/模型/随机性必须可追溯**：统一写入 `meta/params.json`；随机抽样必须写明 seed，并保存抽样清单（ids）。
 3. **任何 QC 断言失败 = 立刻停止并回溯修复**：不得带病推进。
 4. **不覆盖结果**：每次正式跑用独立 run 目录，例如 `results/run_YYYYMMDD/`；或使用 SOP 既定目录，但必须保留旧文件备份（加后缀 `.bak`）。
-5. **不手工拼接祖先序列**：AF3 输入的全长祖先序列只能来自 Phase 4.4 的“亚型内全长嵌套 ASR”输出（见 SOP 的 ⚠ [CHECK-02]）。
+5. **不手工拼接祖先序列**：AF3 输入的全长祖先序列只能来自 Phase 4.4 的"亚型内全长嵌套 ASR"输出（见 SOP ⚠ [CHECK-02]）。
 6. **核心 MSA 禁止插入列膨胀**：核心映射必须走 `Stockholm → 剥离 Insert 列 → AFA`（SOP Phase 3.6）。禁止用 `hmmalign --outformat afa` 直接生成核心比对。
-7. **DCA 门槛是硬门槛**：主分析要求 `Meff/L ≥ 3.0`（理想 ≥ 5.0）。不满足则该模块/联合 DCA 禁跑、禁入 ICDC（SOP ⚠ [CHECK-03]）。
-8. **祖先 holo 条件必须门控**：对祖先节点必须先 Apo，再口袋/对接验证后才允许做 Holo（SOP ⚠ [CHECK-07]）。
-9. **实验记录必须同步更新**：每次执行任何分析操作（命令、脚本、数据处理），必须将精确命令、参数、输出文件、结果摘要和时间戳记录到 `log.md`。记录格式遵循 `log.md` 已有的结构化模板（日期分组 → 时间戳 → 命令块 → 输出表格）。禁止"先跑完再补记录"——每个步骤完成后立即追加到 `log.md`。
-10. **CPU 核心全利用**：本机为 28 核 CPU。所有支持多线程/多进程的工具必须显式设置为 **20 线程**（留 8 核给系统和 I/O），确保充分利用计算资源。具体映射：
-    - `mafft --thread 20`（**禁止** `--thread -1`，该选项实际只用 8 核）
-    - `hmmsearch / hmmalign --cpu 20`
-    - `iqtree -T 20`（或 `-nt 20`）
-    - `mmseqs ... --threads 20`
-    - `cd-hit -T 20`
-    - `foldmason` 默认检测核数，但若有 `--threads` 参数则设为 20
-    - Python 脚本中涉及 `multiprocessing` / `concurrent.futures` 的 `max_workers=20`
+7. **DCA 门槛是硬门槛**：主分析（核心层）要求 `Meff/L ≥ 3.0`（理想 ≥ 5.0）。模块层和联合跨域 DCA 因深度不足已移入"可选探索"，不作为论文主线结论（SOP ⚠ [CHECK-03]；V5.0 Phase 6）。
+8. **装配体状态不可默认（V5.0 硬约束）**：不得将 oligomeric state 写死为"四聚体"。每个祖先节点的功能装配体必须通过 Phase 5.0 Assembly Adjudication 显式判定（文献扫描 + dimer/tetramer 平行 AF3 + PISA 评分），产出 `assembly_adjudication.tsv`。所有下游结构预测与 MD 的拷贝数读取该表（SOP ⚠ [CHECK-08]）。
+9. **实验记录必须同步更新**：每次执行任何分析操作，必须将精确命令、参数、输出文件、结果摘要和时间戳记录到 `log.md`。禁止"先跑完再补记录"。
+10. **CPU 核心全利用**：本机 28 核，工具设为 **20 线程**。`mafft --thread 20`（禁止 `--thread -1`）、`hmmsearch/hmmalign --cpu 20`、`iqtree -T 20`、`mmseqs --threads 20`、`cd-hit -T 20`、Python `max_workers=20`。
+11. **树–比对 tip 集严格一致（V5.0 硬约束）**：IQ-TREE `-te` 要求树与比对的 tip 集完全匹配。Phase 4.3 ASR 前必须从定根树中 prune 掉 KDOPS 外群 tips → `CoreTree_rooted_ingroup.treefile`，并用 `assert_tip_match.py` 断言。不匹配 = 终止。
+12. **V5.0 全部 Apo-only**：Phase 5 不做 Holo 预测，消除"现代配体幻觉"风险。V4.1 的 CHECK-07 已不再适用。
+13. **ICDC 仅为 Discussion 展望**：不作为论文主线定量结论。核心 DCA × 祖先结构 × 有限 MD 的一致性仅作定性描述（SOP Phase 7.3）。
 
 ---
 
@@ -31,190 +27,140 @@
 
 执行过程中必须维持以下目录结构（SOP Phase 0.3）：
 
-- `data/`：原始输入与外部下载（UniProt/NR/UniRef、PDB、ligand、KDOPS 外群等）
+- `data/`：原始输入与外部下载
 - `meta/`：参数、软件版本、外部模型文件（`meta/models/`）
 - `scripts/`：所有可执行脚本（必须提供 `--help`、参数检查、可复现输出）
-- `results/`：所有中间产物与最终产物（按 SOP 目录分层）
-  - `results/03_msa_core/` — 核心 MSA 及其 QC（skeleton, core_global, core_tree, core_asr, coords, panelDb 等）
-  - `results/03_msa_modules/` — 模块注释矩阵、模块序列、模块 MSA（Phase 3.8 产出）
-  - `results/03_msa_full/` — 亚型内全长拼接 MSA + linker + column_map（Phase 3.9 产出）
-  - **禁止**跨目录混放：核心比对不得出现在 `03_msa_modules/`，反之亦然。
+- `results/`：所有中间产物与最终产物
+  - `results/03_msa_core/` — 核心 MSA 及其 QC
+  - `results/03_msa_modules/` — 模块注释矩阵、模块序列、模块 MSA
+  - `results/03_msa_full/` — 亚型内全长缝合 MSA + linker + column_map ⚠ 全长 MSA 禁止放入 `03_msa_core/`
+  - `results/04_phylogeny_asr/` — 核心树、ASR 产出、PastML 结果
+  - `results/05_struct_valid/` — 装配体判定、AF3 结构、MD 轨迹（V5.0 仅 Apo 验证性）
+  - `results/06_dca/` — 核心层 DCA + 可选探索性 DCA
+  - **禁止**跨目录混放
 
-**ACT 低 prevalence 策略决策（2026-03-03）：** ACT strict = 47 seqs（L=142），Meff/L 预计 ≈ 0.2–0.3，远低于 [CHECK-03] 的 3.0 门控。**ACT 的独立模块 DCA 和 core↔ACT 联合 DCA 均排除出主 ICDC 证据链。** ACT 变构证据依赖：(1) PastML 离散性状 ASR (Phase 4.6)，(2) MD DCCM (Phase 5.4)，(3) 结构比较。ACT DCA 结果仅作为补充材料/探索性附录。
+**ACT 低 prevalence 策略决策（2026-03-03）：** ACT strict = 47 seqs（L=142），Meff/L ≈ 0.2–0.3。ACT DCA 排除出主线证据链，仅作探索性附录。
 
-最小必备文件：
-- `PLAN.md`（V4.1 SOP rev4）
-- `meta/params.json`
-- `results/meta/software_versions.tsv`
-- `results/meta/model_files.tsv`（若使用外部模型文件，如 3Di）
+最小必备文件：`PLAN.md`（V5.0）、`meta/params.json`、`results/meta/software_versions.tsv`、`results/meta/model_files.tsv`
 
 ---
 
 ## 2. 执行总览（按 Phase）
 
-下面的“Done 条件”是验收标准；未满足不得进入下一 Phase。
+下面的"Done 条件"是验收标准；未满足不得进入下一 Phase。
 
-### Phase 0：环境与可复现性
+### Phase 0：环境与可复现性 ✅
+
+**Done 条件** — `software_versions.tsv` + `params.json` + `model_files.tsv` 均存在
+
+### Phase 1：数据挖掘 ✅
+
+**Done 条件** — `results/01_mining/` 候选序列 fasta + `hits_*.domtbl` + QC1 报告
+
+### Phase 2：质量控制与去冗余 ✅
+
+**Done 条件** — `results/02_qc/nr80_*.fasta` + `qc_length_report.md` + seeds60 + stepping stones
+
+### Phase 3：结构感知核心 MSA + 模块注释
+
+#### Phase 3.1–3.8 ✅
+
+**Done 条件**
+- `panel_candidates.tsv` + `panel_manifest.tsv`
+- `skeleton_core_aa.fa` + `core_columns.mask`
+- `core_global_matchonly.afa`（9,393 × 521）
+- `core_tree.afa`（436 cols）+ `core_asr.afa`（472 cols）
+- `module_presence_absence_strict.tsv` + 5 模块 MSA
+- QC2 报告
+
+#### Phase 3.9：Profile-anchored Stitching [待执行]
 
 **任务**
-- 创建并激活 conda/mamba 环境（hmmer, mafft, clipkit, iqtree2, foldmason, seqkit, plmc, pastml, gromacs 等）
-- 记录软件版本到 `results/meta/software_versions.tsv`
-- 下载并锁定外部模型文件（例如 3Di `Q_3Di_models.nex`）到 `meta/models/`，写入 sha256 到 `results/meta/model_files.tsv`
-
-**Done 条件**
-- `software_versions.tsv` 存在且包含关键软件版本
-- `model_files.tsv` 存在且包含 `Q_3Di_models.nex` 的 sha256（若用 3Di）
-
----
-
-### Phase 1：数据挖掘（KDOPS 反向过滤 + 全库扫描）
-
-**任务**
-- 用 DAH7PS 核心 HMM 与 KDOPS HMM 进行双向评分（KDOPS 反向过滤）
-- 生成候选 DAH7PS 序列集合与 domtblout 命中表
-
-**Done 条件**
-- `results/01_mining/` 下存在候选序列 fasta + `hits_*.domtbl`
-- QC1（长度/去冗余）能读入这些文件
-
----
-
-### Phase 2：质量控制与去冗余（QC1）
-
-**任务**
-- 过滤异常长度序列、去除低复杂度/明显错误序列
-- CD-HIT 80% 生成 `nr80_*.fasta`（按亚型/分组可分文件）
-
-**Done 条件**
-- `results/02_qc/nr80_*.fasta` 产出
-- `results/02_qc/qc_length_report.md` 产出
-
----
-
-### Phase 3：结构感知核心 MSA（FoldMason 骨架 → HMM 映射）+ 模块注释
-
-#### Phase 3.1A：Structure Panel Selection Contract
-
-**面板规模与配额**
-- Target N = 30（allowed 20–40）
-- 默认配额：Ia=12, Ib=5, II=13（±1 allowed；硬底线 Ia≥8, Ib≥4, II≥8）
-- 每条序列必须来自不同 stepping-stone cluster（断言：不重复簇）
-
-**硬约束（必须满足）**
-1. 结构来源优先级：PDB > AFDB (core mean pLDDT≥70) > ESMFold (core mean pLDDT≥70)
-2. 质量门槛使用 **core-region** 置信度（非全长平均），避免 transit peptide / N端延伸系统性淘汰植物型
-3. core-region 覆盖度 ≥ 0.80（结构必须覆盖 HMM core 的大部分残基）
-4. 每亚型至少 1 个"锚点结构"（PDB 优先；无 PDB 则至少 1 个 AFDB 高置信）
-
-**软约束（尽量满足）**
-1. 按簇大小分层抽样：≥30% 来自小簇(size≤2)，≥30% 中等簇(3–10)，≥20% 大簇(>10)
-2. 分类群多样性：每亚型覆盖主要分类群（避免单一菌属过度代表）
-
-**产出**
-- `results/03_msa_core/panel_candidates.tsv`（258 条 backbone 全量评估表）
-- `results/03_msa_core/panel_manifest.tsv`（最终入选面板清单）
-- 结构文件 → `data/structures/panel_dah7ps/`
-
-#### Phase 3.1B–3.5：FoldMason 骨架与核心列定义
-**Done 条件**
-- `results/03_msa_core/panel_candidates.tsv` + `panel_manifest.tsv` 产出
-- `results/03_msa_core/skeleton_core_aa.fa`
-- `results/03_msa_core/skeleton_3di.fa`
-- `results/03_msa_core/core_columns.mask`
-
-#### Phase 3.6：全量核心映射（关键！）
-**任务**
-- `extract_core_domains.py` 提取 core-only 序列片段，并输出 `core_domain_coords.tsv`
-- `hmmalign` 输出 **Stockholm**，再用 `esl-alimask --rf-is-mask` 剥离 Insert 列，转为 `core_global_matchonly.afa`
-- ⚠ 必须启用 Hit Stitching（SOP ⚠ [CHECK-06]）
-
-**Done 条件**
-- `results/03_msa_core/core_global_matchonly.afa` 存在
-- 核心列数稳定（约 400–600），且显著小于 V3.1（>3000）的膨胀水平
-- QC2 报告 `results/03_msa_core/qc_core_alignment.md` 产出
-
-#### Phase 3.7：双版本修剪（树 vs ASR/DCA）
-**Done 条件**
-- `core_tree.afa` 与 `core_asr.afa` 产出
-
-#### Phase 3.8：模块注释与模块 MSA
-**任务**
-- `annotate_modules.py` 输出 presence/absence 表
-- `extract_module_seqs.py` 必须输出 `${module}_domain_coords.tsv`
-- 构建模块 MSA（`ACT_msa.afa` 等）
-
-**Done 条件**
-- `module_presence_absence_strict.tsv`
-- `ACT_msa.afa` 等模块 MSA 产出
-
-#### Phase 3.9：Profile-anchored Stitching（生成全长亚型 MSA）
-**任务**
-- 仅对同一架构亚型（例如 Type Iβ-ACT）生成 `msa_full_Ib_v4.afa`
+- 仅对同一架构亚型（如 Type Iβ-ACT）生成全长缝合 MSA
 - linker 允许自由对齐；core/module 列必须继承原 MSA，不得漂移
 
 **Done 条件**
-- `results/03_msa_core/msa_full_Ib_v4.afa`
+- `results/03_msa_full/msa_full_Ib_v4.afa`（⚠ 路径在 `03_msa_full/` 而非 `03_msa_core/`）
 - `results/03_msa_full/msa_full_Ib_column_map.tsv`
+- Core 段列数与 `core_asr.afa` 完全一致（断言通过）
 
 ---
 
-### Phase 4：系统发育与 ASR（QC3 关键：根稳定性）
+### Phase 4：系统发育与分层 ASR [待执行]
 
 **任务**
 - 外群定根：MFP + 至少一个 site-heterogeneous 模型（LG+C20+F+G / EX_EHO+F+G）
-- 生成根稳定性报告 `QC3_root_stability.md`
-- 嵌套 ASR（局部子树 + 全长亚型比对）：对 AF3 输入祖先生成连续全长序列
+- **⚠ Phase 4.3 树–比对 tip 集一致性（V5.0 硬约束）**：定根树包含 KDOPS 外群，但 `core_asr.afa` 不包含。ASR 前必须 prune 外群 → `CoreTree_rooted_ingroup.treefile`，并用 `assert_tip_match.py` 断言 tip 集严格一致。选择 prune 方案（而非合并外群到 ASR 比对），因为外群序列在 ASR 中只会引入噪声。
+- 嵌套 ASR（局部子树 + 全长亚型比对，输入来自 `results/03_msa_full/`）
 
 **Done 条件**
-- `CoreTree_rooted_MFP.treefile`、`CoreTree_rooted_LGC20.treefile` 至少存在
-- `QC3_root_stability.md` 通过（根位置一致或已声明不确定性并给出敏感性方案）
-- `ASR_Ib_local.*` 产出（用于 AF3 输入）
+- `CoreTree_rooted_MFP.treefile` + `CoreTree_rooted_LGC20.treefile` 至少存在
+- `CoreTree_rooted_ingroup.treefile`（pruned，用于 ASR）
+- `QC3_root_stability.md` 通过
+- `ASR_Ib_local.*` 产出
 
 ---
 
-### Phase 5：结构预测与 MD（QC4 关键：门控）
+### Phase 5：关键祖先节点的结构验证 [待执行，V5.0 精简版]
+
+> **V5.0 范围：** 2–4 个关键节点 × Apo-only × native-oligomer（由 5.0 判定）× 有限验证性 MD。**不做 Holo。不默认四聚体。**
 
 **任务**
-- 每个祖先节点先做 Apo AF3
-- 口袋检测 + 对接门控后才允许 holo
-- MD 前必须过结构 QC（SOP ⚠ [CHECK-05]）
-- 运行 2×2 因子矩阵（holo 条件可能被门控取消）
+- **5.0 装配体判定（Assembly Adjudication）[CHECK-08]**：对每个祖先节点，先做文献/结构注释扫描 → dimer + tetramer 平行 AF3 → PISA 界面评分 → 产出 `assembly_adjudication.tsv`。后续步骤的拷贝数全部读取该表。
+- 5.1 候选祖先节点选择（Pre-gain / Post-gain，2–4 个）
+- 5.2 Apo 结构预测（AF3 拷贝数由 5.0 判定 + ESMFold 交叉验证）
+- 5.2b 结构 QC 门控 [CHECK-05]：ipTM ≥ 0.6 → 能量最小化 → 10 ns 筛选
+- 5.3 验证性 MD：native-oligomer-apo ≥200 ns × 2 rep（主）+ 可选 alternative-oligomer 10–20 ns 排除测试
+- 5.4 有限动力学读出（RMSD/RMSF + 界面面积 + Fpocket 口袋拓扑比较，不做完整 DCCM/网络流）
 
 **Done 条件**
-- `results/05_struct_md/pocket_gating/<node>_gating.md`
-- `results/05_struct_md/qc_dynamics.md`
+- `results/05_struct_valid/assembly_adjudication.tsv`（每个节点有装配体判定与证据链）
+- `results/05_struct_valid/qc_struct_validation.md`（含装配体判定证据、AF3 指标、MD 收敛性、界面稳定性）
 
 ---
 
-### Phase 6：DCA × 动力学融合（ICDC）
+### Phase 6：核心层共进化分析（DCA） [待执行，V5.0 聚焦版]
+
+> **V5.0 范围：** 仅核心层 DCA 进入主线。模块 DCA、联合跨域 DCA → 可选探索，不入论文主线结论。
 
 **任务**
-- 核心 DCA（`core_dca.afa`）
-- 模块 DCA（Meff/L ≥ 3 才跑）
-- 联合 DCA（`Ib_ACT_joint_dca.afa`）提取跨域耦联 `Ib_ACT_crossdomain_top200.tsv`
-- with/without 模块比较：必须 Meff 匹配下采样 + Z-score（SOP 6.2.5）
-- ICDC 融合（坐标映射必须先通过 SOP ⚠ [CHECK-04]）
+- 6.1 核心层 DCA 输入准备（`core_asr.afa` → gap 过滤 → `core_dca.afa`，Meff/L 门控）
+- 6.2 plmc 执行
+- 6.3 显著性评估：top-L 接触验证（1KFL/1RZM/3NV8）+ 功能位点富集 + 跨亚型保守 vs 特异耦联
+- 6.4 可选探索（不入主线）：模块层 DCA、联合跨域 DCA、Meff 匹配比较
 
 **Done 条件**
-- `results/06_icdc/icdc_crosslayer_paths.tsv`
-- `results/06_icdc/icdc_crossdomain_couplings.tsv`（若跑联合 DCA）
-- `results/06_icdc/coordinate_map.tsv`（断言通过）
+- `results/06_dca/core_dca.afa` + `core_dca_stats.tsv`（Meff/L ≥ 5）
+- `results/06_dca/core_significant_couplings.tsv`
+- `results/06_dca/qc_core_dca.md`
+
+---
+
+### Phase 7：论文写作蓝图与跨证据一致性展望 [待执行，V5.0 新增]
+
+**任务**
+- 7.1 论文主线叙事锁定（结构感知 MSA → 定根树 + 模块 ASR → 核心 DCA → 祖先结构验证）
+- 7.2 核心图表清单（Fig 1–6 + 补充图）
+- 7.3 ICDC 在 Discussion 中的定位：倒数第二段"跨证据一致性展望"，定性展示核心 DCA × 祖先结构 × 有限 MD 的一致性信号，明确声明非正式 ICDC 融合，提出全因子 MD → DCCM → 正式融合作为未来方向
+
+**Done 条件**
+- 论文主线叙事文档 + Fig 1–6 齐备
+- ICDC 定位写法确定
 
 ---
 
 ## 3. 脚本最小接口约定（必须实现）
 
-若仓库中缺少 SOP 引用脚本，AGENT 必须按以下“接口契约”实现（保持可测试、可复现）：
+若仓库中缺少 SOP 引用脚本，AGENT 必须按以下"接口契约"实现：
 
-- 所有脚本必须支持：
-  - `--help`
-  - 输入文件存在性检查
-  - 输出目录自动创建
-  - 失败时非 0 退出码
+- 所有脚本必须支持 `--help`、输入文件存在性检查、输出目录自动创建、失败时非 0 退出码
 - 关键脚本与输出：
-  - `extract_core_domains.py` → `all_core_only.fasta` + `core_domain_coords.tsv`（含 hit stitching 日志）
+  - `extract_core_domains.py` → `all_core_only.fasta` + `core_domain_coords.tsv`（含 hit stitching） ✅
   - `prepare_dca_input.py` → `*_dca.afa` + `*_dca_stats.tsv`（含 Meff/L）
-  - `stitch_full_length_msa.py` → `msa_full_*.afa` + `column_map.tsv`（断言 core 列不变）
+  - `stitch_full_length_msa.py` → `results/03_msa_full/msa_full_*.afa` + `column_map.tsv`（断言 core 列不变）
+  - `prune_tree.py` → `CoreTree_rooted_ingroup.treefile`（V5.0 新增）
+  - `assert_tip_match.py` → 断言树与比对 tip 集相同（V5.0 新增）
+  - `adjudicate_assembly.py` → `assembly_adjudication.tsv`（V5.0 新增）
   - `qc_root_stability.py` → `QC3_root_stability.md`
   - `coordinate_mapper.py` → `coordinate_map.tsv`（断言一致）
 
@@ -222,22 +168,23 @@
 
 ## 4. 常见故障与处理策略（快速索引）
 
-- **核心 MSA 列数突然暴涨（>1000）**：99% 是 Insert 列未剥离或误用了 `hmmalign --outformat afa`。回到 Phase 3.6 修复。
-- **Type II 序列核心被切半**：未做 hit stitching（SOP ⚠ [CHECK-06]）。
-- **根位置在 MFP 与 LGC20 不一致**：典型 LBA 风险；必须声明根不确定性，并在两种根假设下重复 PastML/关键结论敏感性分析（SOP QC3）。
-- **模块 DCA 看起来“很漂亮”但 Meff/L < 3**：一律视为噪声，禁入 ICDC（SOP ⚠ [CHECK-03]）。
-- **祖先 holo 结构出现“神奇新口袋”**：未做 Apo-first 门控（SOP ⚠ [CHECK-07]），撤回 holo 条件，先做口袋/对接验证。
-- **坐标映射对不上**：优先检查 PDB insertion code、ClipKIT 修剪导致列号变化、GROMACS 拓扑编号偏移（SOP ⚠ [CHECK-04]）。
+- **核心 MSA 列数暴涨（>1000）**：Insert 列未剥离或误用 `hmmalign --outformat afa`。回到 Phase 3.6。
+- **Type II 序列核心被切半**：未做 hit stitching（[CHECK-06]）。
+- **根位置在 MFP 与 LGC20 不一致**：LBA 风险；声明根不确定性，两种根假设下重复敏感性分析（QC3）。
+- **ASR 报错 tip 集不匹配**：定根树包含 KDOPS 外群但 core_asr.afa 不包含。必须先 prune → `CoreTree_rooted_ingroup.treefile`。
+- **模块 DCA 看起来"很漂亮"但 Meff/L < 3**：一律视为噪声，禁入主线（[CHECK-03]）。
+- **祖先结构预测的装配体界面崩溃**：可能选错了 oligomeric state。检查 `assembly_adjudication.tsv`，考虑用 alternative oligomer 重新预测（[CHECK-08]）。
+- **坐标映射对不上**：检查 PDB insertion code、ClipKIT 修剪列号变化、GROMACS 拓扑编号偏移。
+- **全长缝合 MSA 找不到**：检查路径是否在 `results/03_msa_full/` 而非 `results/03_msa_core/`。
 
 ---
 
 ## 5. 交付物清单（最终验收）
 
-- `results/03_msa_core/qc_core_alignment.md`
+- `results/03_msa_core/qc_core_alignment.md` ✅
+- `results/03_msa_modules/boundary_robustness.md` ✅
 - `results/04_phylogeny_asr/QC3_root_stability.md`
-- `results/05_struct_md/qc_dynamics.md`
-- `results/06_icdc/icdc_core_network.graphml`
-- `results/06_icdc/icdc_module_network.graphml`
-- `results/06_icdc/icdc_crosslayer_paths.tsv`
-- （若跑联合 DCA）`results/06_icdc/icdc_crossdomain_couplings.tsv`
-
+- `results/05_struct_valid/assembly_adjudication.tsv`
+- `results/05_struct_valid/qc_struct_validation.md`
+- `results/06_dca/qc_core_dca.md`
+- `results/06_dca/core_significant_couplings.tsv`

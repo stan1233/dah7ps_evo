@@ -1,12 +1,12 @@
-# TASKS.md — DAH7PS V4.1 项目任务追踪
+# TASKS.md — DAH7PS V5.0 项目任务追踪
 
-> 基于 `PLAN.md`（V4.1 SOP rev4）提取，状态根据 `log.md` 实验记录同步更新。
+> 基于 `PLAN.md`（V5.0 SOP rev5）提取，状态根据 `log.md` 实验记录同步更新。
 >
 > 状态标记：`[x]` 完成 / `[/]` 进行中 / `[ ]` 待做 / `[-]` 跳过/延后
 
 ---
 
-## Phase 0：环境与可复现性
+## Phase 0：环境与可复现性 ✅
 
 - [x] 0.1 创建 conda 环境 `dah7ps_v4`（python 3.11, hmmer, mafft, iqtree, mmseqs2, foldmason, seqkit, cd-hit）
 - [x] 0.1 安装 pip 依赖（clipkit, pastml）
@@ -14,13 +14,13 @@
 - [x] 0.3 建立 SOP 目录结构（data/, meta/, scripts/, results/01-06, workflow/）
 - [x] 0.4 初始化参数文件 → `meta/params.json`
 - [x] 0.2.1 初始化模型文件记录 → `results/meta/model_files.tsv`
-- [x] 0.2.1 下载 3Di 模型（Q.3Di.AF/Q.3Di.LLM）→ `meta/models/`（用户手动完成，sha256 已记录）
+- [x] 0.2.1 下载 3Di 模型（Q.3Di.AF/Q.3Di.LLM）→ `meta/models/`（sha256 已记录）
 
 **Done 条件：** ✅ `software_versions.tsv` + `params.json` + `model_files.tsv` 均存在
 
 ---
 
-## Phase 1：数据挖掘（KDOPS 反向过滤 + 全库扫描）
+## Phase 1：数据挖掘（KDOPS 反向过滤 + 全库扫描） ✅
 
 ### V3.1 已完成（需评估是否满足 V4.1 要求）
 
@@ -40,7 +40,7 @@
 
 ---
 
-## Phase 2：质量控制与去冗余
+## Phase 2：质量控制与去冗余 ✅
 
 ### Pre-Phase 2 门控（计划外追加）
 
@@ -56,85 +56,72 @@
   - PASS 合计 24,202（Ia=9,204 / Ib=6,401 / II=8,597）
   - Type II rescued by stitching: 2,093 条
 - [x] 2.2 CD-HIT 80% 去冗余 → `nr80_*.fasta`（Ia=3,521 / Ib=3,073 / II=3,079, 总计 9,673）
-- [x] 2.3 CD-HIT 60% 种子提取 → `seeds60_*.fasta`（Ia=581 / Ib=648 / II=649, 总计 1,878, Gate B 已排除）
-- [x] 2.4a MMseqs2 40% 跨亚型 stepping stones → Coverage Backbone 258 条（Ia=104 / Ib=46 / II=108, 零跨亚型混簇）
+- [x] 2.3 CD-HIT 60% 种子提取 → `seeds60_*.fasta`（Ia=581 / Ib=648 / II=649, 总计 1,878）
+- [x] 2.4a MMseqs2 40% 跨亚型 stepping stones → 258 条（Ia=104 / Ib=46 / II=108, 零跨亚型混簇）
 - [x] 2.4b 二次聚类实验（25%→183, 20%→181）→ 确认需 Phase 3.1 结构优先级筛选
 - [x] QC2 产出 `results/02_qc/qc_length_report.md`
 
-### Stepping Stones 两层定义（决策记录）
-
-- **Coverage Backbone（258 条）**：`stepping_stones_rep_seq.fasta`，用于覆盖度验证
-- **Structure Panel（目标 20-40 条）**：Phase 3.1 按 PDB > AFDB > ESMFold 优先级筛选
-- SOP 的 20-50 约束重新绑定到 Structure Panel
-
-**Done 条件：** ✅ `nr80_*.fasta` + `qc_length_report.md` + seeds60 + stepping stones 均产出
+**Done 条件：** ✅ 全部完成
 
 ---
 
 ## Phase 3：结构感知核心 MSA + 模块注释
 
-### 3.1 结构面板构建（Selection Contract 已锁定）
+### 3.1 结构面板构建 ✅
 
-**Selection Contract**: N=30 (20–40), quota Ia=12/Ib=5/II=13 (±1; floors Ia≥8/Ib≥4/II≥8)
-Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region confidence, not full-length.
+- [x] 3.1A-1 `panel_candidates.tsv`（258 条 backbone 全量评估）+ `panel_manifest.tsv`（30 条）
+- [x] 线路 A 决策：PDB 作为外置锚点，不占 30 条配额
+- [x] 3.1A-2 PDB 锚点下载 (1KFL, 1RZM, 3NV8, 5CKV, 2B7O)
+- [x] 3.1A-3 AFDB 下载（30 条，core pLDDT ≥ 70）
+- [x] 最终面板 = 30 AFDB + 5 PDB = 35 结构
 
-- [x] 3.1A-1 生成 `panel_candidates.tsv`（258 条 backbone 全量评估：PDB=0, AFDB=154, needs_ESMFold=124）
-- [x] 3.1A-1 Selection 验证 → `panel_manifest.tsv`（30 条：Ia=12/Ib=5/II=13，全 AFDB）
-- [x] **决策已定**：选择线路 A（PDB 作为外置锚点，不占 30 条配额）
-- [x] 3.1A-2 PDB 锚点结构下载 (1KFL, 1RZM, 3NV8, 5CKV, 2B7O) → `data/structures/panel_dah7ps/PDB-*.cif`
-- [x] 3.1A-3 AFDB 结构下载（30 条，core pLDDT ≥ 70，0 errors）→ `data/structures/panel_dah7ps/AF-*.pdb`
-- [-] 3.1A-4 ESMFold 补缺口 → 不需要（30 AFDB 全部满足质量门槛）
-- [x] 3.1A-5 最终面板 = 30 AFDB + 5 PDB 外置锚点 = 35 结构（在 SOP 20-40 范围内）
-- [ ] 3.1B 下载 KDOPS 外群结构 → `data/structures/panel_kdops/`（Phase 4.1 再做）
+### 3.2-3.4 FoldMason 骨架与核心列 ✅
 
-### 3.2-3.4 FoldMason 骨架与核心列
+- [x] 3.2 FoldMason easy-msa → 46 seqs × 1966 cols 骨架
+- [/] 3.3 FoldMason refinemsa — segfault（msa2lddt 替代）
+- [x] 3.4 逐列 LDDT 核心列界定 → core_len=521, lddt_min=0.1814
 
-- [x] 3.2 FoldMason easy-msa → `results/03_msa_core/skeleton_aa.fa` (46 seqs = 30 AFDB + 16 PDB chains) + `skeleton_3di.fa` + `skeleton.html` (5.6M)
-- [/] 3.3 FoldMason refinemsa — ⚠ segfault（`createdb` 过滤 24 短链导致 DB-MSA 序列数不匹配；`msa2lddt` + `msa2lddtreport` 已跑成功作为替代质量评估）
-- [x] 3.4 逐列 LDDT 核心列界定（`define_core_columns.py`）→ `skeleton_core_aa.fa` + `core_columns.mask`（core_len=521, lddt_min=0.1814 auto_inflection, gap_max=0.30, pad=20）
+### 3.6 全量核心映射 ✅
 
-### 3.5-3.6 亚型内骨架与全量映射
+- [x] 3.6 核心 HMM → `core_global.hmm`（L=521）
+- [x] 3.6 `extract_core_domains.py`（含 hit stitching + pad=20）→ 9,393 seqs
+- [x] 3.6 hmmalign → Stockholm → esl-alimask → `core_global_matchonly.afa`（9,393 × 521）
 
-- [ ] 3.5 亚型内种子 E-INS-i 骨架 → `results/03_msa_core/seeds60_*_einsi.afa`
-- [x] 3.6 核心 HMM 构建 → `core_global.hmm`（L=521, --symfrac 0.0）
-- [x] 3.6 `extract_core_domains.py`（含 hit stitching [CHECK-06] + pad=20 端部补偿）→ `all_core_only.fasta`（9,393 seqs）+ `core_domain_coords.tsv`（含 env_segments/pad 列）
-- [x] 3.6 hmmalign → Stockholm → esl-alimask 剥离 Insert → `core_global_matchonly.afa`（9,393 seqs × 521 cols）
-- [x] QC2 产出 `results/03_msa_core/qc_core_alignment.md`
+### 3.7 双版本修剪 ✅
 
-### 3.7 双版本修剪
+- [x] 3.7 ClipKIT kpic-smart-gap → `core_tree.afa`（436 cols）
+- [x] 3.7 Minimal trim gap>0.95 → `core_asr.afa`（472 cols）
+- [-] 3.7 FoldMason msa2lddt 结构复核 — ✅ Average LDDT = 0.2638
 
-- [x] 3.7 ClipKIT kpic-smart-gap → `core_tree.afa`（9,393 seqs × 436 cols, --complementary 生成 .complement 审计文件）
-- [x] 3.7 Minimal trim (gap > 0.95) → `core_asr.afa`（9,393 seqs × 472 cols）+ `core_asr.cols.tsv`
-- [-] 3.7 FoldMason msa2lddt 结构复核 — ✅ 修复 ID 映射后成功（Average LDDT = 0.2638, 436/436 cols）
+### 3.8 模块注释 ✅
 
-### 3.8 模块注释
+- [x] 3.8 模块 HMM 库构建
+- [x] 3.8 `annotate_modules.py` → strict/relaxed 双矩阵（9,393 rows）
+- [x] 3.8 Strict⊆Relaxed 一致性验证通过
+- [x] 3.8 模块 MSA → ACT(47×142), CM(408×266), α2β3(172×582), N_ext(3,130×8,153), C_tail(360×3,617)
 
-- [x] 3.8 模块 HMM 库构建 → `data/db/module_hmms/modules.hmm`（ACT/CM_1/CM_2 从 Pfam-A.hmm 提取 + hmmpress）
-- [x] 3.8 C-tail 提取 → `c_tails.fasta`（1,490 seqs）+ `hmmsearch` → `module_hits.domtbl`（481 hits: ACT=69, CM_2=411, CM_1=1）
-- [x] 3.8 `annotate_modules.py` → `module_presence_absence_strict.tsv`（9,393 rows）+ `_relaxed.tsv` + `boundary_robustness.md`
-- [x] 3.8 Strict: N_ext=3,130 / α2β3=172 / ACT=47 / CM=408 / C_tail=360；Relaxed: 4,429 / 263 / 60 / 412 / 1,018
-- [x] 3.8 Strict⊆Relaxed 一致性验证通过（0 violations）
-- [x] 3.8 `extract_module_seqs.py` → 5 模块序列 + `*_domain_coords.tsv`（坐标合法性 0 errors）
-- [x] 3.8 模块 MSA → ACT(47×142), CM(408×266), α2β3(172×582), N_ext(3,130×8,153 --auto), C_tail(360×3,617 E-INS-i)
+### 3.9 Profile-anchored Stitching ✅
 
-### 3.9 Profile-anchored Stitching
-
-- [ ] 3.9.1 定义亚型与架构子集
-- [ ] 3.9.2 提取 linker 片段
-- [ ] 3.9.3 亚型内 linker E-INS-i 对齐
-- [ ] 3.9.4 `stitch_full_length_msa.py` → `msa_full_Ib_v4.afa` + `column_map.tsv`（断言 core 列不变）
+- [x] 3.9.1 定义亚型与架构子集 → `results/03_msa_full/Ib_ACT.ids`（47 条）
+- [x] 3.9.2 提取 linker 片段 → `results/03_msa_full/Ib_ACT_linkers.fasta`（C-flank，min=94,median=299,max=348 aa）
+- [x] 3.9.3 亚型内 linker E-INS-i 对齐 → `results/03_msa_full/Ib_ACT_linkers_einsi.afa`（47×426）
+- [x] 3.9.4 `stitch_full_length_msa.py` → `results/03_msa_full/msa_full_Ib_v4.afa`（47×1040）+ `results/03_msa_full/msa_full_Ib_column_map.tsv`
+  - ✅ QC2b 断言通过：core 段 472 列与 core_asr.afa 完全一致
+  - 列分段：core(1–472) | ACT(473–614) | C-flank(615–1040)
 
 ---
 
-## Phase 4：系统发育与分层 ASR
+## Phase 4：系统发育与分层 ASR [待执行]
 
 - [ ] 4.1 KDOPS 外群并入核心比对（hmmalign sto → strip insert）
 - [ ] 4.1 全局树 baseline（MFP）→ `CoreTree_rooted_MFP.treefile`
 - [ ] 4.1 全局树 LBA 抗性（LG+C20+F+G）→ `CoreTree_rooted_LGC20.treefile`
 - [ ] 4.1 QC3 根稳定性报告 → `QC3_root_stability.md`
-- [ ] 4.2 AA 树 vs 3Di 树交叉验证（需 3Di 模型文件）
-- [ ] 4.3 核心氨基酸 ASR
-- [ ] 4.4 嵌套 ASR（亚型内全长比对，输入来自 Phase 3.9）
+- [ ] 4.2 AA 树 vs 3Di 树交叉验证
+- [ ] 4.3 **Prune KDOPS → `CoreTree_rooted_ingroup.treefile`** ⚠ V5.0 硬约束：ASR 前必须确保树–比对 tip 集一致
+- [ ] 4.3 **`assert_tip_match.py` 断言 pruned tree tips == core_asr.afa tips**
+- [ ] 4.3 核心氨基酸 ASR（用 pruned ingroup tree）
+- [ ] 4.4 嵌套 ASR（亚型内全长比对，输入来自 `results/03_msa_full/`）
 - [ ] 4.5 Gap 祖先态重建（方案 A/B/C 分层策略）
 - [ ] 4.6 模块获得/丢失离散性状 ASR（PastML，严格/宽松双版本敏感性）
 - [ ] 4.7 AltAll 系综采样（PP₁=0.80, PP₂=0.20）
@@ -142,71 +129,86 @@ Priority: PDB > AFDB (core pLDDT≥70) > ESMFold (core pLDDT≥70). Core-region 
 
 ---
 
-## Phase 5：结构预测与多聚体 MD
+## Phase 5：关键祖先节点的结构验证 [待执行，V5.0 精简版]
 
-- [ ] 5.0 资源预算约束：祖先节点 ≤ 8，AF3 ≤ 16，MD ≤ 120 GPU-days，单体对照 ≤ 3 节点
-- [ ] 5.1 候选祖先集合定义（Pre-gain / Post-gain / 对照）
-- [ ] 5.2 Apo AF3 四聚体预测（每个祖先节点）
-- [ ] 5.2a Apo-first 门控 [CHECK-07]：口袋检测 → 对接 → holo 权限
-- [ ] 5.2b MD 前结构 QC [CHECK-05]：ipTM/PAE → 能量最小化 → 10ns 筛选
-- [ ] 5.3 2×2 因子矩阵 MD（四聚体-apo, 四聚体-effector, 单体对照）
-- [ ] 5.4 动力学读出（RMSD/RMSF, DCCM, 网络流）
-- [ ] QC4 产出 `results/05_struct_md/qc_dynamics.md`
+> **V5.0：2–4 节点 × Apo-only × native-oligomer（由 5.0 判定）。不做 Holo。不默认四聚体。**
 
----
-
-## Phase 6：ICDC — 分层 DCA × 动力学网络整合
-
-- [ ] 6.1.1 核心层 DCA 输入准备（`prepare_dca_input.py`，Meff/L ≥ 3.0 门控）
-- [ ] 6.1.2 模块层 DCA 输入（Meff/L < 3 自动跳过 [CHECK-03]）
-  - ⚠ **ACT 降级**：ACT strict=47 (L=142)，Meff/L ≈ 0.2–0.3，远低于 3.0。ACT DCA 排除出主 ICDC 证据链，仅作探索性附录。
-- [ ] 6.1.3 亚型内联合 DCA 输入
-- [ ] 6.2.1 核心层 plmc DCA
-- [ ] 6.2.2 模块层 DCA
-- [ ] 6.2.3 联合 DCA → 跨域 core↔module 耦联 `Ib_ACT_crossdomain_top200.tsv`
-- [ ] 6.2.4 显著性评估（top_L, Cβ-Cβ < 8Å）
-- [ ] 6.2.5 模块获得前后耦联变化（Meff 匹配下采样 + Z-score）
-- [ ] 6.3 ICDC 融合（五套坐标系映射验证 `coordinate_mapper.py` [CHECK-04]）
-- [ ] 6.3 产出 `icdc_core_network.graphml` + `icdc_crosslayer_paths.tsv`
+- [ ] 5.0 **装配体判定（Assembly Adjudication）[CHECK-08]**
+  - 文献/PDB/PISA 装配体注释扫描
+  - dimer + tetramer 平行 AF3 预测（均 Apo）
+  - PISA 界面评分比较
+  - 产出 `results/05_struct_valid/assembly_adjudication.tsv`
+- [ ] 5.1 候选祖先节点选择（Pre-gain / Post-gain，2–4 个，bootstrap ≥ 70）
+- [ ] 5.2 Apo 结构预测（AF3 拷贝数由 5.0 判定 + ESMFold 交叉验证）
+- [ ] 5.2b 结构 QC 门控 [CHECK-05]：ipTM ≥ 0.6 + 能量最小化 + 10 ns 筛选
+- [ ] 5.3 验证性 MD：native-oligomer-apo ≥200 ns × 2 rep
+- [ ] 5.3 可选：alternative-oligomer-apo 10–20 ns × 1 rep（排除性测试）
+- [ ] 5.4 有限动力学读出（RMSD/RMSF + 界面面积 + Fpocket）
+- [ ] QC4 产出 `results/05_struct_valid/qc_struct_validation.md`
 
 ---
 
-## 脚本开发（SOP 引用但尚未实现）
+## Phase 6：核心层共进化分析（DCA） [待执行，V5.0 聚焦版]
 
-- [x] `scripts/extract_core_domains.py`（含 hit stitching）— hmmsearch + stitching + coverage filter, 已通过 Phase 3.6 QC
-- [x] `scripts/define_core_columns.py`（LDDT 拐点法）— 已实现并通过 QC
-- [x] `scripts/annotate_modules.py`（坐标 + HMM 双证据融合 + strict/relaxed 双版本矩阵 + boundary_robustness.md）
-- [x] `scripts/extract_module_seqs.py`（C-tail 提取模式 + 按 matrix 逐模块提取模式）
-- [ ] `scripts/extract_linkers.py`
-- [ ] `scripts/stitch_full_length_msa.py`（含 core 列不变断言）
+> **V5.0：仅核心层 DCA 进入主线。模块/联合 DCA → 可选探索。**
+
+### 主线分析
+
+- [ ] 6.1 核心层 DCA 输入准备（`core_asr.afa` → gap 过滤 → `core_dca.afa`，Meff/L 门控 ≥ 3.0）
+- [ ] 6.2 plmc 执行 → `core_couplings.txt`
+- [ ] 6.3 显著性评估：top-L 接触验证（1KFL/1RZM/3NV8）
+- [ ] 6.3 功能位点富集 + 跨亚型保守 vs 特异耦联
+- [ ] QC5 产出 `results/06_dca/qc_core_dca.md`
+
+### 可选探索（不入论文主线结论）
+
+- [ ] 6.4.1 模块层 DCA（探索性，ACT Meff/L ≈ 0.2–0.3，深度不足）
+- [ ] 6.4.2 联合跨域 DCA（探索性）
+- [ ] 6.4.3 模块获得前后耦联变化比较（Meff 匹配下采样，探索性）
+
+---
+
+## Phase 7：论文写作蓝图 [待执行，V5.0 新增]
+
+- [ ] 7.1 论文主线叙事锁定
+- [ ] 7.2 核心图表 Fig 1–6 齐备
+- [ ] 7.3 ICDC 在 Discussion 中的定位（"跨证据一致性展望"，定性描述，非正式融合）
+
+---
+
+## 脚本开发
+
+### 已完成
+- [x] `scripts/extract_core_domains.py`（含 hit stitching）
+- [x] `scripts/define_core_columns.py`（LDDT 拐点法）
+- [x] `scripts/annotate_modules.py`（strict/relaxed 双矩阵）
+- [x] `scripts/extract_module_seqs.py`（C-tail + 按 matrix 逐模块）
+- [x] `scripts/minimal_trim.py`
+- [x] `scripts/extract_struct_subset.py`
+
+### 待开发
+- [x] `scripts/extract_linkers.py` ✅
+- [x] `scripts/stitch_full_length_msa.py`（含 core 列不变断言，输出到 `results/03_msa_full/`）✅
+- [x] `scripts/select_sequences.py` ✅
+- [ ] `scripts/prune_tree.py`（V5.0 新增：prune KDOPS → 保留根位置）
+- [ ] `scripts/assert_tip_match.py`（V5.0 新增：树–比对 tip 集一致性断言）
+- [ ] `scripts/adjudicate_assembly.py`（V5.0 新增：装配体判定）
 - [ ] `scripts/prepare_dca_input.py`（含 Meff/L 门控）
 - [ ] `scripts/qc_root_stability.py`
-- [ ] `scripts/coordinate_mapper.py`（五套坐标系一致性断言）
-- [ ] `scripts/select_sequences.py`
-- [ ] `scripts/merge_alignments.py`
 - [ ] `scripts/compare_trees.py`
 - [ ] `scripts/aggregate_gap_blocks.py`
-- [ ] `scripts/split_msa_by_module.py`
 - [ ] `scripts/compute_meff.py`
-- [ ] `scripts/downsample_to_meff.py`
-- [ ] `scripts/run_plmc_batch.py`
-- [ ] `scripts/dca_compare_meff_matched.py`
 - [ ] `scripts/dca_significance.py`
-- [ ] `scripts/extract_crossdomain_couplings.py`
-- [ ] `scripts/qc_length.py`
-- [x] `scripts/minimal_trim.py`（gap-fraction 列修剪 + 逐列报告 TSV）
-- [x] `scripts/extract_struct_subset.py`（MSA 子集提取 + UniRef→AF header 重映射 + FASTA 清洗）
-- [ ] `scripts/drop_a2m_insertions.py`（fallback 用）
-- [ ] `scripts/subset_msa_by_ids.py`
+- [ ] `scripts/coordinate_mapper.py`
 
 ---
 
 ## 最终交付物
 
-- [ ] `results/03_msa_core/qc_core_alignment.md`
+- [x] `results/03_msa_core/qc_core_alignment.md`
+- [x] `results/03_msa_modules/boundary_robustness.md`
 - [ ] `results/04_phylogeny_asr/QC3_root_stability.md`
-- [ ] `results/05_struct_md/qc_dynamics.md`
-- [ ] `results/06_icdc/icdc_core_network.graphml`
-- [ ] `results/06_icdc/icdc_module_network.graphml`
-- [ ] `results/06_icdc/icdc_crosslayer_paths.tsv`
-- [ ] `results/06_icdc/icdc_crossdomain_couplings.tsv`（若跑联合 DCA）
+- [ ] `results/05_struct_valid/assembly_adjudication.tsv`
+- [ ] `results/05_struct_valid/qc_struct_validation.md`
+- [ ] `results/06_dca/core_significant_couplings.tsv`
+- [ ] `results/06_dca/qc_core_dca.md`

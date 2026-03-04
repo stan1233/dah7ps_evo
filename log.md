@@ -583,6 +583,14 @@ sha256sum meta/models/Q.3Di.AF meta/models/Q.3Di.LLM
 
 **✅ Phase 0 所有 Done 条件通过。**
 
+### Phase 0 验收汇总（2026-03-04 审计）
+
+| 文件 | 内容 | 状态 |
+|------|------|------|
+| `meta/params.json` | 全部参数块（mining/qc/msa/phylogeny/dca/af3/asr） | ✅ |
+| `results/meta/software_versions.tsv` | 13 个工具版本锁定 | ✅ |
+| `results/meta/model_files.tsv` | Q.3Di.AF / Q.3Di.LLM sha256 校验记录 | ✅ |
+
 ---
 
 ### 10:55 — Phase 1.1：种子扩充（V3.1 → V4.1）
@@ -820,6 +828,19 @@ python scripts/filter_kdops.py \
 - `results/01_mining/hits_*_seqs.fasta` ✓
 - `results/01_mining/hits_Ib_clean.fasta` ✓
 - `results/01_mining/qc_mining_report.md` ✓
+
+### Phase 1 验收汇总（2026-03-04 审计）
+
+| 指标 | 值 | 状态 |
+|------|-----|------|
+| Ia hits | 10,071 | ✅ |
+| Ib raw hits | 15,608 | ✅ |
+| Ib after KDOPS filter | **7,869** | ✅ |
+| II hits | 18,529（种子扩充后 +88%） | ✅ |
+| KDOPS 过滤双峰分布 | 仅 4 条边缘序列，无模糊区 | ✅ |
+| Gate A (Ia∩II 归属) | 8,561 条全部以 ≥20 bits 归属 Ia | ✅ |
+| Gate B (Ib 边缘隔离) | 4 条标记至 `kdops_borderline_ids.txt` | ✅ |
+| 最终互斥集合 | Ia=10,071 / Ib=7,869 / II=9,968，共 27,908 | ✅ |
 
 ---
 
@@ -1256,6 +1277,19 @@ conda run -n dah7ps_v4 mmseqs easy-cluster results/02_qc/stepping_stones_rep_seq
 - Gate A/B 风险已消解 ✓
 
 **Phase 2 正式关账。下一步：Phase 3.1 结构面板构建。**
+
+### Phase 2 验收汇总（2026-03-04 审计）
+
+| 指标 | 计划要求 | 实际值 | 状态 |
+|------|---------|--------|------|
+| nr80_Ia | — | 3,521 | ✅ |
+| nr80_Ib | — | 3,073 | ✅ |
+| nr80_II | — | 3,079 | ✅ |
+| nr80 总计 | — | **9,673** | ✅ |
+| seeds60 总计 | — | 1,878 (Ia=581, Ib=648, II=649) | ✅ |
+| stepping stones | 零跨亚型混簇 | 258 条，**0 混簇** | ✅ |
+| Type II stitching | rescued FRAG | 2,093 条（FRAG 34.8% → 13.8%） | ✅ |
+| `qc_length_report.md` | 存在 | ✅ | ✅ |
 
 ---
 
@@ -2035,3 +2069,143 @@ python3 /tmp/verify_phase38.py
 ```
 
 **下一步：** Phase 3.9 — Profile-anchored Stitching。
+---
+
+## 2026-03-04 — Phase 3.9：Profile-anchored Stitching（Iβ-ACT 全长缝合 MSA）
+
+### 背景与坐标分析
+
+- ACT domain 作为 insert states 嵌入于 core HMM envelope 内部（n_env_segments=1 对全部 47 条）
+- 所有 47 条 Iβ-ACT 序列的 C-flank（raw_env_end+1 到 seq_len）：min=94, median=299, max=348 aa
+- N-flank（1 到 raw_env_start-1）：min=1, median=45, max=92 aa
+
+### 新增脚本
+
+- `scripts/select_sequences.py` — 按亚型 FASTA + 模块矩阵筛选序列 ID
+- `scripts/extract_linkers.py` — 提取 C-flank（linker）和 N-flank 序列
+- `scripts/stitch_full_length_msa.py` — 拼接 core+module+linker，含 core 列不变断言
+
+### 执行记录
+
+```bash
+# Step 1
+python scripts/select_sequences.py \
+  --presence_table results/03_msa_modules/module_presence_absence_strict.tsv \
+  --subtype_fasta  results/02_qc/nr80_Ib.fasta \
+  --require_module ACT_domain \
+  --output         results/03_msa_full/Ib_ACT.ids
+# → 9393 sequences in table → 47 pass all filters
+
+# Step 2
+python scripts/extract_linkers.py \
+  --full_length_fasta results/02_qc/nr80_Ib.fasta \
+  --seq_ids           results/03_msa_full/Ib_ACT.ids \
+  --core_coords       results/03_msa_core/core_domain_coords.tsv \
+  --output            results/03_msa_full/Ib_ACT_linkers.fasta \
+  --output_nflank     results/03_msa_full/Ib_ACT_nflanks.fasta
+# → C-flank: n=47 min=94 median=299 max=348
+
+# Step 3: E-INS-i linker alignment
+mafft --genafpair --maxiterate 1000 --ep 0 --thread 20 \
+  results/03_msa_full/Ib_ACT_linkers.fasta \
+  > results/03_msa_full/Ib_ACT_linkers_einsi.afa \
+  2>results/03_msa_full/mafft_Ib_ACT_linkers.log
+# → 47 seqs × 426 cols
+
+# Step 4: Stitch
+python scripts/stitch_full_length_msa.py \
+  --seq_ids          results/03_msa_full/Ib_ACT.ids \
+  --core_msa         results/03_msa_core/core_asr.afa \
+  --module_msa       results/03_msa_modules/ACT_domain_msa.afa \
+  --module_name      ACT \
+  --linker_msa       results/03_msa_full/Ib_ACT_linkers_einsi.afa \
+  --output           results/03_msa_full/msa_full_Ib_v4.afa \
+  --emit_column_map  results/03_msa_full/msa_full_Ib_column_map.tsv \
+  --assert_core_columns_unchanged
+```
+
+### 产出
+
+| 文件 | 内容 |
+|------|------|
+| `results/03_msa_full/Ib_ACT.ids` | 47 条 Iβ-ACT 序列 ID |
+| `results/03_msa_full/Ib_ACT_linkers.fasta` | C-flank 原始序列 |
+| `results/03_msa_full/Ib_ACT_linkers_einsi.afa` | C-flank E-INS-i 对齐（47×426） |
+| `results/03_msa_full/msa_full_Ib_v4.afa` | **全长缝合 MSA（47 seqs × 1040 cols）** |
+| `results/03_msa_full/msa_full_Ib_column_map.tsv` | 列坐标映射表 |
+
+### 列坐标分段
+
+| 段 | 来源 | 列范围 | 列数 |
+|----|------|--------|------|
+| core | core_asr.afa | 1–472 | 472 |
+| module:ACT | ACT_domain_msa.afa | 473–614 | 142 |
+| linker:C-flank | Ib_ACT_linkers_einsi.afa | 615–1040 | 426 |
+
+### QC2b 断言
+
+✅ ASSERT PASS：core 列数与 core_asr.afa 完全一致（472 cols），全部 47 条序列逐列相等。
+
+**下一步：** Phase 4 — 系统发育与分层 ASR。
+
+---
+
+## 2026-03-04 — Phase 0–3 全面审计
+
+> 在进入 Phase 4 前，对所有已完成阶段的产出文件与 QC 指标做全面核查。
+
+### 关键文件完整性（25 项）
+
+| 文件 | 状态 |
+|------|------|
+| `meta/params.json` | ✅ |
+| `results/meta/software_versions.tsv` | ✅ |
+| `results/meta/model_files.tsv` | ✅ |
+| `results/01_mining/qc_mining_report.md` | ✅ |
+| `results/02_qc/qc_length_report.md` | ✅ |
+| `results/02_qc/nr80_{Ia,Ib,II}.fasta` | ✅ |
+| `results/02_qc/seeds60_{Ia,Ib,II}.fasta` | ✅ |
+| `results/02_qc/stepping_stones_rep_seq.fasta` | ✅ |
+| `results/03_msa_core/panel_candidates.tsv` | ✅ |
+| `results/03_msa_core/panel_manifest.tsv` | ✅ |
+| `results/03_msa_core/skeleton_core_aa.fa` | ✅ |
+| `results/03_msa_core/core_columns.mask` | ✅ |
+| `results/03_msa_core/core_global.hmm` | ✅ |
+| `results/03_msa_core/core_domain_coords.tsv` | ✅ |
+| `results/03_msa_core/core_global_matchonly.afa` | ✅ |
+| `results/03_msa_core/core_tree.afa` | ✅ |
+| `results/03_msa_core/core_asr.afa` | ✅ |
+| `results/03_msa_core/qc_core_alignment.md` | ✅ |
+| `results/03_msa_modules/module_presence_absence_strict.tsv` | ✅ |
+| `results/03_msa_modules/module_presence_absence_relaxed.tsv` | ✅ |
+| `results/03_msa_modules/boundary_robustness.md` | ✅ |
+| 5 类模块 MSA（ACT/CM/α2β3/N_ext/C_tail） | ✅ |
+| `results/03_msa_full/msa_full_Ib_v4.afa` | ✅ |
+| `results/03_msa_full/msa_full_Ib_column_map.tsv` | ✅ |
+
+### Phase 3.1–3.9 核心指标汇总
+
+| 产出 | 计划要求 | 实际值 | 状态 |
+|------|---------|--------|------|
+| 结构面板 | 目标 N=30 AFDB + PDB 锚点 | 30 AFDB + 5 PDB = 35 | ✅ |
+| core_columns.mask | 400–600 cols | **521 cols** (LDDT knee=0.1814) | ✅ |
+| core_global_matchonly.afa | 9,393 × 521 | **9,393 × 521** | ✅ |
+| core_tree.afa | — × 436 cols | **9,393 × 436** | ✅ |
+| core_asr.afa | — × 472 cols | **9,393 × 472** | ✅ |
+| msa2lddt 结构复核 LDDT | > knee(0.1814) | **0.2638** | ✅ |
+| Stockholm→esl-alimask 路径 | 禁止 `--outformat afa` | 已严格遵守 | ✅ |
+| hit stitching (CHECK-06) | 启用 | 1,069 条 (11.4%) 需要合并 | ✅ |
+| 模块矩阵 Strict ⊆ Relaxed | 零违反 | **0 违反** | ✅ |
+| Boundary confidence high | — | **79.1%** | ✅ |
+| msa_full_Ib_v4.afa 路径 | 在 `03_msa_full/` 而非 `03_msa_core/` | ✅ | ✅ |
+| core 列数断言（Phase 3.9） | 472 cols 不变 | **ASSERT PASS** | ✅ |
+
+### 已知情况（非 QC 失败）
+
+| 项目 | 说明 | 影响 |
+|------|------|------|
+| N_ext_msa.afa: 3130 × 8153 cols | N_ext 按坐标定义，序列高度异质，膨胀不可避免 | 不影响主线；N_ext DCA 不入主线 |
+| C_tail_msa.afa: 360 × 3617 cols | 同理 | 同上 |
+| ACT strict 47 seqs, Meff/L≈0.2–0.3 | 已记录于 AGENT.md 2026-03-03 决策 | Phase 6 ACT DCA 仅为探索性 ✅ |
+
+**审计结论：Phase 0–3 全部 25 项关键文件完整，所有强制 QC 断言通过，满足 PLAN.md V5.0 Phase 3 全部 Done 条件。可进入 Phase 4。**
