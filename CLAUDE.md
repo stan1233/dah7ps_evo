@@ -40,8 +40,8 @@ No top-level test suite exists. Correctness is validated via QC assertion script
 | 1 — HMM Mining | ✅ | `results/01_mining/` — 9,673 NR80 sequences |
 | 2 — QC & Dedup | ✅ | `results/02_qc/nr80_*.fasta` (Ia=3521, Ib=3073, II=3079) |
 | 3.1–3.8 — Core MSA + Module Annotation | ✅ | `results/03_msa_core/core_asr.afa` (9393×472), `results/03_msa_modules/` |
-| **3.9 — Full-length Stitching** | ⬜ **NEXT** | `results/03_msa_full/msa_full_Ib_v4.afa` |
-| 4 — Phylogeny + ASR | ⬜ | `results/04_phylogeny_asr/` |
+| 3.9 — Full-length Stitching | ✅ | `results/03_msa_full/msa_full_Ib_v4.afa` (47×1040) |
+| **4 — Phylogeny + ASR** | ⬜ **NEXT** | `results/04_phylogeny_asr/` |
 | 5 — Structural Validation | ⬜ | `results/05_struct_valid/` |
 | 6 — Core DCA | ⬜ | `results/06_dca/` |
 | 7 — Paper Blueprint | ⬜ | Narrative + Fig 1–6 |
@@ -57,7 +57,55 @@ Type II sequences require multi-domain hit stitching in `extract_core_domains.py
 The core MSA (TIM-barrel) and module MSAs (ACT, CM, α2β3, N_ext, C_tail) are built independently:
 - `results/03_msa_core/` — core-only alignments for phylogeny and DCA
 - `results/03_msa_modules/` — per-module alignments + `module_presence_absence_strict/relaxed.tsv`
-- `results/03_msa_full/` — subtype-scoped full-length stitched MSA (Phase 3.9, not yet executed); **never mix full-length MSAs into `03_msa_core/`**
+- `results/03_msa_full/` — subtype-scoped full-length stitched MSA; **never mix full-length MSAs into `03_msa_core/`**
+
+> ⚠️ **V3.1 artifact warning**: `results/03_msa_core/msa_full_{Ia,Ib,II}.afa` are old V3.1 `mafft --add` outputs (archived, 3473/5728/3064 seqs, ~5000 inflated cols). They are **not** Phase 3.9 outputs and must not be used. Also ignore `results/03_msa_core/aligned_seeds60_*.afa` and `results/02_qc/caseA_full_*.fasta` — all V3.1 intermediates.
+
+### Key File Dimensions (quick reference)
+
+| File | Seqs | Cols | Notes |
+|------|------|------|-------|
+| `03_msa_core/core_global_matchonly.afa` | 9,393 | 521 | Full core, all match states |
+| `03_msa_core/core_tree.afa` | 9,393 | 436 | ClipKIT kpic-smart-gap, for phylogeny |
+| `03_msa_core/core_asr.afa` | 9,393 | 472 | Minimal gap trim, for ASR & DCA |
+| `03_msa_modules/ACT_domain_msa.afa` | 47 | 142 | Iβ-ACT only |
+| `03_msa_modules/CM_domain_msa.afa` | 408 | 266 | |
+| `03_msa_modules/alpha2beta3_insert_msa.afa` | 172 | 582 | |
+| `03_msa_modules/N_ext_msa.afa` | 3,130 | 8,153 | Highly heterogeneous — not for DCA |
+| `03_msa_modules/C_tail_msa.afa` | 360 | 3,617 | Highly heterogeneous — not for DCA |
+| `03_msa_full/msa_full_Ib_v4.afa` | 47 | 1,040 | core(1–472)\|ACT(473–614)\|C-flank(615–1040) |
+
+### Coordinate TSV Column Reference
+
+**`results/03_msa_core/core_domain_coords.tsv`** (9,393 rows):
+```
+seq_id | seq_len | core_start | core_end | hmm_from | hmm_to | coverage |
+n_hits | n_env_segments | stitched_flag | core_residues | env_segments |
+raw_env_start | raw_env_end | pad_left | pad_right
+```
+- `raw_env_start` / `raw_env_end`: 1-based full-length coords of the core envelope **before** padding
+- `core_start` / `core_end`: after padding (`raw_env_start - pad_left` / `raw_env_end + pad_right`)
+- `env_segments`: semicolon-separated ranges e.g. `"5-271;274-399"` (for multi-hit stitching)
+
+**`results/03_msa_modules/ACT_domain_domain_coords.tsv`** (47 rows):
+```
+seq_id | seq_len | module | from | to | module_len
+```
+- `from` / `to`: 1-based full-length sequence coordinates (hmmsearch `env_from` / `env_to`)
+
+**`results/03_msa_modules/module_presence_absence_strict.tsv`** (9,393 rows):
+```
+seq_id | N_ext | alpha2beta3_insert | ACT_domain | CM_domain | C_tail | boundary_confidence
+```
+
+### ACT Domain Topology (Critical for Phase 3.9/4.4)
+
+ACT is **not** external to the core — it is embedded as **insert states within the core HMM envelope**. For all 47 Iβ-ACT sequences: `n_env_segments = 1` (single continuous envelope). ACT residues are stripped by `esl-alimask` and do **not** appear in `core_asr.afa`.
+
+Consequence for full-length MSA stitching:
+- "Linker" = **C-flank** (`raw_env_end+1` to `seq_len`), not a gap between core and ACT
+- Iβ-ACT C-flank: min=94, median=299, max=348 aa; N-flank: min=1, median=45, max=92 aa
+- Stitch order: `[core_asr.afa rows] | [ACT_domain_msa.afa rows] | [C-flank E-INS-i aligned]`
 
 ### Parameters
 
@@ -100,7 +148,12 @@ ACT strict = 47 seqs (L=142), Meff/L ≈ 0.2–0.3. ACT DCA is excluded from the
 | Full-length stitched MSA not found | Wrong path | Must be in `results/03_msa_full/`, not `results/03_msa_core/` |
 | Coordinate mapping mismatch | PDB insertion codes, ClipKIT trimming shifts, or GROMACS topology offset | Inspect each source of numbering change in `coordinate_mapper.py` |
 
-## Scripts Pending Development (Phase 3.9+)
+## Scripts Status
 
-These scripts are referenced in `PLAN.md` but do not yet exist:
-`extract_linkers.py`, `stitch_full_length_msa.py`, `select_sequences.py`, `prune_tree.py`, `assert_tip_match.py`, `adjudicate_assembly.py`, `prepare_dca_input.py`, `qc_root_stability.py`, `compare_trees.py`, `aggregate_gap_blocks.py`, `compute_meff.py`, `dca_significance.py`, `coordinate_mapper.py`
+**Completed (Phase 3.9):**
+- `select_sequences.py` — filter sequences by subtype FASTA + module presence/absence matrix
+- `extract_linkers.py` — extract C-flank (and optionally N-flank) from full-length FASTA using core coords
+- `stitch_full_length_msa.py` — stitch core + module + linker MSAs; hard-asserts core columns unchanged
+
+**Pending (Phase 4+):**
+`prune_tree.py`, `assert_tip_match.py`, `adjudicate_assembly.py`, `prepare_dca_input.py`, `qc_root_stability.py`, `compare_trees.py`, `aggregate_gap_blocks.py`, `compute_meff.py`, `dca_significance.py`, `coordinate_mapper.py`
