@@ -2209,3 +2209,80 @@ python scripts/stitch_full_length_msa.py \
 | ACT strict 47 seqs, Meff/L≈0.2–0.3 | 已记录于 AGENT.md 2026-03-03 决策 | Phase 6 ACT DCA 仅为探索性 ✅ |
 
 **审计结论：Phase 0–3 全部 25 项关键文件完整，所有强制 QC 断言通过，满足 PLAN.md V5.0 Phase 3 全部 Done 条件。可进入 Phase 4。**
+
+---
+
+## 2026-03-16 Phase 4.3：Prune KDOPS → Ingroup Tree
+
+---
+
+### 04:50 — Phase 4.3 Prune KDOPS 外群
+
+**背景：** Phase 4.1 MFP 树已完成（本地 20T + 集群 60T 续跑）。模型 Q.PFAM+F+R10, 1001 iterations, LogL=-2835499.68, UFBoot correlation 0.915 (未收敛至 0.99)。
+
+```bash
+conda run -n dah7ps_v4 python3 scripts/prune_tree.py \
+  --input results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile \
+  --remove_prefix KDOPS_ \
+  --output results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile \
+  --assert_rooted
+```
+
+**输出：**
+- Total tips (regex scan): 9,405
+- Tips matching 'KDOPS_*': 12 (O50044, O66496, P0A715, P0CD74, P61657, Q0KCE4, Q31KV0, Q7V4M4, Q92Q99, Q9AV97, Q9ZFK4, Q9ZN55)
+- KDOPS monophyly: **NO (polyphyletic)** — violating taxa 混入 ingroup
+- Root children: 3 (trifurcating root)
+  - Child 0: 9,403 tips (10 KDOPS)
+  - Child 1: 1 tip (1 KDOPS)
+  - Child 2: 1 tip (1 KDOPS)
+- Pruned tree: 9,393 tips, **bifurcating root** ✅
+- Output: `results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile`
+
+**⚠ 注意：** KDOPS 外群在 ML tree 中为多系（polyphyletic），且原始根为三叉（trifurcation）。这表明 IQ-TREE 输出的是本质上未定根的树。Prune 后根自然落在 ingroup MRCA 处，但根位置的可靠性需结合 LG+C20 树交叉验证。
+
+---
+
+### 04:55 — Phase 4.3 Tip-Set Consistency Assertion
+
+```bash
+conda run -n dah7ps_v4 python3 scripts/assert_tip_match.py \
+  --tree results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile \
+  --msa results/03_msa_core/core_asr.afa \
+  --assert_identical
+```
+
+**结果：**
+- Tree tips: 9,393
+- MSA seqs: 9,393
+- ✅ **PASS**: Tree tips and MSA sequence IDs are IDENTICAL (9,393/9,393)
+- V5.0 硬约束满足，可用于 ASR。
+
+---
+
+### ⚠️ Phase 4.3 关键发现：KDOPS 外群根化可靠性问题
+
+**问题描述：** KDOPS 外群在 ML best tree (`.treefile`) 中为**多系（polyphyletic）**，未能形成单独的外群分支：
+
+| 根节点子树 | tip 数 | KDOPS 数 | 说明 |
+|-----------|--------|---------|------|
+| Child 0 | 9,403 | 10 | 绝大部分 KDOPS 混入 ingroup 内部 |
+| Child 1 | 1 | 1 | 单独 KDOPS tip |
+| Child 2 | 1 | 1 | 单独 KDOPS tip |
+
+**原始根为三叉（trifurcation）**，说明 IQ-TREE 输出的是本质上未定根的树（Newick 格式的三叉根 = 无根树常规表达）。
+
+**原因分析：**
+- KDOPS 外群序列在 436 列核心比对中 gap 比例极高（62–87%），仅有 55–165 个有效残基
+- 信息量不足导致长分支吸引（LBA），远缘外群被错误地拉向 ingroup 内部不同位置
+- Consensus tree (`.contree`) 中也出现 `WARNING: Branch separating outgroup is not found`（2 个外群），与此一致
+
+**对下游的影响：**
+- Prune 后 ete3 自动合并三叉根为二叉根，产生 bifurcating root。但此根位置**并非由外群定根推断**，而是三叉根收缩后的自然结果
+- **根位置的可靠性需要独立验证**：
+  1. LG+C20 树交叉验证（Phase 4.1 待完成）
+  2. AA 树 vs 3Di 树拓扑对比（Phase 4.2）
+  3. QC3 根稳定性报告中评估不同方法的根位置一致性
+
+**当前决策：** 继续使用 pruned tree 进行 ASR（tip 集一致性已验证），但在 QC3 报告中标注根位置不确定性。
+

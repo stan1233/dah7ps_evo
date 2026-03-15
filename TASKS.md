@@ -111,15 +111,15 @@
 
 ---
 
-## Phase 4：系统发育与分层 ASR [待执行]
+## Phase 4：系统发育与分层 ASR [进行中]
 
-- [ ] 4.1 KDOPS 外群并入核心比对（hmmalign sto → strip insert）
-- [ ] 4.1 全局树 baseline（MFP）→ `CoreTree_rooted_MFP.treefile`
+- [x] 4.1 KDOPS 外群并入核心比对（hmmalign sto → strip insert）
+- [x] 4.1 全局树 baseline（MFP）→ `CoreTree_rooted_MFP.treefile`（Q.PFAM+F+R10, 1001 iter, LogL=-2835499.68）
 - [ ] 4.1 全局树 LBA 抗性（LG+C20+F+G）→ `CoreTree_rooted_LGC20.treefile`
 - [ ] 4.1 QC3 根稳定性报告 → `QC3_root_stability.md`
 - [ ] 4.2 AA 树 vs 3Di 树交叉验证
-- [ ] 4.3 **Prune KDOPS → `CoreTree_rooted_ingroup.treefile`** ⚠ V5.0 硬约束：ASR 前必须确保树–比对 tip 集一致
-- [ ] 4.3 **`assert_tip_match.py` 断言 pruned tree tips == core_asr.afa tips**
+- [x] 4.3 **Prune KDOPS → `CoreTree_rooted_ingroup.treefile`**（12 KDOPS pruned → 9,393 tips, bifurcating root）⚠ KDOPS polyphyletic in ML tree
+- [x] 4.3 **`assert_tip_match.py` 断言 pruned tree tips == core_asr.afa tips** ✅ PASS 9,393/9,393
 - [ ] 4.3 核心氨基酸 ASR（用 pruned ingroup tree）
 - [ ] 4.4 嵌套 ASR（亚型内全长比对，输入来自 `results/03_msa_full/`）
 - [ ] 4.5 Gap 祖先态重建（方案 A/B/C 分层策略）
