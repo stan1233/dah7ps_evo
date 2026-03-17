@@ -120,7 +120,7 @@
 - [ ] 4.2 AA 树 vs 3Di 树交叉验证
 - [x] 4.3 **Prune KDOPS → `CoreTree_rooted_ingroup.treefile`**（12 KDOPS pruned → 9,393 tips, bifurcating root）⚠ KDOPS polyphyletic in ML tree
 - [x] 4.3 **`assert_tip_match.py` 断言 pruned tree tips == core_asr.afa tips** ✅ PASS 9,393/9,393
-- [ ] 4.3 核心氨基酸 ASR（用 pruned ingroup tree）
+- [🏃] 4.3 核心氨基酸 ASR（用 pruned ingroup tree，Q.PFAM+F+R10, PID 23826）
 - [ ] 4.4 嵌套 ASR（亚型内全长比对，输入来自 `results/03_msa_full/`）
 - [ ] 4.5 Gap 祖先态重建（方案 A/B/C 分层策略）
 - [ ] 4.6 模块获得/丢失离散性状 ASR（PastML，严格/宽松双版本敏感性）

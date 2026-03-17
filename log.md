@@ -2286,3 +2286,17 @@ conda run -n dah7ps_v4 python3 scripts/assert_tip_match.py \
 
 **当前决策：** 继续使用 pruned tree 进行 ASR（tip 集一致性已验证），但在 QC3 报告中标注根位置不确定性。
 
+### 05:05 — Phase 4.3 核心氨基酸 ASR
+
+**背景**：基于 tip-set 严格匹配的 `CoreTree_rooted_ingroup.treefile` 和 `core_asr.afa` 执行祖先序列重建。为节省 ModelFinder 时间，复用前一阶段 MFP 搜索得到的最佳模型 `Q.PFAM+F+R10`。
+
+```bash
+nohup iqtree -s results/03_msa_core/core_asr.afa \
+  -te results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile \
+  -m Q.PFAM+F+R10 \
+  -asr -T 20 \
+  --prefix results/04_phylogeny_asr/ASR_core \
+  > results/04_phylogeny_asr/iqtree_ASR_core_nohup.log 2>&1 &
+```
+
+**状态**：已提交后台运行（20 线程）。由于包含 9,393 条序列，优化支长、模型参数和最终的经验贝叶斯 ASR 估计耗时较长。
