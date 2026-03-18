@@ -103,5 +103,21 @@
     "asr": {
         "altall_pp1": 0.80,
         "altall_pp2": 0.20
+    },
+    "rooting": {
+        "primary_scenarios": ["MFP_KDOPS", "LGC20_KDOPS", "MIDPOINT_INGROUP", "MAD_INGROUP"],
+        "optional_scenarios": ["NONREV_REDUCED", "ROOTSTRAP_REDUCED"],
+        "support_main_min_ufboot": 95,
+        "support_preferred_min_shalrt": 80,
+        "trait_stability_min_scenarios": 2
+    },
+    "manuscript": {
+        "claim_tiers": ["root_robust", "root_sensitive", "exploratory"],
+        "phase5_max_tier1": 2,
+        "phase5_max_tier2": 2
+    },
+    "metrics": {
+        "manifest_path": "results/meta/metrics_manifest.tsv",
+        "snapshot_path": "results/meta/progress_snapshot.md"
     }
 }

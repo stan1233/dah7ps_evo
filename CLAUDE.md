@@ -1,155 +1,428 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working inside this repository.
+
+---
 
 ## Project Overview
 
-This is a bioinformatics research project reconstructing the evolutionary origin of allosteric regulation in DAH7PS enzymes. The workflow follows a strict phase-based SOP (V5.0) defined in `PLAN.md`. **`PLAN.md` is the single source of truth**; `AGENT.md` translates it into executable tasks; `TASKS.md` tracks completion status; `log.md` records every command executed.
+This repository contains a bioinformatics research workflow for reconstructing the evolutionary origin of allosteric regulation in the DAH7PS enzyme family.
+
+The project now follows **V5.1 SOP rev6**.
+
+### Source-of-truth hierarchy
+
+Use the following order whenever documents disagree:
+
+1. `PLAN.md` — strategy, scope, gates, interpretation boundaries
+2. `results/meta/metrics_manifest.tsv` — canonical numbers and dimensions
+3. `results/meta/progress_snapshot.md` — current execution snapshot
+4. `AGENTS.md` — operational contract and acceptance rules
+5. `TASKS.md` — live checklist / pending items
+6. `log.md` — command-by-command execution record
+
+### Current project status
+
+Treat the repository as being in the following state unless a newer `progress_snapshot.md` says otherwise:
+
+- Phases 0–3.8: completed
+- **Phase 3.9: completed**
+- Phase 4.1: rooted trees already generated
+- Phase 4.3: KDOPS outgroup pruned and tip-match issue already resolved
+- Main current bottleneck: **root robustness**, not core-MSA failure
+
+### The most important V5.1 mindset shift
+
+Do **not** assume that the current rooted ingroup tree is the final historical truth.
+It is a **working tree** for computation.
+Deep historical interpretation must wait until **QC3 root robustness** is complete.
+
+---
 
 ## Environment
 
 ```bash
 conda activate dah7ps_v4
-# Tools: HMMER, MAFFT, IQ-TREE 2, ClipKIT, FoldMason, SeqKit, MMseqs2, CD-HIT, plmc, PastML
-# External (HPC): GROMACS ≥2023, AlphaFold3, ESMFold
 ```
 
-**Parallelism:** This machine has 28 cores. Always use **20 threads**: `--thread 20` / `--cpu 20` / `-T 20` / `-T AUTO` / `--threads 20` / `max_workers=20`. Never use `--thread -1`.
+### Core tools
 
-## Running Scripts
+- HMMER
+- MAFFT
+- IQ-TREE 2
+- FoldMason
+- MMseqs2
+- CD-HIT
+- SeqKit
+- ClipKIT
+- PastML
+- plmc
 
-All scripts in `scripts/` must support `--help`, validate inputs, auto-create output dirs, and exit non-zero on failure.
+### External / HPC tools
 
-```bash
-# Example: core domain extraction (Phase 3.6)
-python scripts/extract_core_domains.py --help
+- AlphaFold3
+- ESMFold
+- GROMACS >= 2023
+- PISA or equivalent interface assessment tools
 
-# Example: module annotation (Phase 3.8)
-python scripts/annotate_modules.py --help
+### Parallelism
+
+This machine has 28 CPU cores.
+Use **20 threads** consistently unless there is an explicit reason not to.
+
+Examples:
+
+- `mafft --thread 20`
+- `hmmsearch --cpu 20`
+- `hmmalign --cpu 20`
+- `iqtree -T 20`
+- `mmseqs --threads 20`
+- `cd-hit -T 20`
+- Python: `max_workers=20`
+
+Never use `--thread -1`.
+
+---
+
+## What this project is trying to prove
+
+The main claim is **not** “a single perfect deep-rooted history for all DAH7PS modules.”
+
+The main claim is:
+
+- a structurally conserved TIM-barrel core can be aligned and compared family-wide,
+- allosteric modules were recruited recurrently on top of that conserved core,
+- some evolutionary conclusions are robust to root uncertainty,
+- core DCA and limited ancestral structure validation can support those root-robust conclusions.
+
+Whenever there is a conflict between “telling a complete story” and “staying inside the evidence boundary,” choose the evidence boundary.
+
+---
+
+## Current execution priorities
+
+### Highest priority
+
+1. Finish **QC3 root robustness gate**
+2. Elevate **Phase 4.2 AA vs 3Di tree comparison** to a formal QC3 input
+3. Initialize and maintain:
+   - `results/04_phylogeny_asr/root_scenarios.tsv`
+   - `results/04_phylogeny_asr/node_selection_registry.tsv`
+   - `results/meta/metrics_manifest.tsv`
+   - `results/meta/progress_snapshot.md`
+
+### Safe to continue in parallel
+
+These can proceed before QC3 is fully closed:
+
+- subtype-local nested full-length ASR (especially `Iβ-ACT`)
+- strict / relaxed module trait matrix preparation
+- core DCA input preparation
+- assembly adjudication literature/annotation preparation
+
+### Must wait for QC3
+
+Do **not** lock these before QC3:
+
+- the deepest rooted historical narrative
+- final Phase 5 ancestral node list
+- any “first gain” or “earliest origin” claim that depends on a single root scenario
+
+---
+
+## Hard constraints
+
+### 1) The core MSA must stay insert-free
+
+The canonical path is:
+
+```text
+FoldMason skeleton -> hmmbuild -> hmmalign (Stockholm) -> RF mask -> esl-alimask -> AFA
 ```
 
-No top-level test suite exists. Correctness is validated via QC assertion scripts and the QC `.md` reports produced at each phase.
+Never use `hmmalign --outformat afa` to produce the core AFA directly.
+That causes insert-column inflation.
 
-## Architecture
+### 2) Full-length ancestors must come from nested ASR
 
-### Phase Execution Order (V5.0)
+If a full-length ancestral sequence is sent to AF3, it must come from the formal Phase 4.4 subtype-local nested ASR output.
+Manual concatenation of core and module fragments is prohibited.
 
-**Current progress and next steps: see `TASKS.md`.** Key outputs per phase for orientation:
+### 3) Tree/MSA tip sets must match exactly
 
-| Phase | Key Output |
-|-------|------------|
-| 0 — Environment | `meta/params.json`, `results/meta/software_versions.tsv` |
-| 1 — HMM Mining | `results/01_mining/` — nr80 total 9,673 seqs |
-| 2 — QC & Dedup | `results/02_qc/nr80_*.fasta` (Ia=3521, Ib=3073, II=3079) |
-| 3.1–3.8 — Core MSA + Modules | `results/03_msa_core/core_asr.afa` (9393×472), `results/03_msa_modules/` |
-| 3.9 — Full-length Stitching | `results/03_msa_full/msa_full_Ib_v4.afa` (47×1040) |
-| 4 — Phylogeny + ASR | `results/04_phylogeny_asr/` |
-| 5 — Structural Validation | `results/05_struct_valid/` |
-| 6 — Core DCA | `results/06_dca/` |
-| 7 — Paper Blueprint | Narrative + Fig 1–6 |
+Before ASR:
 
-### Core MSA Pipeline (Phases 3.1–3.6)
+- prune KDOPS outgroup from the rooted tree
+- generate `CoreTree_rooted_ingroup.treefile`
+- assert equality with `assert_tip_match.py`
 
-FoldMason `easy-msa` → per-column LDDT (knee detection) → core column mask (521 cols) → `hmmbuild` profile → `hmmalign` → **Stockholm → `esl-alimask --rf-is-mask` → AFA**. The Stockholm strip-insert path is mandatory; `hmmalign --outformat afa` is **prohibited** (causes insert column inflation).
+The tip mismatch problem is already considered solved for the current Phase 4.3 state, but this rule remains mandatory for any regenerated tree.
 
-Type II sequences require multi-domain hit stitching in `extract_core_domains.py` because the α2β3 insertion fragments HMM hits.
+### 4) The current rooted tree is only a working tree
 
-### Core–Module Decoupling
+You may use it for:
 
-The core MSA (TIM-barrel) and module MSAs (ACT, CM, α2β3, N_ext, C_tail) are built independently:
-- `results/03_msa_core/` — core-only alignments for phylogeny and DCA
-- `results/03_msa_modules/` — per-module alignments + `module_presence_absence_strict/relaxed.tsv`
-- `results/03_msa_full/` — subtype-scoped full-length stitched MSA; **never mix full-length MSAs into `03_msa_core/`**
+- ASR execution
+- trait reconstruction preparation
+- DCA input preparation
 
-> ⚠️ **V3.1 artifact warning**: `results/03_msa_core/msa_full_{Ia,Ib,II}.afa` are old V3.1 `mafft --add` outputs (archived, 3473/5728/3064 seqs, ~5000 inflated cols). They are **not** Phase 3.9 outputs and must not be used. Also ignore `results/03_msa_core/aligned_seeds60_*.afa` and `results/02_qc/caseA_full_*.fasta` — all V3.1 intermediates.
+You may **not** use it as the sole basis for final deep-history claims until QC3 is complete.
 
-### Key File Dimensions (quick reference)
+### 5) Root robustness is a gate, not a footnote
 
-| File | Seqs | Cols | Notes |
-|------|------|------|-------|
-| `03_msa_core/core_global_matchonly.afa` | 9,393 | 521 | Full core, all match states |
-| `03_msa_core/core_tree.afa` | 9,393 | 436 | ClipKIT kpic-smart-gap, for phylogeny |
-| `03_msa_core/core_asr.afa` | 9,393 | 472 | Minimal gap trim, for ASR & DCA |
-| `03_msa_modules/ACT_domain_msa.afa` | 47 | 142 | Iβ-ACT only |
-| `03_msa_modules/CM_domain_msa.afa` | 408 | 266 | |
-| `03_msa_modules/alpha2beta3_insert_msa.afa` | 172 | 582 | |
-| `03_msa_modules/N_ext_msa.afa` | 3,130 | 8,153 | Highly heterogeneous — not for DCA |
-| `03_msa_modules/C_tail_msa.afa` | 360 | 3,617 | Highly heterogeneous — not for DCA |
-| `03_msa_full/msa_full_Ib_v4.afa` | 47 | 1,040 | core(1–472)\|ACT(473–614)\|C-flank(615–1040) |
+QC3 must compare multiple root scenarios.
+Minimum required scenarios:
 
-### Coordinate TSV Column Reference
+- `MFP_KDOPS`
+- `LGC20_KDOPS`
+- `MIDPOINT_INGROUP`
+- `MAD_INGROUP`
 
-**`results/03_msa_core/core_domain_coords.tsv`** (9,393 rows):
-```
-seq_id | seq_len | core_start | core_end | hmm_from | hmm_to | coverage |
-n_hits | n_env_segments | stitched_flag | core_residues | env_segments |
-raw_env_start | raw_env_end | pad_left | pad_right
-```
-- `raw_env_start` / `raw_env_end`: 1-based full-length coords of the core envelope **before** padding
-- `core_start` / `core_end`: after padding (`raw_env_start - pad_left` / `raw_env_end + pad_right`)
-- `env_segments`: semicolon-separated ranges e.g. `"5-271;274-399"` (for multi-hit stitching)
+Optional strengthened scenarios:
 
-**`results/03_msa_modules/ACT_domain_domain_coords.tsv`** (47 rows):
-```
-seq_id | seq_len | module | from | to | module_len
-```
-- `from` / `to`: 1-based full-length sequence coordinates (hmmsearch `env_from` / `env_to`)
+- `NONREV_REDUCED`
+- `ROOTSTRAP_REDUCED`
 
-**`results/03_msa_modules/module_presence_absence_strict.tsv`** (9,393 rows):
-```
-seq_id | N_ext | alpha2beta3_insert | ACT_domain | CM_domain | C_tail | boundary_confidence
-```
+### 6) DCA has a hard evidence gate
 
-### ACT Domain Topology (Critical for Phase 3.9/4.4)
+Mainline DCA is **core-only**.
 
-ACT is **not** external to the core — it is embedded as **insert states within the core HMM envelope**. For all 47 Iβ-ACT sequences: `n_env_segments = 1` (single continuous envelope). ACT residues are stripped by `esl-alimask` and do **not** appear in `core_asr.afa`.
+- minimum mainline gate: `Meff/L >= 3.0`
+- preferred writing-grade target: `Meff/L >= 5.0`
 
-Consequence for full-length MSA stitching:
-- "Linker" = **C-flank** (`raw_env_end+1` to `seq_len`), not a gap between core and ACT
-- Iβ-ACT C-flank: min=94, median=299, max=348 aa; N-flank: min=1, median=45, max=92 aa
-- Stitch order: `[core_asr.afa rows] | [ACT_domain_msa.afa rows] | [C-flank E-INS-i aligned]`
+Module DCA and joint cross-domain DCA are exploratory only.
+Do not promote them into the main evidence chain.
 
-### Parameters
+### 7) Oligomeric state must be adjudicated explicitly
 
-All thresholds are externalized to `meta/params.json`. Never hardcode values in scripts; read from the params file instead.
+Never assume tetramer.
+Every ancestral node entering structural validation must first pass Phase 5.0 assembly adjudication:
 
-### Hard Constraints (V5.0)
+- literature / annotation scan
+- dimer vs tetramer parallel AF3
+- interface assessment / PISA-style evidence
 
-- **DCA gate**: Core DCA requires `Meff/L ≥ 3.0` (ideal ≥ 5.0). Module DCA (ACT Meff/L ≈ 0.2–0.3) is exploratory only, not main-line evidence.
-- **Assembly adjudication**: Oligomeric state for ancestral nodes must be explicitly determined via Phase 5.0 (literature + parallel dimer/tetramer AF3 + PISA scoring → `assembly_adjudication.tsv`). Never hardcode "tetramer".
-- **Tree–MSA tip consistency**: Before ASR, prune KDOPS outgroup tips from the rooted tree → `CoreTree_rooted_ingroup.treefile`; assert with `assert_tip_match.py`.
-- **Ancestral sequences**: Full-length ancestors sent to AF3 must come from Phase 4.4 nested ASR output. Manual concatenation of core+module ASR fragments is prohibited.
-- **Apo-only**: Phase 5 does not predict Holo structures (eliminates "modern ligand hallucination" risk).
+All downstream structural work must read the copy number from `assembly_adjudication.tsv`.
 
-### Result Preservation
+### 8) Phase 5 remains Apo-only
 
-Never overwrite results from a completed run. Either use a timestamped subdirectory (`results/run_YYYYMMDD/`) or keep the old files with a `.bak` suffix before producing new ones.
+Do not generate Holo ancestral structures for the main workflow.
+No modern-ligand-driven “rescue” of ancestral conformations.
 
-### QC Failures
+### 9) ICDC is not a main quantitative result
 
-Any QC assertion failure = **stop immediately and trace back to fix the root cause**. Never proceed with a known failure downstream.
+Treat DCA × structure × limited MD convergence as an outlook / discussion topic, not as a closed-loop quantitative proof.
 
-### Logging
+### 10) Never overwrite formal results silently
 
-Every command, parameter, output file, result summary, and timestamp must be recorded in `log.md` **before moving on**, not retroactively.
+Use timestamped run directories or preserve old files with `.bak` suffixes.
 
-### ACT Module — Low Prevalence Decision (2026-03-03)
+### 11) Every run must be logged immediately
 
-ACT strict = 47 seqs (L=142), Meff/L ≈ 0.2–0.3. ACT DCA is excluded from the main evidence chain; exploratory appendix only.
+Every significant command, parameter set, output path, result summary, and timestamp must be written to `log.md` before moving on.
 
-## Common Failures (Quick Reference)
+---
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Core MSA columns > 1000 | Insert columns not stripped, or `hmmalign --outformat afa` used | Return to Phase 3.6; use Stockholm → esl-alimask path |
-| Type II core sequences cut in half | Hit stitching not applied | Check `extract_core_domains.py` stitching logic [CHECK-06] |
-| Root position differs between MFP and LG+C20 | LBA risk | Declare root uncertainty; repeat sensitivity analysis under both root hypotheses (QC3) |
-| IQ-TREE `-te` tip mismatch error | Rooted tree contains KDOPS outgroup but `core_asr.afa` does not | Run `prune_tree.py` first → `CoreTree_rooted_ingroup.treefile` |
-| Module DCA looks good but Meff/L < 3 | Insufficient depth, spurious signal | Treat as noise; exclude from main-line conclusions [CHECK-03] |
-| Ancestral structure interface collapse in MD | Wrong oligomeric state sent to AF3/MD | Check `assembly_adjudication.tsv`; consider alternative oligomer [CHECK-08] |
-| Full-length stitched MSA not found | Wrong path | Must be in `results/03_msa_full/`, not `results/03_msa_core/` |
-| Coordinate mapping mismatch | PDB insertion codes, ClipKIT trimming shifts, or GROMACS topology offset | Inspect each source of numbering change in `coordinate_mapper.py` |
+## Key project architecture
 
-## Scripts
+### Core–module decoupling
 
-All scripts in `scripts/` follow the same interface contract (see Running Scripts above). For the complete list of completed vs pending scripts, see `TASKS.md` → "脚本开发" section.
+The project is intentionally split into three alignment layers:
+
+- `results/03_msa_core/` — core-only alignments for phylogeny, ASR, DCA
+- `results/03_msa_modules/` — module-specific MSAs and strict/relaxed presence-absence matrices
+- `results/03_msa_full/` — subtype-scoped stitched full-length alignments for nested ASR only
+
+Never collapse these back into one family-wide full-length alignment.
+That was the failure mode of earlier workflow generations.
+
+### Important legacy warning
+
+Old V3.1 `mafft --add` full-length artifacts may still exist in the repository.
+They are archival only and must not be reused as Phase 4–6 inputs.
+
+---
+
+## Key files and canonical roles
+
+### Core alignments
+
+- `results/03_msa_core/core_global_matchonly.afa` — full core alignment with all match states
+- `results/03_msa_core/core_tree.afa` — phylogeny-trimmed core alignment
+- `results/03_msa_core/core_asr.afa` — ASR / DCA trimmed core alignment
+
+### Module annotations
+
+- `results/03_msa_modules/module_presence_absence_strict.tsv`
+- `results/03_msa_modules/module_presence_absence_relaxed.tsv`
+- module-specific MSAs under `results/03_msa_modules/`
+
+### Full-length stitched alignments
+
+- `results/03_msa_full/msa_full_Ib_v4.afa`
+- `results/03_msa_full/msa_full_Ib_column_map.tsv`
+
+### Rooting and ASR
+
+- `results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile`
+- `results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile`
+- `results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile`
+- `results/04_phylogeny_asr/QC3_root_stability.md`
+- `results/04_phylogeny_asr/root_scenarios.tsv`
+- `results/04_phylogeny_asr/node_selection_registry.tsv`
+
+### Structural validation
+
+- `results/05_struct_valid/assembly_adjudication.tsv`
+- `results/05_struct_valid/qc_struct_validation.md`
+
+### DCA
+
+- `results/06_dca/core_dca.afa`
+- `results/06_dca/core_dca_stats.tsv`
+- `results/06_dca/core_significant_couplings.tsv`
+- `results/06_dca/qc_core_dca.md`
+
+### Metadata / synchronization
+
+- `results/meta/software_versions.tsv`
+- `results/meta/model_files.tsv`
+- `results/meta/metrics_manifest.tsv`
+- `results/meta/progress_snapshot.md`
+
+---
+
+## Rooting policy and interpretation policy
+
+### Root scenarios are first-class objects
+
+Every serious historical interpretation must reference an explicit root scenario.
+Do not speak as if there is only one root unless QC3 explicitly supports that.
+
+### Use these claim tiers
+
+Every result should be mentally tagged as one of:
+
+- `root_robust`
+- `root_sensitive`
+- `exploratory`
+
+Interpretation rules:
+
+- `root_robust` — safe for main text
+- `root_sensitive` — supplement or qualified discussion only
+- `exploratory` — appendix, outlook, or method note only
+
+### Node-selection policy for Phase 5
+
+A candidate ancestral node is **not eligible** for mainline structural validation unless all of the following are true:
+
+1. the associated event is stable in at least 2 root scenarios
+2. `UFBoot >= 95`
+3. if available, `SH-aLRT >= 80`
+4. strict and relaxed trait reconstructions do not fundamentally contradict each other
+5. the full-length ancestor can be obtained from formal nested ASR
+6. assembly adjudication yields a defensible oligomeric state
+
+Do not fall back to the old `bootstrap >= 70` style standard for mainline node selection.
+
+---
+
+## What to do when uncertainty appears
+
+### If KDOPS is non-monophyletic in the rooted ML tree
+
+Do **not** try to force KDOPS into a single “fixed” answer.
+Treat this as a root-robustness problem.
+Proceed via QC3.
+
+### If MFP and LG+C20 disagree on root position
+
+That is not a reason to discard the project.
+It means the deepest historical polarity is uncertain.
+Keep computing, but restrict strong claims to root-robust conclusions.
+
+### If module DCA appears interesting despite poor depth
+
+Do not promote it.
+Low-depth module DCA stays exploratory.
+
+### If an attractive ancestral node fails support criteria
+
+Reject or hold it.
+Do not keep it just because the story is biologically appealing.
+
+### If documentation numbers disagree
+
+Trust `results/meta/metrics_manifest.tsv`.
+Then sync all derived documents.
+
+---
+
+## Script expectations
+
+Every script in `scripts/` should:
+
+- support `--help`
+- validate inputs
+- create output directories automatically
+- fail with non-zero exit code on error
+- write enough metadata to make the run reproducible
+
+### High-priority scripts for the current stage
+
+- `qc_root_stability.py`
+- `compare_trees.py`
+- `prepare_dca_input.py`
+- `adjudicate_assembly.py`
+
+### Additional important scripts
+
+- `compute_meff.py`
+- `dca_significance.py`
+- `coordinate_mapper.py`
+- `prune_tree.py`
+- `assert_tip_match.py`
+- `stitch_full_length_msa.py`
+
+---
+
+## Common failure modes
+
+| Symptom                                | Likely cause                               | Correct response                                             |
+| -------------------------------------- | ------------------------------------------ | ------------------------------------------------------------ |
+| Core alignment suddenly becomes huge   | insert columns were retained               | go back to Stockholm -> RF-mask path                         |
+| IQ-TREE `-te` tip mismatch             | KDOPS outgroup not pruned before ASR       | regenerate `CoreTree_rooted_ingroup.treefile` and rerun tip assertion |
+| Root differs across models             | deep root instability                      | keep working, but downgrade interpretation to root-sensitive |
+| A module DCA result looks exciting     | insufficient depth / phylogenetic artifact | keep as exploratory only                                     |
+| AF3 ancestor requires assumed tetramer | oligomeric state was hardcoded             | return to assembly adjudication                              |
+| Full-length ancestor is built manually | pipeline shortcut                          | reject and regenerate via nested ASR                         |
+| README / TASKS / PLAN numbers diverge  | documentation drift                        | fix `metrics_manifest.tsv` first, then sync outward          |
+
+---
+
+## Practical working style for Claude Code
+
+When editing or extending this repository:
+
+1. check `progress_snapshot.md` first
+2. confirm whether the task is root-sensitive or root-robust
+3. do not change scientific scope silently
+4. update manifest/snapshot when producing final numbers
+5. log commands immediately
+6. preserve old outputs
+7. prefer smaller, well-audited advances over large undocumented leaps
+
+---
+
+## Bottom line
+
+The current project is not “off track.”
+It is at the point where the difference between a publishable story and an over-claimed story is whether root uncertainty is handled explicitly.
+
+Your job in this repository is therefore:
+
+- keep the workflow reproducible,
+- keep the evidence layers separated,
+- keep the documentation synchronized,
+- and only make claims that survive the declared gates.

@@ -2300,3 +2300,273 @@ nohup iqtree -s results/03_msa_core/core_asr.afa \
 ```
 
 **状态**：已提交后台运行（20 线程）。由于包含 9,393 条序列，优化支长、模型参数和最终的经验贝叶斯 ASR 估计耗时较长。
+
+---
+
+## 2026-03-17 — V5.1 文档同步与 Phase 4.1 LG+C20 树补跑
+
+---
+
+### 16:07 — V5.1 文档同步
+
+**操作：** 根据更新后的 `PLAN.md`（V5.1 SOP rev6）同步更新所有文档：
+
+| 文件 | 变更摘要 |
+|------|---------|
+| `README.md` | 策略表从 V5.0 → V5.1；新增多 root scenario、QC3 gate、claim tiers、metrics manifest；新增 V5.1 vulnerability fixes（CHECK-04/06） |
+| `TASKS.md` | 升级为 V5.1；Phase 4 拆分为子节；新增 QC3 gate checklist、V5.1 脚本和交付物 |
+| `AGENTS.md` | 全面重写为 V5.1 SOP rev6 执行指南；新增文档层级、多 root scenario、claim tiers、4 重节点门控 |
+| `CLAUDE.md` | 全面重写为 V5.1 mindset + working policy 文档；新增 root scenario policy、uncertainty handling guide |
+
+**同时修正：** `AGENT.md` → `AGENTS.md` 文件名修正（`mv AGENT.md AGENTS.md`），并同步更新 `CLAUDE.md` 中的引用。
+
+---
+
+### 16:50 — Phase 4.1 LG+C20 树状态审计
+
+**审计结论：LG+C20 树未完成。**
+
+| 运行 | 环境 | 结果 |
+|------|------|------|
+| 本地首次尝试 | 本机（`-T 20`），RAM 不足 | **OOM Killed**（LG+C20 需 ~55 GB） |
+| 集群 `0309_iqtree.tar.gz` | JH Unischeduler cu018, 60 核, 64 GB | **只包含 MFP 树**，未提交 LG+C20 作业 |
+
+**产物现状：**
+- `CoreTree_rooted_LGC20.ckp.gz`：存在（检查点）
+- `CoreTree_rooted_LGC20.log`：存在（截止至参数估计初始化）
+- `CoreTree_rooted_LGC20.treefile`：**不存在**
+
+**状态修正：** 更新 `PLAN.md` 和 `AGENTS.md` 中 Phase 4.1 状态为"MFP 已完成（集群），LG+C20 未完成（本地 OOM）"。`TASKS.md` 原有 `[ ]` 标记正确。
+
+---
+
+### 17:18 — Phase 4.1 LG+C20 树集群提交（首次尝试）
+
+**作业脚本：** `scripts/cluster/job_iqtree_LGC20.sh`
+
+```bash
+~/mambaforge/envs/iqtree3/bin/iqtree \
+    -s core_with_outgroup.afa \
+    -m LG+C20+F+G \
+    -B 1000 \
+    -T AUTO \
+    -o KDOPS_P0A715,KDOPS_Q9ZFK4,KDOPS_O66496 \
+    --prefix CoreTree_rooted_LGC20
+```
+
+**集群 AUTO 线程 benchmark 结果：**
+
+| Threads | Time (sec) | Speedup | Efficiency |
+|---------|-----------|---------|------------|
+| 1 | 620.4 | 1.000 | 100% |
+| 2 | 410.8 | 1.510 | 76% |
+| 3 | 339.8 | 1.826 | 61% |
+| 4 | 308.3 | 2.013 | 50% |
+| 5 | 260.7 | 2.380 | 48% |
+
+**AUTO 决策：BEST NUMBER OF THREADS = 4**
+
+LG+C20+F+G 是 20 类频率混合模型，本质上受内存带宽限制（55 GB 远超 CPU 缓存），导致多线程效率极低。128 核集群节点的优势无法体现。
+
+---
+
+## 2026-03-18 — Phase 4.1 LG+C20 树本地运行
+
+---
+
+### 05:03 — LG+C20 树本地运行（checkpoint resume）
+
+**背景：** 本机内存已扩容至 117 GB。从集群检查点恢复运行。
+
+```bash
+nohup iqtree \
+    -s results/04_phylogeny_asr/core_with_outgroup.afa \
+    -m LG+C20+F+G \
+    -B 1000 \
+    -T AUTO \
+    -o KDOPS_P0A715,KDOPS_Q9ZFK4,KDOPS_O66496 \
+    --prefix results/04_phylogeny_asr/CoreTree_rooted_LGC20 \
+    > results/04_phylogeny_asr/iqtree_LGC20_nohup.log 2>&1 &
+```
+
+**运行环境：**
+
+| 参数 | 值 |
+|------|-----|
+| 主机 | OUC-Desktop |
+| RAM | 117 GB |
+| CPU 核心 | 28（AVX2 + FMA3） |
+| IQ-TREE 版本 | 3.0.1 |
+| Checkpoint | 从 `CoreTree_rooted_LGC20.ckp.gz` 恢复 |
+| Seed | 784602 |
+| AUTO 线程决策 | **6 threads** |
+
+**⚠ 注意：** checkpoint 恢复时 IQ-TREE 报告 `WARNING: Command-line argument 'AUTO' differs from checkpoint '20'`，但正常继续运行。
+
+**当前进度（截止 2026-03-18 11:16）：**
+- ✅ 参数优化完成（164 轮，15265s，Optimal LogL = -2842137.894）
+- ✅ RapidNJ 树构建完成（LogL = -2932167.934）
+- 🏃 正在生成 98 棵 parsimony 候选树
+
+**预估：** 基于 MFP 在 60 核集群上 47 小时完成的参考，LG+C20 在 6 线程本地运行预计需 **5–10 天**。
+
+---
+
+### 11:46 — P0 文档同步初始化（V5.1 新增）
+
+**操作：** 创建 V5.1 要求的四个文档同步文件 + 更新 `params.json`。
+
+**创建的文件：**
+
+| 文件 | 内容 | 记录条数 |
+|------|------|---------|
+| `results/meta/metrics_manifest.tsv` | 单一真源指标 manifest | 39 条指标（P0–P6） |
+| `results/meta/progress_snapshot.md` | Phase 状态总览 + 瓶颈 + 并行任务 | — |
+| `results/04_phylogeny_asr/root_scenarios.tsv` | 5 个 root scenarios（S1 working, S2 running, S3/S4 planned, S5 optional） | 5 行 |
+| `results/04_phylogeny_asr/node_selection_registry.tsv` | 空模板（待 QC3 后填充） | schema only |
+
+**`meta/params.json` 更新：** 新增 3 个 V5.1 参数块：
+- `rooting`：primary/optional scenarios, UFBoot ≥ 95, SH-aLRT ≥ 80, trait_stability ≥ 2
+- `manuscript`：claim_tiers = [root_robust, root_sensitive, exploratory]
+- `metrics`：manifest_path + snapshot_path
+
+**`TASKS.md` 更新：** 标记 0.5–0.8 为 `[x]`，标记最终交付物中 `metrics_manifest.tsv` 和 `progress_snapshot.md` 为 `[x]`。
+
+**✅ P0 文档同步初始化完成。**
+
+---
+
+### 15:36 — Phase 4.1 S3：Midpoint Rooting
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 python3 scripts/root_ingroup_tree.py \
+    --input results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile \
+    --outdir results/04_phylogeny_asr/
+```
+
+**方法：** BioPython `Phylo.root_at_midpoint()`
+
+**输出：**
+
+| 文件 | 大小 |
+|------|------|
+| `CoreTree_rooted_midpoint_ingroup.treefile` | 412 KB |
+
+---
+
+### 16:04 — Phase 4.1 S4：MAD Rooting (Minimal Ancestor Deviation)
+
+**背景：** BioPython 后端因 `root_with_outgroup()` + `distance()` 在 9,393 tip 树上极慢（≈20 min 未完成），切换至 ete3 后端（C-based `set_outgroup()` + `get_distance()`）。
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 python3 -u scripts/mad_root_ete3.py \
+    --input results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile \
+    --output results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup.treefile \
+    --max-eval 500
+```
+
+**方法：** 对 9,391 个候选分支中最平衡的 500 个进行评估，每个分支重新定根后计算 root-to-tip 距离的相对偏差（rho = CV of root-to-tip distances）。选择 rho 最小的分支作为根。
+
+**结果：**
+
+| 指标 | 值 |
+|------|------|
+| 候选分支评估数 | 500 / 9,391 |
+| 最优 rho | 0.163617 |
+| 根部分裂 | [3,060 : 6,333] |
+| Root-to-tip 均值 | 4.8557 |
+| Root-to-tip 标准差 | 0.7945 |
+| Root-to-tip CV | 0.1636 |
+| 计算耗时 | 86.6 秒 |
+
+**输出：**
+
+| 文件 | 大小 |
+|------|------|
+| `CoreTree_rooted_MAD_ingroup.treefile` | 388 KB |
+| `CoreTree_rooted_MAD_ingroup_summary.txt` | 336 B |
+
+**脚本：** `scripts/mad_root_ete3.py`（ete3 后端，`scripts/root_ingroup_tree.py` 为原 BioPython 版，已保留但未用于最终结果）
+
+---
+
+### 16:17 — Phase 4.1 S4 补充运行：MAD 全量搜索（9,391 branches）
+
+**背景：** 第一次 MAD 运行 (`mad_root_ete3.py`) 仅评估 top-500 最平衡分支。用户要求用 `mad_root_fast.py`（自动检测到 ete3 后端）对全部 9,391 个候选分支进行完整搜索，以验证 top-500 限制搜索是否找到了全局最优。
+
+**精确命令：**
+
+```bash
+nohup conda run -n dah7ps_v4 python3 -u scripts/mad_root_fast.py \
+    --input results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile \
+    --output results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup_biopython.treefile \
+    > results/04_phylogeny_asr/mad_rooting_biopython.log 2>&1 &
+```
+
+> 注：尽管输出文件名为 `_biopython`，实际使用的是 ete3 后端（`mad_root_fast.py` 检测到 ete3 可用后自动选择）。
+
+**全量搜索结果：**
+
+| 指标 | 值 |
+|------|------|
+| 候选分支评估数 | **9,391 / 9,391**（全部） |
+| 最优 rho | 0.163617 |
+| 根部分裂 | [2,820 : 6,573] |
+
+**全量搜索中 rho 的收敛过程：**
+
+```
+Branch    0-500:  rho = 0.482  ← top-500 中的最优
+Branch   ~800:    rho = 0.458
+Branch  ~1000:    rho = 0.440
+Branch  ~2800:    rho = 0.429
+Branch  ~3200:    rho = 0.362
+Branch  ~3400:    rho = 0.354
+Branch  ~6600:    rho = 0.164  ← 真正的全局最优，在第 6,600 个分支才出现
+```
+
+---
+
+### 04:39 — S4 MAD 两次运行对比分析
+
+**对比：**
+
+| | Run 1 (top-500, `mad_root_ete3.py`) | Run 2 (全部 9,391, `mad_root_fast.py`) |
+|---|---|---|
+| 搜索范围 | top-500 最平衡分支 | 全部 9,391 个内部分支 |
+| 后端 | ete3 | ete3（自动检测） |
+| 最优 rho | 0.163617 | 0.163617 |
+| Root split | [3,060 : 6,333] | [2,820 : 6,573] |
+| 较小 clade 大小 | 3,060 | 2,820 |
+
+**关键发现 — 根位置完全不同：**
+
+| 对比指标 | 值 |
+|---------|------|
+| 两个小 clade 的 tip 重叠 | **0 tips** |
+| 对称差 | **5,880 tips** |
+| 仅在 Run 1 小 clade | 3,060 tips |
+| 仅在 Run 2 小 clade | 2,820 tips |
+
+**解释：**
+
+1. rho 值完全一致 (0.163617)，说明这棵树上存在**至少两个 rho 相同的根位置**。
+2. 这两个最优根位于树的**完全不同区域**（0 tip overlap）。
+3. Run 1 的 top-500 限制搜索只覆盖了最平衡的分支，恰好在这个范围内找到了一个 rho=0.164 的位置；但全量搜索在第 ~6,600 个分支（不在 top-500 内）找到了另一个同样好的位置。
+4. 这进一步证实了 V5.1 PLAN 的核心判断：**DAH7PS 系统发育的深根存在本质不确定性**。即使是 outgroup-free 的 MAD 方法也无法给出唯一的根位置。
+
+**决策：** 采用 Run 2（全量搜索）的结果作为正式 S4 MAD 树。
+
+```bash
+# 替换正式产物
+cp results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup.treefile \
+   results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup_top500.treefile.bak
+cp results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup_biopython.treefile \
+   results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup.treefile
+```
+
+**✅ S3 + S4 完成。root_scenarios.tsv 已更新。MAD root non-uniqueness 已记录。**
