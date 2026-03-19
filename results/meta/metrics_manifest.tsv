@@ -37,4 +37,11 @@ tree_LGC20_logL	-2842137.89	logL	results/04_phylogeny_asr/iqtree_LGC20_nohup.log
 ingroup_tree_tips	9393	tips	results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile	P4.3	final	2026-03-18	After pruning 12 KDOPS
 asr_core_S1_model	Q.PFAM+F+R10	model	results/04_phylogeny_asr/ASR_core.iqtree	P4.3	final	2026-03-18	ASR on working tree S1
 asr_core_S1_logL	-2904285.44	logL	results/04_phylogeny_asr/ASR_core.iqtree	P4.3	final	2026-03-18	ASR tree log-likelihood
+skeleton_AA_model	Q.PFAM+I+R4	model	results/04_phylogeny_asr/SkeletonTree_AA.iqtree	P4.2	final	2026-03-19	Skeleton AA tree best-fit model
+skeleton_AA_logL	-24492.82	logL	results/04_phylogeny_asr/SkeletonTree_AA.iqtree	P4.2	final	2026-03-19	Skeleton AA tree log-likelihood
+skeleton_3Di_model	Q.3Di.AF+G4	model	results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di.iqtree	P4.2	final	2026-03-19	Skeleton 3Di tree model (explicit; MFP skips Q.3Di due to IQ-TREE case bug)
+skeleton_3Di_logL	-16939.94	logL	results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di.iqtree	P4.2	final	2026-03-19	Skeleton 3Di tree log-likelihood
+tree_comparison_nRF	0.7442	ratio	results/04_phylogeny_asr/tree_comparison.tsv	P4.2	final	2026-03-19	Normalized RF distance AA vs 3Di (high but expected)
+tree_comparison_shared_bip	11	count	results/04_phylogeny_asr/tree_comparison.tsv	P4.2	final	2026-03-19	Shared bipartitions (of 43 each)
+tree_comparison_verdict	QC3-YELLOW	status	results/04_phylogeny_asr/tree_comparison.md	P4.2	final	2026-03-19	All 3 subtype clades monophyletic in both; no fatal deep conflict
 dca_meff_L	NA	ratio	NA	P6.1	pending	2026-03-18	Not yet computed

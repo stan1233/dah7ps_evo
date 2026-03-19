@@ -137,8 +137,8 @@
 
 ### 4.2 结构系统发育交叉验证 [V5.1 升级为高优先级]
 
-- [ ] 4.2 AA 树 vs 3Di 树交叉验证 → `tree_comparison.md` + `tree_comparison.tsv`
-- [ ] 4.2 **[V5.1]** 三个判读问题：亚型深分化方向一致性 / KDOPS 分离兼容性 / focal deep split 冲突
+- [x] 4.2 AA 树 vs 3Di 树交叉验证 → `tree_comparison.md` + `tree_comparison.tsv` ✅ (nRF=0.7442, 三大亚型单系一致, QC3-YELLOW)
+- [x] 4.2 **[V5.1]** 三个判读问题：Q1 通过（亚型单系一致） / Q2 不适用（骨架树无 KDOPS） / Q3 无致命冲突（高 nRF 为 AA vs 3Di 预期行为）
 
 ### 4.3 核心氨基酸 ASR（可继续计算，解释分层）
 

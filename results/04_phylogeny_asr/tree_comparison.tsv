@@ -1,0 +1,9 @@
+metric	value	note
+aa_tree_bipartitions	43	Internal bipartitions in AA tree
+threedi_tree_bipartitions	43	Internal bipartitions in 3Di tree
+shared_bipartitions	11	Identical in both
+aa_only_bipartitions	32	Unique to AA
+threedi_only_bipartitions	32	Unique to 3Di
+RF_distance	64	Robinson-Foulds
+RF_max	86	Max possible
+RF_normalized	0.7442	0=identical 1=max different

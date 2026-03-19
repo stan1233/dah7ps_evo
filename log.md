@@ -2570,3 +2570,102 @@ cp results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup_biopython.treefile \
 ```
 
 **✅ S3 + S4 完成。root_scenarios.tsv 已更新。MAD root non-uniqueness 已记录。**
+
+---
+
+## 2026-03-19 Phase 4.2：AA vs 3Di 骨架树交叉验证
+
+---
+
+### 09:56 — 3Di 骨架树重建（修复 IQ-TREE case bug）
+
+**背景：** 2026-03-05 的首次 3Di 树运行因 IQ-TREE 3.0.1 bug 失败。`-mset Q.3Di.AF,Q.3Di.LLM,GTR20` 中的模型名被内部转大写为 `Q.3DI.AF`，导致 `ERROR: File not found Q.3DI.AF`。
+
+**修复方案：** 不使用 `-mset`，改为 `-m Q.3Di.AF+G4 --mdef meta/models/Q_3Di_models.nex` 直接指定模型。
+
+**步骤 1：备份旧产物**
+
+```bash
+mv results/04_phylogeny_asr/SkeletonTree_3Di.log results/04_phylogeny_asr/SkeletonTree_3Di_failed.log.bak
+mv results/04_phylogeny_asr/SkeletonTree_3Di.model.gz results/04_phylogeny_asr/SkeletonTree_3Di_failed.model.gz.bak
+mv results/04_phylogeny_asr/iqtree_Skeleton3Di_nohup.log results/04_phylogeny_asr/iqtree_Skeleton3Di_nohup_failed.log.bak
+```
+
+**步骤 2：MFP 运行（无 -mset）**
+
+```bash
+iqtree -s results/03_msa_core/skeleton_core_3di.fa \
+  -m MFP --mdef meta/models/Q_3Di_models.nex \
+  -alrt 1000 -B 1000 -T 20 \
+  --prefix results/04_phylogeny_asr/SkeletonTree_3Di
+```
+
+**结果：** MFP 选择 PMB+F+R4（LogL=-18971.18）。然而 Q.3Di 模型**未被 ModelFinder 测试**——同一 case bug 在 MFP 内部模型枚举中也生效。
+
+**步骤 3：显式 Q.3Di.AF 模型运行**
+
+```bash
+iqtree -s results/03_msa_core/skeleton_core_3di.fa \
+  -m "Q.3Di.AF+G4" --mdef meta/models/Q_3Di_models.nex \
+  -alrt 1000 -B 1000 -T 20 \
+  --prefix results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di
+```
+
+**结果对比：**
+
+| 运行 | 模型 | LogL | 状态 |
+|------|------|------|------|
+| MFP | PMB+F+R4 | -18971.18 | 可用但非最优 |
+| 显式 | **Q.3Di.AF+G4** | **-16939.94** | **正式 3Di 树** |
+
+**⏱ 耗时：** 41 秒（Q.3Di.AF run）
+
+**正式产物：** `results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di.treefile`
+
+---
+
+### 11:13 — AA vs 3Di 树拓扑比较
+
+**精确命令：**
+
+```bash
+python3 scripts/compare_trees.py \
+  --aa results/04_phylogeny_asr/SkeletonTree_AA.treefile \
+  --threedi results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di.treefile \
+  --out_tsv results/04_phylogeny_asr/tree_comparison.tsv \
+  --out_md results/04_phylogeny_asr/tree_comparison.md \
+  --aa_model "Q.PFAM+I+R4" \
+  --threedi_model "Q.3Di.AF+G4"
+```
+
+**结果：**
+
+| 指标 | 值 |
+|------|------|
+| 共享 bipartitions | 11 / 43 |
+| AA-only bipartitions | 32 |
+| 3Di-only bipartitions | 32 |
+| RF distance | 64 / 86 |
+| **Normalized RF** | **0.7442** |
+
+**Q1 亚型单系性：**
+
+| Clade | AA | 3Di | 一致? |
+|-------|-----|------|-------|
+| Type Ia (1KFL) | ✅ 单系 | ✅ 单系 | ✅ |
+| Type Ib (1RZM) | ✅ 单系 | ✅ 单系 | ✅ |
+| Type II (3NV8/5CKV/2B7O) | ✅ 单系 | ✅ 单系 | ✅ |
+
+**解释：** nRF = 0.74 表面很高，但这是 AA vs 3Di 比较的**预期行为**——3Di 编码的是结构折叠拓扑，AA 编码的是序列分歧，两者在中间分支上自然不同。**关键的亚型级深分化在两种证据源中完全一致。**
+
+**4.2 verdict：QC3-YELLOW**（非 RED）
+
+**产出文件：**
+
+| 文件 | 说明 |
+|------|-----|
+| `results/04_phylogeny_asr/tree_comparison.tsv` | 量化比较指标 |
+| `results/04_phylogeny_asr/tree_comparison.md` | QC3 §4.2 判读报告 |
+
+**✅ Phase 4.2 完成。metrics_manifest.tsv、TASKS.md、progress_snapshot.md 已同步更新。**
+

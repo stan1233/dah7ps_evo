@@ -36,16 +36,37 @@ How did allosteric regulation evolve on top of the conserved TIM barrel catalyti
 - **CHECK-04 (new)**: deep root over-interpretation risk, mitigated by QC3 gate + claim tiers
 - **CHECK-06 (new)**: document/numeric drift risk, mitigated by metrics manifest
 
+## Current Progress (2026-03-19)
+
+> All numbers from `results/meta/metrics_manifest.tsv` (single source of truth).
+
+| Phase | Status | Key Milestone |
+|---|---|---|
+| 0 环境与可复现性 | ✅ | `params.json`, `software_versions.tsv`, `metrics_manifest.tsv` |
+| 1 数据挖掘 | ✅ | PASS 24,202 seqs (Ia=9,204 / Ib=6,401 / II=8,597) |
+| 2 QC 与去冗余 | ✅ | NR80=9,673 / seeds60=1,878 / stepping-stone=258 |
+| 3.1–3.8 核心 MSA + 模块 | ✅ | `core_asr.afa` (9,393×472), 5 类模块 strict/relaxed |
+| 3.9 Full-length stitching | ✅ | `msa_full_Ib_v4.afa` (47×1040), QC2b 通过 |
+| 4.1 Rooted tree | 🏃 | S1 MFP ✅; S2 LG+C20 计算中; S3 midpoint ✅; S4 MAD ✅ |
+| **4.2 AA vs 3Di tree** | **✅** | **nRF=0.74, 三大亚型单系一致 → QC3-YELLOW** |
+| 4.3 Core ASR (S1) | ✅ | LogL=-2904285.44 |
+| QC3 Root robustness | ⬜ | 需 S2 完成 |
+| 5 结构验证 | ⬜ | 需 QC3 |
+| 6 Core DCA | ⬜ | 6.1 可立即启动 |
+| 7 论文蓝图 | ⬜ | — |
+
 ## Dataset
 
-| Type | Raw | After QC1 | NR80 | Core Mapped |
-|------|-----|-----------|------|-------------|
-| Iα   | 10,102 | 3,473 | 3,521 | — |
-| Iβ   | 16,211 | 5,728 | 3,073 | — |
-| II   | 9,862 | 3,064 | 3,079 | — |
-| **Total** | — | — | **9,673** | **9,393** |
+| Type | Raw Hits | PASS (QC1) | NR80 | Core Mapped |
+|------|----------|------------|------|-------------|
+| Iα   | 10,071 | 9,204 | 3,521 | — |
+| Iβ   | 7,869 (post-KDOPS) | 6,401 | 3,073 | — |
+| II   | 18,529 | 8,597 | 3,079 | — |
+| **Total** | — | **24,202** | **9,673** | **9,393** |
 
 Core MSA: 9,393 seqs × 521 cols (match-only), trimmed to 436 cols (tree) / 472 cols (ASR/DCA).
+
+Structural panel: 35 structures (30 AFDB + 5 PDB). Skeleton trees: 46 seqs × 521 cols (AA: Q.PFAM+I+R4; 3Di: Q.3Di.AF+G4).
 
 ## Key Vulnerability Fixes
 
@@ -67,6 +88,7 @@ Core MSA: 9,393 seqs × 521 cols (match-only), trimmed to 436 cols (tree) / 472 
 - **V5.1**: QC3 mandatory gate separates working tree from narrative tree
 - **V5.1**: Metrics manifest prevents document/numeric drift across PLAN/TASKS/README/paper [CHECK-06]
 - **V5.1**: Phase 5 node selection tightened to four-way gating (support + root stability + annotation stability + ASR interpretability)
+- **V5.1**: IQ-TREE 3.0.1 Q.3Di model case bug workaround: use `-m Q.3Di.AF+G4 --mdef` instead of `-mset`
 
 ## Environment
 

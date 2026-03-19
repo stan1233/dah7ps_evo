@@ -15,7 +15,7 @@
 | 3.1–3.8 结构感知核心 MSA | ✅ 完成 | `core_global_matchonly.afa` (9,393×521), `core_tree.afa` (436 cols), `core_asr.afa` (472 cols), 5 类模块 strict/relaxed 双矩阵 |
 | 3.9 Full-length stitching | ✅ 完成 | `msa_full_Ib_v4.afa` (47×1040), QC2b 断言通过 |
 | 4.1 Rooted tree | 🏃 进行中 | MFP ✅ (Q.PFAM+F+R10, LogL=-2835379.61); **LG+C20 正在本地运行** |
-| 4.2 AA vs 3Di tree | ⬜ 待做 | SkeletonTree_AA ✅; 3Di 待确认 |
+| 4.2 AA vs 3Di tree | ✅ 完成 | AA: Q.PFAM+I+R4; 3Di: Q.3Di.AF+G4; nRF=0.74 但亚型单系性一致 → **QC3-YELLOW** |
 | 4.3 Core ASR (S1) | ✅ 完成 | `ASR_core.*` (LogL=-2904285.44) |
 | 4.3 Core ASR (S2+) | ⬜ 待做 | 需等 LG+C20 树完成 |
 | 4.4 Nested ASR (Iβ-ACT) | ⬜ 待做 | 可立即启动 |
