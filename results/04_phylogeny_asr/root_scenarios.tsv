@@ -1,0 +1,6 @@
+scenario_id	source_alignment	tree_model	rooting_method	outgroup_set	tip_count	support_status	status	note
+S1_MFP_KDOPS	core_with_outgroup.afa	Q.PFAM+F+R10	outgroup	KDOPS_P0A715,KDOPS_Q9ZFK4,KDOPS_O66496	9405	UFBoot=1000	working	MFP rooted tree completed; ingroup pruned tree available
+S2_LGC20_KDOPS	core_with_outgroup.afa	LG+C20+F+G	outgroup	KDOPS_P0A715,KDOPS_Q9ZFK4,KDOPS_O66496	9405	UFBoot=1000	running	Currently computing locally; candidate tree search phase
+S3_MIDPOINT	CoreTree_rooted_ingroup.treefile	NA	midpoint	none	9393	NA	completed	BioPython root_at_midpoint(); output=CoreTree_rooted_midpoint_ingroup.treefile (412 KB)
+S4_MAD	CoreTree_rooted_ingroup.treefile	NA	MAD	none	9393	NA	completed	ete3 MAD full-search (9391 branches); rho=0.163617; root_split=[2820,6573]; root non-unique (top-500 found different position with same rho)
+S5_NONREV_REDUCED	TBD	nonreversible	nonreversible	none	TBD	NA	optional	Reduced representative set; resource-dependent

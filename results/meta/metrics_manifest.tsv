@@ -1,0 +1,47 @@
+metric_id	value	unit	source_file	phase	status	updated_on	note
+pass_Ia	9204	seqs	results/02_qc/	P2	final	2026-03-18	Length+coverage QC passed
+pass_Ib	6401	seqs	results/02_qc/	P2	final	2026-03-18	Length+coverage QC passed
+pass_II	8597	seqs	results/02_qc/	P2	final	2026-03-18	Length+coverage QC passed
+pass_total	24202	seqs	results/02_qc/	P2	final	2026-03-18	Sum of Ia+Ib+II PASS
+nr80_Ia	3521	seqs	results/02_qc/nr80_Ia.fasta	P2	final	2026-03-18	CD-HIT 80% NR
+nr80_Ib	3073	seqs	results/02_qc/nr80_Ib.fasta	P2	final	2026-03-18	CD-HIT 80% NR
+nr80_II	3079	seqs	results/02_qc/nr80_II.fasta	P2	final	2026-03-18	CD-HIT 80% NR
+nr80_total	9673	seqs	results/02_qc/	P2	final	2026-03-18	Sum of NR80
+seeds60_Ia	581	seqs	results/02_qc/seeds60_Ia.fasta	P2	final	2026-03-18	CD-HIT 60% seeds
+seeds60_Ib	648	seqs	results/02_qc/seeds60_Ib.fasta	P2	final	2026-03-18	CD-HIT 60% seeds
+seeds60_II	649	seqs	results/02_qc/seeds60_II.fasta	P2	final	2026-03-18	CD-HIT 60% seeds
+seeds60_total	1878	seqs	results/02_qc/	P2	final	2026-03-18	Sum of seeds60
+stepping_stone_258	258	seqs	results/02_qc/	P2	final	2026-03-18	MMseqs2 40% stepping stones (Ia=104,Ib=46,II=108)
+struct_panel_afdb	30	structs	results/	P3.1	final	2026-03-18	AFDB structures (core pLDDT>=70)
+struct_panel_pdb	5	structs	results/	P3.1	final	2026-03-18	PDB anchor structures
+struct_panel_total	35	structs	results/	P3.1	final	2026-03-18	Total structural panel
+foldmason_skeleton_seqs	46	seqs	results/03_msa_core/	P3.2	final	2026-03-18	FoldMason skeleton sequences
+foldmason_skeleton_cols	1966	cols	results/03_msa_core/	P3.2	final	2026-03-18	FoldMason skeleton columns
+core_columns	521	cols	results/03_msa_core/	P3.4	final	2026-03-18	LDDT-defined core columns
+core_global_seqs	9393	seqs	results/03_msa_core/core_global_matchonly.afa	P3.6	final	2026-03-18	Full core MSA sequences
+core_global_cols	521	cols	results/03_msa_core/core_global_matchonly.afa	P3.6	final	2026-03-18	Full core MSA columns (match-only)
+core_tree_cols	436	cols	results/03_msa_core/core_tree.afa	P3.7	final	2026-03-18	ClipKIT kpic-smart-gap trimmed
+core_asr_cols	472	cols	results/03_msa_core/core_asr.afa	P3.7	final	2026-03-18	Minimal trim gap>0.95
+core_asr_seqs	9393	seqs	results/03_msa_core/core_asr.afa	P3.7	final	2026-03-18	Sequences in ASR alignment
+module_types	5	count	results/03_msa_modules/	P3.8	final	2026-03-18	N_ext, alpha2beta3_insert, ACT_domain, CM_domain, C_tail
+module_matrix_rows	9393	seqs	results/03_msa_modules/module_presence_absence_strict.tsv	P3.8	final	2026-03-18	Rows in module matrix (excl header)
+msa_full_Ib_seqs	47	seqs	results/03_msa_full/msa_full_Ib_v4.afa	P3.9	final	2026-03-18	Ib-ACT full-length stitched MSA
+msa_full_Ib_cols	1040	cols	results/03_msa_full/msa_full_Ib_v4.afa	P3.9	final	2026-03-18	core(1-472)|ACT(473-614)|C-flank(615-1040)
+outgroup_seqs	12	seqs	results/04_phylogeny_asr/core_with_outgroup.afa	P4.1	final	2026-03-18	KDOPS outgroup sequences
+core_with_outgroup_seqs	9405	seqs	results/04_phylogeny_asr/core_with_outgroup.afa	P4.1	final	2026-03-18	9393 ingroup + 12 KDOPS
+tree_MFP_model	Q.PFAM+F+R10	model	results/04_phylogeny_asr/CoreTree_rooted_MFP.iqtree	P4.1	final	2026-03-18	Best-fit model by BIC (S1)
+tree_MFP_logL	-2835379.61	logL	results/04_phylogeny_asr/CoreTree_rooted_MFP.iqtree	P4.1	final	2026-03-18	Tree log-likelihood (S1 MFP)
+tree_MFP_ufboot	1000	reps	results/04_phylogeny_asr/CoreTree_rooted_MFP.iqtree	P4.1	final	2026-03-18	UFBoot replicates
+tree_LGC20_model	LG+C20+F+G	model	results/04_phylogeny_asr/CoreTree_rooted_LGC20	P4.1	provisional	2026-03-18	Running; checkpoint exists
+tree_LGC20_logL	-2842137.89	logL	results/04_phylogeny_asr/iqtree_LGC20_nohup.log	P4.1	provisional	2026-03-18	Optimized LogL from param step; tree search in progress
+ingroup_tree_tips	9393	tips	results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile	P4.3	final	2026-03-18	After pruning 12 KDOPS
+asr_core_S1_model	Q.PFAM+F+R10	model	results/04_phylogeny_asr/ASR_core.iqtree	P4.3	final	2026-03-18	ASR on working tree S1
+asr_core_S1_logL	-2904285.44	logL	results/04_phylogeny_asr/ASR_core.iqtree	P4.3	final	2026-03-18	ASR tree log-likelihood
+skeleton_AA_model	Q.PFAM+I+R4	model	results/04_phylogeny_asr/SkeletonTree_AA.iqtree	P4.2	final	2026-03-19	Skeleton AA tree best-fit model
+skeleton_AA_logL	-24492.82	logL	results/04_phylogeny_asr/SkeletonTree_AA.iqtree	P4.2	final	2026-03-19	Skeleton AA tree log-likelihood
+skeleton_3Di_model	Q.3Di.AF+G4	model	results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di.iqtree	P4.2	final	2026-03-19	Skeleton 3Di tree model (explicit; MFP skips Q.3Di due to IQ-TREE case bug)
+skeleton_3Di_logL	-16939.94	logL	results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di.iqtree	P4.2	final	2026-03-19	Skeleton 3Di tree log-likelihood
+tree_comparison_nRF	0.7442	ratio	results/04_phylogeny_asr/tree_comparison.tsv	P4.2	final	2026-03-19	Normalized RF distance AA vs 3Di (high but expected)
+tree_comparison_shared_bip	11	count	results/04_phylogeny_asr/tree_comparison.tsv	P4.2	final	2026-03-19	Shared bipartitions (of 43 each)
+tree_comparison_verdict	QC3-YELLOW	status	results/04_phylogeny_asr/tree_comparison.md	P4.2	final	2026-03-19	All 3 subtype clades monophyletic in both; no fatal deep conflict
+dca_meff_L	NA	ratio	NA	P6.1	pending	2026-03-18	Not yet computed

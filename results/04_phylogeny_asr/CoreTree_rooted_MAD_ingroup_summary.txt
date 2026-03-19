@@ -1,0 +1,15 @@
+MAD Rooting Summary
+===================
+Input: results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile
+Tips: 9393
+Candidates evaluated: 500
+Best rho (relative ancestor deviation): 0.163617
+Root split sizes: [3060, 6333]
+Elapsed: 86.6s
+
+Root-to-tip distances:
+  Mean: 4.8557
+  Std:  0.7945
+  Min:  2.6645
+  Max:  7.5116
+  CV:   0.1636

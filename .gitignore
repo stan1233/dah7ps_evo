@@ -36,3 +36,13 @@ tmp_foldmason/
 
 # Stockholm alignment files (large intermediate)
 *.sto
+
+# IQ-TREE intermediate/recovery files (very large)
+*.mldist
+*.state
+*.ckp.gz
+*.model.gz
+*.bionj
+*.contree
+*.splits.nex
+*.uniqueseq.phy
