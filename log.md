@@ -2669,3 +2669,101 @@ python3 scripts/compare_trees.py \
 
 **✅ Phase 4.2 完成。metrics_manifest.tsv、TASKS.md、progress_snapshot.md 已同步更新。**
 
+
+---
+
+## 2026-04-08 QC3 Root Robustness Gate 执行
+
+---
+
+### 06:15 — S2 LGC20 树完成确认
+
+**背景：** `CoreTree_rooted_LGC20.treefile` 已于 2026-04-05 05:52 完成。
+
+**关键参数（来自 `CoreTree_rooted_LGC20.iqtree`）：**
+
+| 指标 | 值 |
+|---|---|
+| 序列数 | 9,405 (9,393 ingroup + 12 KDOPS) |
+| 对齐长度 | 436 cols (core_tree.afa) |
+| 模型 | MIX{LG+F+F, LG+FC20pi1…pi20}+G4 |
+| 最终 LogL | -2820118.0907 |
+| UFBoot replicates | 1000 |
+| 完成时间 | 2026-04-05 05:52 |
+
+**状态更新：** `root_scenarios.tsv` S2 状态由 `running` → `completed`
+
+---
+
+### 06:18 — QC3 分析执行
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 python scripts/qc_root_stability.py \
+  --dir results/04_phylogeny_asr \
+  --module_strict results/03_msa_modules/module_presence_absence_strict.tsv \
+  --module_relaxed results/03_msa_modules/module_presence_absence_relaxed.tsv \
+  --out_dir results/04_phylogeny_asr
+```
+
+**耗时：** ~100 秒（含四棵大树的 BioPython 解析 + RF 计算）
+
+**QC3 结果：**
+
+**→ 四棵树全部加载成功：**
+- S1 MFP KDOPS: 9405 tips ✅
+- S2 LGC20 KDOPS: 9405 tips ✅
+- S3 Midpoint ingroup: 9393 tips ✅
+- S4 MAD ingroup: 9393 tips ✅
+
+**→ Pairwise RF distances (ingroup only)：**
+
+| 比较 | RF | nRF |
+|---|---|---|
+| S1 vs S2 | 7748 | 0.413 |
+| S1 vs S3 | 54 | 0.003 |
+| S1 vs S4 | 52 | 0.003 |
+| S2 vs S3 | 7752 | 0.413 |
+| S2 vs S4 | 7750 | 0.413 |
+| S3 vs S4 | 2 | 0.000 |
+
+**→ Root partition ratios：**
+- S1 MFP: 1.0（KDOPS 多系导致 ratio 异常）
+- S2 LGC20: 1.0
+- S3 Midpoint: 0.326
+- S4 MAD: 0.300
+
+**→ 模块流行率（strict）：**
+- N_ext: 33.3% → root_sensitive
+- alpha2beta3_insert: 1.8% → root_robust
+- ACT_domain: 0.5% → root_robust
+- CM_domain: 4.3% → root_sensitive
+- C_tail: 3.8% → root_sensitive
+
+**→ QC3 总裁决：YELLOW（root_sensitive）**
+
+**输出文件：**
+- `results/04_phylogeny_asr/QC3_root_stability.md` ✅ 新建
+- `results/04_phylogeny_asr/root_scenarios.tsv` ✅ 更新（S2 completed）
+- `results/04_phylogeny_asr/rooted_working_tree.treefile` ✅ 新建（S1 ingroup 副本）
+- `results/04_phylogeny_asr/node_selection_registry.tsv` ~ 已存在，未覆盖
+
+**文档同步：**
+- `results/meta/metrics_manifest.tsv` → 更新 S2 LogL 为正式值、新增 QC3 指标行
+- `results/meta/progress_snapshot.md` → 全面更新至当前状态
+
+---
+
+### 科学解读（重要）
+
+**S1 vs S2 nRF=0.413**：MFP 换为 LG+C20（抗 LBA 混合模型）后，全局拓扑变化中等。这一差异反映了两点：
+1. KDOPS 外群多系性在两棵树中均存在，但 KDOPS 各序列在树中的具体位置有差异。
+2. 内群拓扑在抗 LBA 模型下发生了一定幅度的重排，这正是使用 S2 的意义所在。
+
+**S1 vs S3 nRF=0.003**：MFP 树与 Midpoint 根几乎完全一致。这说明 S1 的拓扑在 outgroup-free 条件下也被 midpoint 方法"认可"，增强了 S1 作为 working tree 的合理性。
+
+**S3 vs S4 nRF=0.000**：Midpoint 与 MAD 方法拓扑等同，增强了 topology-based rooting 的内部一致性。
+
+**YELLOW 主要原因**：S1/S2（outgroup-based）与 S3/S4（topology-based）的 root partition ratios（1.0 vs ~0.31）存在差异，反映了 KDOPS 多系性使 outgroup rooting 的根位置估计不可靠。这在 V5.1 AGENTS.md 中已预判，当前处理策略正确。
+
