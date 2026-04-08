@@ -8,7 +8,7 @@ This file provides guidance to Claude Code when working inside this repository.
 
 This repository contains a bioinformatics research workflow for reconstructing the evolutionary origin of allosteric regulation in the DAH7PS enzyme family.
 
-The project now follows **V5.1 SOP rev6**.
+The project now follows **V6 SOP rev7**.
 
 ### Source-of-truth hierarchy
 
@@ -31,7 +31,7 @@ Treat the repository as being in the following state unless a newer `progress_sn
 - Phase 4.3: KDOPS outgroup pruned and tip-match issue already resolved
 - Main current bottleneck: **root robustness**, not core-MSA failure
 
-### The most important V5.1 mindset shift
+### The most important V6 mindset shift
 
 Do **not** assume that the current rooted ingroup tree is the final historical truth.
 It is a **working tree** for computation.

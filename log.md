@@ -2767,3 +2767,142 @@ conda run -n dah7ps_v4 python scripts/qc_root_stability.py \
 
 **YELLOW 主要原因**：S1/S2（outgroup-based）与 S3/S4（topology-based）的 root partition ratios（1.0 vs ~0.31）存在差异，反映了 KDOPS 多系性使 outgroup rooting 的根位置估计不可靠。这在 V5.1 AGENTS.md 中已预判，当前处理策略正确。
 
+---
+
+### 18:14 — V6 文档分支创建与审计版文档并入
+
+**任务背景：**
+
+用户在仓库根目录新增上传目录 `dah7ps_docs_updated/`，其中包含三份审计后文档：
+- `dah7ps_docs_updated/PLAN.md`
+- `dah7ps_docs_updated/README.md`
+- `dah7ps_docs_updated/TASKS.md`
+
+要求：
+1. 基于当前工作树创建新分支 `Phase-4_V6`
+2. 用上传的三份文件更新当前项目对应文档
+3. 将版本标识统一改为 `V6`，不再保留 `V5.1.1`
+4. 更新完成后删除 `dah7ps_docs_updated/`
+
+**执行前状态检查：**
+
+```bash
+git status --short --branch
+rg --files dah7ps_docs_updated
+rg --files -g 'PLAN.md' -g 'AGENTS.md' -g 'TASKS.md' -g 'README.md' -g 'CLAUDE.md'
+```
+
+确认结果：
+- 当前分支：`Phase-4_V5.1`
+- 上传目录存在，且仅包含 `PLAN.md`、`README.md`、`TASKS.md`
+- 项目根目录已有同名目标文件
+
+**分支创建：**
+
+```bash
+git checkout -b Phase-4_V6
+```
+
+说明：
+- 首次在沙箱内执行时因 `.git/refs/heads/Phase-4_V6.lock` 写入受限失败
+- 经提权后成功创建并切换到新分支 `Phase-4_V6`
+
+**差异核对：**
+
+```bash
+diff -u PLAN.md dah7ps_docs_updated/PLAN.md
+diff -u README.md dah7ps_docs_updated/README.md
+diff -u TASKS.md dah7ps_docs_updated/TASKS.md
+```
+
+核对结论：
+- 三份上传文档均不是局部修补，而是相对仓库内旧版文档的审计后重写版本
+- `PLAN.md` 由旧 `V5.1 SOP rev6` 结构，切换为新的审计版路线重排文本（原上传标题为 `V5.1.1 审计修订版（SOP rev7）`）
+- `README.md` 由旧的 V5.1 策略总览，切换为 2026-04-08 审计状态说明与当前 gate/priority 说明
+- `TASKS.md` 由旧 phase checklist，切换为以 provenance repair / S2 ASR / module stability / DCA audit / Phase 5 gating 为主的 critical-path 任务表
+
+**实际文件替换：**
+
+```bash
+cp dah7ps_docs_updated/PLAN.md PLAN.md
+cp dah7ps_docs_updated/README.md README.md
+cp dah7ps_docs_updated/TASKS.md TASKS.md
+```
+
+**替换后的版本统一处理：**
+
+为满足“版本改为 `V6` 而不是 `V5.1.1`”的要求，对项目级文档做了额外版本清理：
+
+1. `PLAN.md`
+- 标题从 `V5.1.1 审计修订版（SOP rev7）` 改为 `V6 审计修订版（SOP rev7）`
+
+2. `README.md`
+- 顶部状态行从 `Audit-adjusted project status (V5.1.1, 2026-04-08)` 改为 `Audit-adjusted project status (V6, 2026-04-08)`
+
+3. `TASKS.md`
+- 标题从 `DAH7PS V5.1.1 审计修订版任务清单` 改为 `DAH7PS V6 审计修订版任务清单`
+- 文档内任务项 `PLAN 更新为 V5.1.1 审计修订版` 改为 `PLAN 更新为 V6 审计修订版`
+
+4. `AGENTS.md`
+- 顶部标题从 `V5.1 SOP rev6 执行指南` 改为 `V6 SOP rev7 执行指南`
+- source-of-truth 描述从 ``PLAN.md`（V5.1 SOP rev6）`` 改为 ``PLAN.md`（V6 SOP rev7）``
+- 项目级表述同步替换：
+  - `V5.1 的关键不是……` → `V6 的关键不是……`
+  - `V5.1 追加要求` → `V6 追加要求`
+  - `V5.1 核心新增` → `V6 核心新增`
+  - `V5.1 收紧版` → `V6 收紧版`
+  - `不能宣称 V5.1 主线完成` → `不能宣称 V6 主线完成`
+  - `V5.1 的成功标准……` → `V6 的成功标准……`
+
+5. `CLAUDE.md`
+- 项目说明从 `The project now follows V5.1 SOP rev6.` 改为 `The project now follows V6 SOP rev7.`
+- 小节标题从 `The most important V5.1 mindset shift` 改为 `The most important V6 mindset shift`
+
+**版本核查命令：**
+
+```bash
+rg -n "V5\\.1\\.1|V5\\.1 SOP rev6|V5\\.1|V6|rev7|rev6" PLAN.md README.md TASKS.md AGENTS.md CLAUDE.md
+```
+
+核查结果：
+- `PLAN.md` / `README.md` / `TASKS.md` 顶部版本已统一为 `V6`
+- `AGENTS.md` / `CLAUDE.md` 的项目级版本引用已统一到 `V6 SOP rev7`
+- 未保留 `V5.1.1` 或 `V5.1 SOP rev6` 作为当前版本标签
+
+**上传目录清理：**
+
+```bash
+rm -rf dah7ps_docs_updated
+test -e dah7ps_docs_updated && echo exists || echo missing
+```
+
+结果：
+- `dah7ps_docs_updated/` 已从文件系统删除
+- `test` 返回 `missing`
+
+**最终工作树状态：**
+
+```bash
+git status --short --branch
+```
+
+结果：
+- 当前分支：`Phase-4_V6`
+- 已修改文件：
+  - `AGENTS.md`
+  - `CLAUDE.md`
+  - `PLAN.md`
+  - `README.md`
+  - `TASKS.md`
+- 未跟踪文件：
+  - `.codex`
+
+**本次文档更新的实质性变化摘要：**
+
+这次更新不是简单替换文件名，而是把项目文档基线从旧的 `V5.1 SOP rev6` 叙事切换到 2026-04-08 审计后的 `V6 SOP rev7` 路线。核心变化包括：
+- 把项目主瓶颈明确重定义为 `root scenario provenance / sensitivity`
+- 将 `S4 provenance repair` 与 `S2 prune + ASR` 提升为当前最高优先级
+- 把模块历史解释正式后置到 `strict/relaxed × scenario` 稳定性矩阵之后
+- 把 DCA 明确为可并行但必须先过 `Meff/L` 审计门槛的分支
+- 把 Phase 5 明确限定为 QC3 之后才能锁定节点的后置流程
+- 将项目对外和对内文档的当前版本标签统一提升为 `V6`
