@@ -1,6 +1,6 @@
-# AGENTS.md — DAH7PS 变构起源演化动力学重建（V5.1 SOP rev6 执行指南）
+# AGENTS.md — DAH7PS 变构起源演化动力学重建（V6 SOP rev7 执行指南）
 
-> **唯一真相源（Single Source of Truth）**：`PLAN.md`（V5.1 SOP rev6）  
+> **唯一真相源（Single Source of Truth）**：`PLAN.md`（V6 SOP rev7）  
 > **本文件的作用**：把 `PLAN.md` 翻译成可执行的工程契约、阶段门控、验收标准与禁止事项，确保自动化执行时不偏航、不偷换问题、不提前下结论。
 
 ---
@@ -32,7 +32,7 @@
 
 ### 0.3 执行代理必须理解的核心变化
 
-V5.1 的关键不是“返工前半程”，而是：
+V6 的关键不是“返工前半程”，而是：
 
 - 用 **多 root scenario** 管理不确定性；
 - 把 **QC3** 提升为真正 gate；
@@ -205,7 +205,7 @@ results/
 - `results/meta/software_versions.tsv`
 - `results/meta/model_files.tsv`
 
-**V5.1 追加要求**
+**V6 追加要求**
 
 - `results/meta/metrics_manifest.tsv`
 - `results/meta/progress_snapshot.md`
@@ -328,7 +328,7 @@ results/
 - 这一步完成只意味着 ASR 计算可以继续；
 - **不意味着** deepest-root 历史解释可以直接锁定。
 
-#### QC3：root robustness gate【V5.1 核心新增】
+#### QC3：root robustness gate【V6 核心新增】
 
 **目标**
 判断哪些历史事件是 root-robust，哪些是 root-sensitive。
@@ -413,7 +413,7 @@ results/
 
 - 每个候选节点都有明确的 oligomer decision 与证据链
 
-#### Phase 5.1：候选节点选择【V5.1 收紧版】
+#### Phase 5.1：候选节点选择【V6 收紧版】
 
 **只有符合以下全部条件才可进入主线：**
 
@@ -552,7 +552,7 @@ results/
 
 ## 7. 执行完成的最低交付标准
 
-以下项目缺任一项，都不能宣称 V5.1 主线完成：
+以下项目缺任一项，都不能宣称 V6 主线完成：
 
 1. `metrics_manifest.tsv` 与 `progress_snapshot.md` 已建立并持续更新
 2. Phase 3.9 已在所有文档中正式改为已完成
@@ -574,4 +574,4 @@ results/
 - 不要让文档状态继续漂移；
 - 不要让 exploratory 分析篡位成主线结论。
 
-**V5.1 的成功标准不是“讲出最宏大的故事”，而是“只讲能够被多证据、可复现、可审稿地支撑的故事”。**
+**V6 的成功标准不是“讲出最宏大的故事”，而是“只讲能够被多证据、可复现、可审稿地支撑的故事”。**

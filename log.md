@@ -2669,3 +2669,240 @@ python3 scripts/compare_trees.py \
 
 **✅ Phase 4.2 完成。metrics_manifest.tsv、TASKS.md、progress_snapshot.md 已同步更新。**
 
+
+---
+
+## 2026-04-08 QC3 Root Robustness Gate 执行
+
+---
+
+### 06:15 — S2 LGC20 树完成确认
+
+**背景：** `CoreTree_rooted_LGC20.treefile` 已于 2026-04-05 05:52 完成。
+
+**关键参数（来自 `CoreTree_rooted_LGC20.iqtree`）：**
+
+| 指标 | 值 |
+|---|---|
+| 序列数 | 9,405 (9,393 ingroup + 12 KDOPS) |
+| 对齐长度 | 436 cols (core_tree.afa) |
+| 模型 | MIX{LG+F+F, LG+FC20pi1…pi20}+G4 |
+| 最终 LogL | -2820118.0907 |
+| UFBoot replicates | 1000 |
+| 完成时间 | 2026-04-05 05:52 |
+
+**状态更新：** `root_scenarios.tsv` S2 状态由 `running` → `completed`
+
+---
+
+### 06:18 — QC3 分析执行
+
+**精确命令：**
+
+```bash
+conda run -n dah7ps_v4 python scripts/qc_root_stability.py \
+  --dir results/04_phylogeny_asr \
+  --module_strict results/03_msa_modules/module_presence_absence_strict.tsv \
+  --module_relaxed results/03_msa_modules/module_presence_absence_relaxed.tsv \
+  --out_dir results/04_phylogeny_asr
+```
+
+**耗时：** ~100 秒（含四棵大树的 BioPython 解析 + RF 计算）
+
+**QC3 结果：**
+
+**→ 四棵树全部加载成功：**
+- S1 MFP KDOPS: 9405 tips ✅
+- S2 LGC20 KDOPS: 9405 tips ✅
+- S3 Midpoint ingroup: 9393 tips ✅
+- S4 MAD ingroup: 9393 tips ✅
+
+**→ Pairwise RF distances (ingroup only)：**
+
+| 比较 | RF | nRF |
+|---|---|---|
+| S1 vs S2 | 7748 | 0.413 |
+| S1 vs S3 | 54 | 0.003 |
+| S1 vs S4 | 52 | 0.003 |
+| S2 vs S3 | 7752 | 0.413 |
+| S2 vs S4 | 7750 | 0.413 |
+| S3 vs S4 | 2 | 0.000 |
+
+**→ Root partition ratios：**
+- S1 MFP: 1.0（KDOPS 多系导致 ratio 异常）
+- S2 LGC20: 1.0
+- S3 Midpoint: 0.326
+- S4 MAD: 0.300
+
+**→ 模块流行率（strict）：**
+- N_ext: 33.3% → root_sensitive
+- alpha2beta3_insert: 1.8% → root_robust
+- ACT_domain: 0.5% → root_robust
+- CM_domain: 4.3% → root_sensitive
+- C_tail: 3.8% → root_sensitive
+
+**→ QC3 总裁决：YELLOW（root_sensitive）**
+
+**输出文件：**
+- `results/04_phylogeny_asr/QC3_root_stability.md` ✅ 新建
+- `results/04_phylogeny_asr/root_scenarios.tsv` ✅ 更新（S2 completed）
+- `results/04_phylogeny_asr/rooted_working_tree.treefile` ✅ 新建（S1 ingroup 副本）
+- `results/04_phylogeny_asr/node_selection_registry.tsv` ~ 已存在，未覆盖
+
+**文档同步：**
+- `results/meta/metrics_manifest.tsv` → 更新 S2 LogL 为正式值、新增 QC3 指标行
+- `results/meta/progress_snapshot.md` → 全面更新至当前状态
+
+---
+
+### 科学解读（重要）
+
+**S1 vs S2 nRF=0.413**：MFP 换为 LG+C20（抗 LBA 混合模型）后，全局拓扑变化中等。这一差异反映了两点：
+1. KDOPS 外群多系性在两棵树中均存在，但 KDOPS 各序列在树中的具体位置有差异。
+2. 内群拓扑在抗 LBA 模型下发生了一定幅度的重排，这正是使用 S2 的意义所在。
+
+**S1 vs S3 nRF=0.003**：MFP 树与 Midpoint 根几乎完全一致。这说明 S1 的拓扑在 outgroup-free 条件下也被 midpoint 方法"认可"，增强了 S1 作为 working tree 的合理性。
+
+**S3 vs S4 nRF=0.000**：Midpoint 与 MAD 方法拓扑等同，增强了 topology-based rooting 的内部一致性。
+
+**YELLOW 主要原因**：S1/S2（outgroup-based）与 S3/S4（topology-based）的 root partition ratios（1.0 vs ~0.31）存在差异，反映了 KDOPS 多系性使 outgroup rooting 的根位置估计不可靠。这在 V5.1 AGENTS.md 中已预判，当前处理策略正确。
+
+---
+
+### 18:14 — V6 文档分支创建与审计版文档并入
+
+**任务背景：**
+
+用户在仓库根目录新增上传目录 `dah7ps_docs_updated/`，其中包含三份审计后文档：
+- `dah7ps_docs_updated/PLAN.md`
+- `dah7ps_docs_updated/README.md`
+- `dah7ps_docs_updated/TASKS.md`
+
+要求：
+1. 基于当前工作树创建新分支 `Phase-4_V6`
+2. 用上传的三份文件更新当前项目对应文档
+3. 将版本标识统一改为 `V6`，不再保留 `V5.1.1`
+4. 更新完成后删除 `dah7ps_docs_updated/`
+
+**执行前状态检查：**
+
+```bash
+git status --short --branch
+rg --files dah7ps_docs_updated
+rg --files -g 'PLAN.md' -g 'AGENTS.md' -g 'TASKS.md' -g 'README.md' -g 'CLAUDE.md'
+```
+
+确认结果：
+- 当前分支：`Phase-4_V5.1`
+- 上传目录存在，且仅包含 `PLAN.md`、`README.md`、`TASKS.md`
+- 项目根目录已有同名目标文件
+
+**分支创建：**
+
+```bash
+git checkout -b Phase-4_V6
+```
+
+说明：
+- 首次在沙箱内执行时因 `.git/refs/heads/Phase-4_V6.lock` 写入受限失败
+- 经提权后成功创建并切换到新分支 `Phase-4_V6`
+
+**差异核对：**
+
+```bash
+diff -u PLAN.md dah7ps_docs_updated/PLAN.md
+diff -u README.md dah7ps_docs_updated/README.md
+diff -u TASKS.md dah7ps_docs_updated/TASKS.md
+```
+
+核对结论：
+- 三份上传文档均不是局部修补，而是相对仓库内旧版文档的审计后重写版本
+- `PLAN.md` 由旧 `V5.1 SOP rev6` 结构，切换为新的审计版路线重排文本（原上传标题为 `V5.1.1 审计修订版（SOP rev7）`）
+- `README.md` 由旧的 V5.1 策略总览，切换为 2026-04-08 审计状态说明与当前 gate/priority 说明
+- `TASKS.md` 由旧 phase checklist，切换为以 provenance repair / S2 ASR / module stability / DCA audit / Phase 5 gating 为主的 critical-path 任务表
+
+**实际文件替换：**
+
+```bash
+cp dah7ps_docs_updated/PLAN.md PLAN.md
+cp dah7ps_docs_updated/README.md README.md
+cp dah7ps_docs_updated/TASKS.md TASKS.md
+```
+
+**替换后的版本统一处理：**
+
+为满足“版本改为 `V6` 而不是 `V5.1.1`”的要求，对项目级文档做了额外版本清理：
+
+1. `PLAN.md`
+- 标题从 `V5.1.1 审计修订版（SOP rev7）` 改为 `V6 审计修订版（SOP rev7）`
+
+2. `README.md`
+- 顶部状态行从 `Audit-adjusted project status (V5.1.1, 2026-04-08)` 改为 `Audit-adjusted project status (V6, 2026-04-08)`
+
+3. `TASKS.md`
+- 标题从 `DAH7PS V5.1.1 审计修订版任务清单` 改为 `DAH7PS V6 审计修订版任务清单`
+- 文档内任务项 `PLAN 更新为 V5.1.1 审计修订版` 改为 `PLAN 更新为 V6 审计修订版`
+
+4. `AGENTS.md`
+- 顶部标题从 `V5.1 SOP rev6 执行指南` 改为 `V6 SOP rev7 执行指南`
+- source-of-truth 描述从 ``PLAN.md`（V5.1 SOP rev6）`` 改为 ``PLAN.md`（V6 SOP rev7）``
+- 项目级表述同步替换：
+  - `V5.1 的关键不是……` → `V6 的关键不是……`
+  - `V5.1 追加要求` → `V6 追加要求`
+  - `V5.1 核心新增` → `V6 核心新增`
+  - `V5.1 收紧版` → `V6 收紧版`
+  - `不能宣称 V5.1 主线完成` → `不能宣称 V6 主线完成`
+  - `V5.1 的成功标准……` → `V6 的成功标准……`
+
+5. `CLAUDE.md`
+- 项目说明从 `The project now follows V5.1 SOP rev6.` 改为 `The project now follows V6 SOP rev7.`
+- 小节标题从 `The most important V5.1 mindset shift` 改为 `The most important V6 mindset shift`
+
+**版本核查命令：**
+
+```bash
+rg -n "V5\\.1\\.1|V5\\.1 SOP rev6|V5\\.1|V6|rev7|rev6" PLAN.md README.md TASKS.md AGENTS.md CLAUDE.md
+```
+
+核查结果：
+- `PLAN.md` / `README.md` / `TASKS.md` 顶部版本已统一为 `V6`
+- `AGENTS.md` / `CLAUDE.md` 的项目级版本引用已统一到 `V6 SOP rev7`
+- 未保留 `V5.1.1` 或 `V5.1 SOP rev6` 作为当前版本标签
+
+**上传目录清理：**
+
+```bash
+rm -rf dah7ps_docs_updated
+test -e dah7ps_docs_updated && echo exists || echo missing
+```
+
+结果：
+- `dah7ps_docs_updated/` 已从文件系统删除
+- `test` 返回 `missing`
+
+**最终工作树状态：**
+
+```bash
+git status --short --branch
+```
+
+结果：
+- 当前分支：`Phase-4_V6`
+- 已修改文件：
+  - `AGENTS.md`
+  - `CLAUDE.md`
+  - `PLAN.md`
+  - `README.md`
+  - `TASKS.md`
+- 未跟踪文件：
+  - `.codex`
+
+**本次文档更新的实质性变化摘要：**
+
+这次更新不是简单替换文件名，而是把项目文档基线从旧的 `V5.1 SOP rev6` 叙事切换到 2026-04-08 审计后的 `V6 SOP rev7` 路线。核心变化包括：
+- 把项目主瓶颈明确重定义为 `root scenario provenance / sensitivity`
+- 将 `S4 provenance repair` 与 `S2 prune + ASR` 提升为当前最高优先级
+- 把模块历史解释正式后置到 `strict/relaxed × scenario` 稳定性矩阵之后
+- 把 DCA 明确为可并行但必须先过 `Meff/L` 审计门槛的分支
+- 把 Phase 5 明确限定为 QC3 之后才能锁定节点的后置流程
+- 将项目对外和对内文档的当前版本标签统一提升为 `V6`

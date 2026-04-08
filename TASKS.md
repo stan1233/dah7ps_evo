@@ -1,282 +1,334 @@
-# TASKS.md — DAH7PS V5.1 项目任务追踪
+# TASKS.md — DAH7PS V6 审计修订版任务清单
 
-> 基于 `PLAN.md`（V5.1 SOP rev6）提取，状态根据 `log.md` 实验记录同步更新。
-> 所有数字以 `results/meta/metrics_manifest.tsv` 为准。
->
-> 状态标记：`[x]` 完成 / `[/]` 进行中 / `[ ]` 待做 / `[-]` 跳过/延后
-
----
-
-## Phase 0：环境与可复现性 ✅
-
-- [x] 0.1 创建 conda 环境 `dah7ps_v4`（python 3.11, hmmer, mafft, iqtree, mmseqs2, foldmason, seqkit, cd-hit）
-- [x] 0.1 安装 pip 依赖（clipkit, pastml）
-- [x] 0.2 记录软件版本 → `results/meta/software_versions.tsv`
-- [x] 0.3 建立 SOP 目录结构（data/, meta/, scripts/, results/01-06, workflow/）
-- [x] 0.4 初始化参数文件 → `meta/params.json`
-- [x] 0.2.1 初始化模型文件记录 → `results/meta/model_files.tsv`
-- [x] 0.2.1 下载 3Di 模型（Q.3Di.AF/Q.3Di.LLM）→ `meta/models/`（sha256 已记录）
-- [x] 0.5 **[V5.1]** 初始化文档同步：创建 `results/meta/metrics_manifest.tsv` + `results/meta/progress_snapshot.md`
-- [x] 0.6 **[V5.1]** 创建 `results/04_phylogeny_asr/root_scenarios.tsv`
-- [x] 0.7 **[V5.1]** 创建 `results/04_phylogeny_asr/node_selection_registry.tsv`
-- [x] 0.8 **[V5.1]** 更新 `meta/params.json` → 新增 `rooting` / `manuscript` / `metrics` 参数块
-
-**Done 条件：** ✅ `software_versions.tsv` + `params.json` + `model_files.tsv` 均存在
+> 本文件基于 2026-04-08 诊断审计重排优先级。  
+> 所有数字以 `results/meta/metrics_manifest.tsv` 为准；所有状态以 `results/meta/progress_snapshot.md` 为准。  
+> 状态标记：`[x]` 完成 / `[/]` 进行中 / `[ ]` 待做 / `[-]` 暂停或被 gate 阻塞
 
 ---
 
-## Phase 1：数据挖掘（KDOPS 反向过滤 + 全库扫描） ✅
+## 0. 全局规则（新增）
 
-### V3.1 已完成（需评估是否满足 V4.1 要求）
-
-- [x] 1.1 种子比对 + HMM 构建（Ia/Ib/II）→ `results/01_mining/model_*.hmm`
-- [x] 1.2 hmmsearch 扫描 UniRef90 → `results/01_mining/domhits_*.tbl`
-- [x] 1.2 序列提取 → `results/01_mining/raw_full_*.fasta`（Ia=10,102 / Ib=16,211 / II=9,862）
-- [x] 1.3 KDOPS 反向过滤（仅 Iβ）→ `results/01_mining/raw_full_Ib_clean.fasta`
-
-### V4.1 新增要求
-
-- [x] 1.1 **扩充 Type II 种子**（1 → 14 条，覆盖细菌 + 植物多分支）
-- [x] 1.1 扩充 Type Ia（3 → 13 条）/ Type Ib（3 → 6 条）种子多样性
-- [x] 1.3 准备 KDOPS 外群种子集（12 条，覆盖 9 个分类群）→ `data/seeds/kdops_outgroup.fasta`
-- [x] 1.1 用扩充后种子重建 HMM → 重新 hmmsearch（Ia=10,071 / Ib=15,608 / II=18,529）
-- [x] 1.3 KDOPS 反向过滤 V4.1（Ib: 15,608 → 7,869 clean）→ `results/01_mining/hits_Ib_clean.fasta`
-- [x] QC1 产出 `results/01_mining/qc_mining_report.md`
-
-### V5.1 解释边界
-
-> KDOPS 在 Phase 1 中是成功的负选择工具；但在 Phase 4 中不再自动等价于唯一可信的深根。
+- [x] 将 Phase 0–3 视为稳定基础层，不因当前 root 问题返工
+- [x] 将“working tree ≠ narrative tree”写入 README / PLAN / TASKS
+- [x] 将 Phase 5 改为 **QC3 后置**
+- [ ] 所有 scenario 强制记录 `treefile + summary + log + source script + md5`
+- [ ] 将 S3 / S4 缺失的执行记录补入 `log.md`
+- [ ] 统一 Phase 5 目录名为 `results/05_struct_md/`
+- [ ] 清理旧文档中的过期状态与路径漂移
 
 ---
 
-## Phase 2：质量控制与去冗余 ✅
+## 1. 已稳定完成的基础层（不返工）
 
-### Pre-Phase 2 门控（计划外追加）
+### Phase 0–3 stable baseline
 
-- [x] Gate A：三亚型 hits 交集统计 → Ia∩II = 8,561（85%）
-- [x] Gate A-2：Best-hit Ia vs II 竞争打分归属 → 全部归属 Ia（100% HIGH）
-- [x] Gate A-2：生成互斥 FASTA（Ia=10,071 / Ib=7,869 / II=9,968）
-- [x] Gate B：Ib 边缘 KDOPS 序列隔离（4 条标记 → `kdops_borderline_ids.txt`）
+- [x] 环境、软件版本、参数文件、目录规范
+- [x] UniRef90 序列挖掘与 subtype HMM 流程
+- [x] KDOPS 负筛与 Ib 清洗
+- [x] Ia / II overlap 竞争归属
+- [x] Phase 2 长度 / 覆盖度 QC
+- [x] Type II stitching rescue
+- [x] NR80 / seeds60 / stepping-stone
+- [x] FoldMason 结构面板与 skeleton
+- [x] LDDT-based core column definition
+- [x] `core_global_matchonly.afa`、`core_tree.afa`、`core_asr.afa`
+- [x] strict / relaxed 模块矩阵
+- [x] Ib-ACT full-length profile-anchored stitching
+- [x] S1 rooted tree
+- [x] S1 core ASR
 
-### V4.1 执行
-
-- [x] 2.1 长度 + HMM 覆盖度三箱过滤（`qc_length_coverage.py`）
-  - Ia/Ib: cov_mode=best, II: cov_mode=merged (multi-domain stitching)
-  - PASS 合计 24,202（Ia=9,204 / Ib=6,401 / II=8,597）
-  - Type II rescued by stitching: 2,093 条
-- [x] 2.2 CD-HIT 80% 去冗余 → `nr80_*.fasta`（Ia=3,521 / Ib=3,073 / II=3,079, 总计 9,673）
-- [x] 2.3 CD-HIT 60% 种子提取 → `seeds60_*.fasta`（Ia=581 / Ib=648 / II=649, 总计 1,878）
-- [x] 2.4a MMseqs2 40% 跨亚型 stepping stones → 258 条（Ia=104 / Ib=46 / II=108, 零跨亚型混簇）
-- [x] 2.4b 二次聚类实验（25%→183, 20%→181）→ 确认需 Phase 3.1 结构优先级筛选
-- [x] QC2 产出 `results/02_qc/qc_length_report.md`
-
-**Done 条件：** ✅ 全部完成
+> 说明：以上层级默认继续沿用，不作为当前阻塞项。
 
 ---
 
-## Phase 3：结构感知核心 MSA + 模块注释 ✅
+## 2. P0 Critical Path（当前真正阻塞主线的任务）
 
-### 3.1 结构面板构建 ✅
+### 2.1 S4 provenance 修复（最高优先级）
 
-- [x] 3.1A-1 `panel_candidates.tsv`（258 条 backbone 全量评估）+ `panel_manifest.tsv`（30 条）
-- [x] 线路 A 决策：PDB 作为外置锚点，不占 30 条配额
-- [x] 3.1A-2 PDB 锚点下载 (1KFL, 1RZM, 3NV8, 5CKV, 2B7O)
-- [x] 3.1A-3 AFDB 下载（30 条，core pLDDT ≥ 70）
-- [x] 最终面板 = 30 AFDB + 5 PDB = 35 结构
+- [/] 盘点现有 S4 相关文件（treefile / summary / log / bak / alternative output）
+- [ ] 冻结现有 legacy 文件，不再允许覆盖写入
+- [ ] 给 S4 各版本显式命名：
+  - [ ] `..._top500...`
+  - [ ] `..._fullsearch...`
+  - [ ] 若存在 legacy 官方文件，写清它当前实际对应哪一版
+- [ ] 为每个 S4 输出记录 md5
+- [ ] 在 `root_scenarios.tsv` 中加入：
+  - [ ] scenario_id
+  - [ ] label
+  - [ ] source_script
+  - [ ] search_space
+  - [ ] objective / rho
+  - [ ] root split
+  - [ ] output_treefile
+  - [ ] md5
+  - [ ] notes
+- [ ] 补写 `log.md` 的 S3 / S4 条目
+- [ ] 重新生成或修复：
+  - [ ] `CoreTree_rooted_MAD_ingroup_summary.txt`（若继续保留）
+  - [ ] `qc_root_stability.md`
+- [ ] 在文档中把 S4 暂时改写为 **provisional ingroup reroot scenario**
+- [ ] 判断当前 S4 的方法学身份：
+  - [ ] formal MAD
+  - [ ] balance / clock-like reroot proxy
+  - [ ] 未定（则继续用 provisional）
 
-### 3.2-3.4 FoldMason 骨架与核心列 ✅
-
-- [x] 3.2 FoldMason easy-msa → 46 seqs × 1966 cols 骨架
-- [/] 3.3 FoldMason refinemsa — segfault（msa2lddt 替代）
-- [x] 3.4 逐列 LDDT 核心列界定 → core_len=521, lddt_min=0.1814
-
-### 3.6 全量核心映射 ✅
-
-- [x] 3.6 核心 HMM → `core_global.hmm`（L=521）
-- [x] 3.6 `extract_core_domains.py`（含 hit stitching + pad=20）→ 9,393 seqs
-- [x] 3.6 hmmalign → Stockholm → esl-alimask → `core_global_matchonly.afa`（9,393 × 521）
-
-### 3.7 双版本修剪 ✅
-
-- [x] 3.7 ClipKIT kpic-smart-gap → `core_tree.afa`（436 cols）
-- [x] 3.7 Minimal trim gap>0.95 → `core_asr.afa`（472 cols）
-- [-] 3.7 FoldMason msa2lddt 结构复核 — ✅ Average LDDT = 0.2638
-
-### 3.8 模块注释 ✅
-
-- [x] 3.8 模块 HMM 库构建
-- [x] 3.8 `annotate_modules.py` → strict/relaxed 双矩阵（9,393 rows）
-- [x] 3.8 Strict⊆Relaxed 一致性验证通过
-- [x] 3.8 模块 MSA → ACT(47×142), CM(408×266), α2β3(172×582), N_ext(3,130×8,153), C_tail(360×3,617)
-
-### 3.9 Profile-anchored Stitching ✅
-
-- [x] 3.9.1 定义亚型与架构子集 → `results/03_msa_full/Ib_ACT.ids`（47 条）
-- [x] 3.9.2 提取 linker 片段 → `results/03_msa_full/Ib_ACT_linkers.fasta`（C-flank，min=94,median=299,max=348 aa）
-- [x] 3.9.3 亚型内 linker E-INS-i 对齐 → `results/03_msa_full/Ib_ACT_linkers_einsi.afa`（47×426）
-- [x] 3.9.4 `stitch_full_length_msa.py` → `results/03_msa_full/msa_full_Ib_v4.afa`（47×1040）+ `results/03_msa_full/msa_full_Ib_column_map.tsv`
-  - ✅ QC2b 断言通过：core 段 472 列与 core_asr.afa 完全一致
-  - 列分段：core(1–472) | ACT(473–614) | C-flank(615–1040)
+**Done 条件：**
+- [ ] 同名文件不再对应不同内容
+- [ ] treefile / summary / log / manifest 一致
+- [ ] S4 的名字和方法学身份一致
 
 ---
 
-## Phase 4：系统发育与分层 ASR [进行中，V5.1 重点修订]
+### 2.2 S2 KDOPS prune + assert_tip_match + ASR（最高优先级）
 
-> **V5.1 规则：计算可以继续，叙事必须分层。working tree ≠ narrative tree。**
+- [x] `CoreTree_rooted_LGC20.treefile` 已存在
+- [ ] KDOPS prune → `CoreTree_rooted_LGC20_ingroup.treefile`
+- [ ] `assert_tip_match.py` 通过并写入日志
+- [ ] 提交 S2 core ASR
+- [ ] 获得以下文件：
+  - [ ] `ASR_core_S2.state`
+  - [ ] `ASR_core_S2.iqtree`
+  - [ ] `ASR_core_S2.treefile`
+  - [ ] `ASR_core_S2.log`
+- [ ] 更新 `progress_snapshot.md`
+- [ ] 将 S2 状态从“tree-only”升级为“ASR-ready”
 
-### 4.1 核心树推断与 root scenario 管理
+**审计报告中建议的命令序列：**
+```bash
+conda run -n dah7ps_v4 python scripts/prune_tree.py \
+  --input results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile \
+  --remove KDOPS \
+  --output results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile
 
-- [x] 4.1 KDOPS 外群并入核心比对（hmmalign sto → strip insert）
-- [x] 4.1 全局树 baseline（MFP）→ `CoreTree_rooted_MFP.treefile`（Q.PFAM+F+R10, 1001 iter, LogL=-2835499.68）
-- [ ] 4.1 全局树 LBA 抗性（LG+C20+F+G）→ `CoreTree_rooted_LGC20.treefile`
-- [ ] 4.1 **[V5.1]** 补跑 S1/S2 支持度版本（`-alrt 1000 -B 1000`）（若 full-tree 太贵则在 focal subtree 上补做）
-- [x] 4.1 **[V5.1]** 构建 S3 ingroup-only midpoint rooted tree → `CoreTree_rooted_midpoint_ingroup.treefile` ✅
-- [x] 4.1 **[V5.1]** 构建 S4 ingroup-only MAD rooted tree → `CoreTree_rooted_MAD_ingroup.treefile` ✅ (rho=0.163617, split=[3060,6333])
-- [ ] 4.1 **[V5.1]** 可选 S5：reduced representative set nonreversible/rootstrap
-- [ ] 4.1 **[V5.1]** 维护 `results/04_phylogeny_asr/root_scenarios.tsv`
+conda run -n dah7ps_v4 python scripts/assert_tip_match.py \
+  --tree results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile \
+  --alignment results/03_msa_core/core_asr.afa
 
-### 4.2 结构系统发育交叉验证 [V5.1 升级为高优先级]
+iqtree -s results/03_msa_core/core_asr.afa \
+  -te results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile \
+  -m LG+C20+F+G --asr -T 20 \
+  --prefix results/04_phylogeny_asr/ASR_core_S2
+```
 
-- [x] 4.2 AA 树 vs 3Di 树交叉验证 → `tree_comparison.md` + `tree_comparison.tsv` ✅ (nRF=0.7442, 三大亚型单系一致, QC3-YELLOW)
-- [x] 4.2 **[V5.1]** 三个判读问题：Q1 通过（亚型单系一致） / Q2 不适用（骨架树无 KDOPS） / Q3 无致命冲突（高 nRF 为 AA vs 3Di 预期行为）
-
-### 4.3 核心氨基酸 ASR（可继续计算，解释分层）
-
-- [x] 4.3 **Prune KDOPS → `CoreTree_rooted_ingroup.treefile`**（12 KDOPS pruned → 9,393 tips, bifurcating root）⚠ KDOPS polyphyletic in ML tree
-- [x] 4.3 **`assert_tip_match.py` 断言 pruned tree tips == core_asr.afa tips** ✅ PASS 9,393/9,393
-- [🏃] 4.3 核心氨基酸 ASR（用 pruned ingroup tree，Q.PFAM+F+R10, PID 23826）
-- [ ] 4.3 **[V5.1]** 至少补跑 1 个 alternative scenario 的 ASR（优先 S2 或 S4）
-- [ ] 4.3 **[V5.1]** 产出 `asr_node_summary.tsv`
-
-### 4.4 嵌套 ASR [立即并行推进]
-
-- [ ] 4.4 嵌套 ASR（Iβ-ACT exemplar，输入 `msa_full_Ib_v4.afa`）
-- [ ] 4.4 **[V5.1]** focal Pre-gain / Post-gain 节点导出：ML 序列 + AltAll 序列 + PP 概要
-
-### 4.5 Gap 祖先态重建
-
-- [ ] 4.5 Gap 祖先态重建（方案 A/B/C 分层策略）
-- [ ] 4.5 **[V5.1]** 所有 gap ASR 使用 pruned ingroup rooted scenario trees
-
-### 4.6 模块 trait ASR（PastML）[V5.1 关键加强]
-
-- [ ] 4.6 模块获得/丢失离散性状 ASR（PastML）
-- [ ] 4.6 **[V5.1]** 必须运行 strict/relaxed × 至少 2 root scenarios（S1, S2 或 S4）
-- [ ] 4.6 **[V5.1]** 输出 `module_origin_stability.tsv`（robust / semi-robust / root-sensitive / annotation-sensitive / unresolved）
-
-### 4.7–4.8 AltAll 与模块层 ASR
-
-- [ ] 4.7 AltAll 系综采样（PP₁=0.80, PP₂=0.20）— **[V5.1]** 只对 Phase 5 候选 + gain/loss 边界 + exemplar 关键祖先节点
-- [ ] 4.8 模块层局部 ASR（探索性，不作为主线 gating）
-
-### QC3：系统发育 / ASR 统一 gate [V5.1 强制执行]
-
-- [ ] QC3 **[V5.1]** root scenario 列表与对应模型/方法
-- [ ] QC3 **[V5.1]** UFBoot + SH-aLRT 支持度记录
-- [ ] QC3 **[V5.1]** KDOPS subset sensitivity
-- [ ] QC3 **[V5.1]** midpoint / MAD 对照
-- [ ] QC3 **[V5.1]** AA tree vs 3Di tree 对照
-- [ ] QC3 **[V5.1]** strict vs relaxed 模块事件稳定性
-- [ ] QC3 **[V5.1]** focal node 多场景同向判断
-- [ ] QC3 **[V5.1]** Phase 5 推荐：Go / Conditional Go / Hold
-- [ ] QC3 产出 `results/04_phylogeny_asr/qc_phylogeny_asr.md` + `.tsv`
+**Done 条件：**
+- [ ] S2 至少能与 S1 做正式 ASR 对比
+- [ ] 不再只有 S1 一个场景能谈 residue-level 祖先态
 
 ---
 
-## Phase 5：关键祖先节点的结构验证 [待执行，V5.1 更严格门控]
+### 2.3 Cross-scenario ASR sensitivity 摘要
 
-> **V5.1：2–4 节点 × Apo-only × native-oligomer。不做 Holo。节点必须通过 QC3 gate + 四重门控。**
+- [ ] 建立 S1 vs S2 节点对应策略
+- [ ] 生成 `asr_node_summary.tsv`
+- [ ] 生成 `asr_sensitivity_summary.tsv`
+- [ ] 统计每个 focal node 的：
+  - [ ] residue disagreement rate
+  - [ ] 高 PP 位点是否稳定
+  - [ ] 结构解释关键位点是否一致
+- [ ] 将节点分为：
+  - [ ] 可进入 Phase 5 候选池
+  - [ ] 仅 root-sensitive / model-sensitive
+  - [ ] 暂不解释
 
-- [ ] 5.0 **装配体判定（Assembly Adjudication）[CHECK-08]**
-  - 文献/PDB/PISA 装配体注释扫描
-  - dimer + tetramer 平行 AF3 预测（均 Apo）
-  - PISA 界面评分比较
-  - 产出 `results/05_struct_valid/assembly_adjudication.tsv`
-- [ ] 5.1 **[V5.1]** 候选祖先节点选择（四重门控：UFBoot ≥ 95 + root stability ≥ 2 scenarios + strict/relaxed stability + ASR interpretability）
-  - Tier-1：主文主图（2 节点）
-  - Tier-2：补充/reserve（1–2 节点）
-  - 产出 `results/04_phylogeny_asr/node_selection_registry.tsv`
-- [ ] 5.2 Apo 结构预测（AF3 拷贝数由 5.0 判定 + ESMFold 交叉验证）
-- [ ] 5.2b 结构 QC 门控 [CHECK-05]：ipTM ≥ 0.6 + 能量最小化 + 10 ns 筛选
-- [ ] 5.3 验证性 MD：native-oligomer-apo ≥200 ns × 2 rep（Tier-1 only）
-- [ ] 5.3 可选：alternative-oligomer-apo 10–20 ns × 1 rep（排除性测试）
-- [ ] 5.4 有限动力学读出（RMSD/RMSF + 界面面积 + Fpocket）— 只比较 root-robust tier-1 节点
-- [ ] QC4 产出 `results/05_struct_valid/qc_struct_validation.md`
+**Done 条件：**
+- [ ] 可以回答“某节点不稳定，到底是根问题还是模型问题”
 
 ---
 
-## Phase 6：核心层共进化分析（DCA） [待执行，V5.1 聚焦版]
+## 3. P1 高优先任务（紧随 P0 之后）
 
-> **V5.1：仅核心层 DCA 进入主线。模块/联合 DCA → 可选探索。**
+### 3.1 模块定义文档化与边界敏感性
 
-### 主线分析
+- [ ] 产出 `results/03_msa_modules/module_definition_spec.md`
+- [ ] 产出 `results/03_msa_modules/module_boundary_sensitivity.tsv`
+- [ ] 为每个模块记录：
+  - [ ] strict 规则
+  - [ ] relaxed 规则
+  - [ ] HMM 判定条件
+  - [ ] 坐标判定条件
+  - [ ] 数量差异
+- [ ] 重点解释：
+  - [ ] `N_ext`
+  - [ ] `C_tail`
+- [ ] 对边界变化最大的模块抽样人工复核
+- [ ] 将结论写入 `module_trait_asr_summary.md` 的方法部分
 
-- [ ] 6.1 核心层 DCA 输入准备（`core_asr.afa` → gap 过滤 → `core_dca.afa`，Meff/L 门控 ≥ 3.0）[可立即并行]
-- [ ] 6.2 plmc 执行 → `core_couplings.txt`
-- [ ] 6.3 显著性评估：top-L 接触验证（1KFL/1RZM/3NV8）
-- [ ] 6.3 功能位点富集 + 跨亚型保守 vs 特异耦联
-- [ ] QC5 产出 `results/06_dca/qc_core_dca.md`
-
-### 可选探索（不入论文主线结论）
-
-- [ ] 6.4.1 模块层 DCA（探索性，ACT Meff/L ≈ 0.2–0.3，深度不足）
-- [ ] 6.4.2 联合跨域 DCA（探索性）
-- [ ] 6.4.3 模块获得前后耦联变化比较（Meff 匹配下采样，探索性）
-
----
-
-## Phase 7：论文写作蓝图 [待执行，V5.1 重写主叙事]
-
-> **V5.1 写作核心：从"唯一深根故事"改为"root-robust 主叙事"。**
-
-- [ ] 7.1 论文主线叙事锁定（root-robust claims → main text; root-sensitive → Supplement/Discussion）
-- [ ] 7.2 核心图表 Fig 1–6 齐备
-  - Fig 3 **[V5.1]** root scenario 比较 + stable/unstable module events
-  - Fig 4 **[V5.1]** Iβ-ACT nested full-length ASR exemplar
-- [ ] 7.3 ICDC 在 Discussion 中的定位（"跨证据一致性展望"，定性描述，非正式融合）
-- [ ] 7.4 **[V5.1]** Claim tiers 落地（root_robust / root_sensitive / exploratory）
+**Done 条件：**
+- [ ] strict / relaxed 不再只是两个黑箱矩阵
+- [ ] 后续 trait ASR 能够解释 `annotation_sensitive`
 
 ---
 
-## 脚本开发
+### 3.2 模块 trait ASR（PastML）
 
-### 已完成
-- [x] `scripts/extract_core_domains.py`（含 hit stitching）
-- [x] `scripts/define_core_columns.py`（LDDT 拐点法）
-- [x] `scripts/annotate_modules.py`（strict/relaxed 双矩阵）
-- [x] `scripts/extract_module_seqs.py`（C-tail + 按 matrix 逐模块）
-- [x] `scripts/minimal_trim.py`
-- [x] `scripts/extract_struct_subset.py`
-- [x] `scripts/extract_linkers.py`
-- [x] `scripts/stitch_full_length_msa.py`（含 core 列不变断言，输出到 `results/03_msa_full/`）
-- [x] `scripts/select_sequences.py`
-- [x] `scripts/prune_tree.py`
-- [x] `scripts/assert_tip_match.py`
+- [ ] 运行 `strict × S1`
+- [ ] 运行 `strict × S2`
+- [ ] 运行 `relaxed × S1`
+- [ ] 运行 `relaxed × S2`
+- [ ] 若 S4 修复完成：
+  - [ ] `strict × S4`
+  - [ ] `relaxed × S4`
+- [ ] 生成 `module_origin_stability.tsv`
+- [ ] 将事件标注为：
+  - [ ] `root_robust`
+  - [ ] `root_sensitive`
+  - [ ] `annotation_sensitive`
+  - [ ] `unresolved`
 
-### 高优先补齐 [V5.1]
-- [ ] `scripts/qc_root_stability.py`
-- [ ] `scripts/compare_trees.py`
-- [ ] `scripts/adjudicate_assembly.py`
-- [ ] `scripts/prepare_dca_input.py`（含 Meff/L 门控）
-- [ ] `scripts/compute_meff.py`
-- [ ] `scripts/dca_significance.py`
-- [ ] `scripts/coordinate_mapper.py`
-- [ ] `scripts/build_metrics_manifest.py` **[V5.1 新增]**
-- [ ] `scripts/summarize_module_stability.py` **[V5.1 新增]**
+**Done 条件：**
+- [ ] 模块 gain/loss 不再靠启发式描述
+- [ ] 最深层模块极性若不稳，必须显式标出来
 
 ---
 
-## 最终交付物
+### 3.3 root scenario matrix 与 QC3 修复
 
-- [x] `results/03_msa_core/qc_core_alignment.md`
-- [x] `results/03_msa_modules/boundary_robustness.md`
-- [ ] `results/04_phylogeny_asr/qc_phylogeny_asr.md` **[V5.1 替代旧 QC3_root_stability.md]**
-- [ ] `results/04_phylogeny_asr/root_scenarios.tsv` **[V5.1 新增]**
-- [ ] `results/04_phylogeny_asr/module_origin_stability.tsv` **[V5.1 新增]**
-- [ ] `results/04_phylogeny_asr/node_selection_registry.tsv` **[V5.1 新增]**
-- [ ] `results/05_struct_valid/assembly_adjudication.tsv`
-- [ ] `results/05_struct_valid/qc_struct_validation.md`
-- [ ] `results/06_dca/core_significant_couplings.tsv`
-- [ ] `results/06_dca/qc_core_dca.md`
-- [x] `results/meta/metrics_manifest.tsv` **[V5.1 新增]** ✅ 2026-03-18 初始化（39 指标）
-- [x] `results/meta/progress_snapshot.md` **[V5.1 新增]** ✅ 2026-03-18 初始化
+- [ ] 修复 `root_scenarios.tsv`
+- [ ] 更新 `qc_root_stability.md`
+- [ ] 生成 `root_sensitivity_matrix.tsv`
+- [ ] 在 QC3 中单独列出：
+  - [ ] provenance pass / fail
+  - [ ] S1 vs S2
+  - [ ] S3 vs repaired S4
+  - [ ] strict vs relaxed 模块稳定性
+  - [ ] 是否需要 S5
+- [ ] 给出新的 QC3 结论：
+  - [ ] GO
+  - [ ] Conditional GO
+  - [ ] HOLD
+
+**Done 条件：**
+- [ ] QC3 不再依赖 stale summary
+- [ ] QC3 结论能够真正支配 Phase 5 和 manuscript narrative
+
+---
+
+## 4. P2 并行分支（不阻塞 P0/P1，但可以立即开始）
+
+### 4.1 DCA 审计
+
+- [ ] 准备 `results/06_dca/core_dca.afa`
+- [ ] 计算 `Meff`
+- [ ] 计算 `L`
+- [ ] 计算 `Meff/L`
+- [ ] 生成 `results/06_dca/core_dca_stats.tsv`
+- [ ] 判断是否满足主线门槛 `Meff/L >= 3.0`
+- [ ] 若通过：
+  - [ ] 运行 plmc
+  - [ ] 生成 `core_couplings.txt`
+  - [ ] 生成 `qc_core_dca.md`
+- [ ] 若不通过：
+  - [ ] 在 `qc_core_dca.md` 中终止并说明原因
+
+**Done 条件：**
+- [ ] DCA 从“README 里的计划”变成“有实际 gate 的分析分支”
+
+---
+
+### 4.2 Assembly adjudication 准备（Phase 5 前置准备）
+
+- [ ] 建立 `results/05_struct_md/`
+- [ ] 收集 extant structure / literature 中的装配体证据
+- [ ] 建立 `assembly_adjudication.tsv`
+- [ ] 记录：
+  - [ ] PDB biological assembly
+  - [ ] 文献描述的装配状态
+  - [ ] PISA 先验信息
+  - [ ] 可能的 native oligomer 候选
+- [ ] 仅做准备，不提名祖先节点
+
+**Done 条件：**
+- [ ] Phase 5 启动前已有装配体证据底稿
+- [ ] 不会出现“先跑 AF3，后补装配体依据”的倒序问题
+
+---
+
+## 5. 条件触发分支
+
+### 5.1 S5 reduced-set rooting（仅在必要时启动）
+
+- [ ] 设计 reduced representative set
+- [ ] 保证 subtype-balance 与 taxon-balance
+- [ ] 运行 nonreversible rooting / rootstrap
+- [ ] 将结果写入 `root_sensitivity_matrix.tsv`
+- [ ] 更新 QC3 结论
+
+**触发条件：**
+- [ ] S1 / S2 / S3 / repaired S4 仍持续冲突
+- [ ] 或者 Phase 5 节点选择仍高度依赖单一 root
+
+---
+
+## 6. 当前被 gate 阻塞的任务
+
+### 6.1 Phase 5 节点选择
+
+- [-] 正式提名 Tier-1 节点
+- [-] 正式提名 Tier-2 节点
+- [-] 围绕 deepest node 启动 AF3 主线
+- [-] 围绕未 gated 节点启动 MD 主线
+
+**解除阻塞条件：**
+- [ ] provenance gate 通过
+- [ ] S2 ASR 完成
+- [ ] module stability 表完成
+- [ ] node_selection_registry.tsv 有真实评估而非 placeholder
+
+---
+
+### 6.2 主文 deepest-history 叙事
+
+- [-] 锁定单一 deepest root 故事
+- [-] 在主文中给出唯一模块起源顺序
+- [-] 把 root-sensitive 结论写成硬结论
+
+**解除阻塞条件：**
+- [ ] 至少达到 `root_robust`
+- [ ] 或者明确降级到 Supplement / Discussion
+
+---
+
+## 7. 文档与可复现性维护
+
+- [ ] README 更新为 2026-04-08 审计状态
+- [ ] PLAN 更新为 V6 审计修订版
+- [ ] TASKS 更新为审计版 critical path
+- [ ] `metrics_manifest.tsv` 中补齐：
+  - [ ] DCA 行
+  - [ ] S2 ASR 行
+  - [ ] S4 provenance 行
+- [ ] `progress_snapshot.md` 与 README / PLAN / TASKS 一致
+- [ ] `root_scenarios.tsv` 与 QC3 / summary / log 一致
+
+**Done 条件：**
+- [ ] 文档不再出现“README 还停在旧状态，但 snapshot 已更新”的漂移
+
+---
+
+## 8. 当前建议的执行顺序
+
+```text
+[1] S4 provenance repair
+[2] S2 prune + assert_tip_match + ASR
+[3] S1 vs S2 ASR sensitivity summary
+[4] module_definition_spec + boundary sensitivity
+[5] strict/relaxed × S1/S2 trait ASR
+[6] QC3 repair and new verdict
+[7] DCA Meff/L audit (parallel)
+[8] assembly_adjudication preparation (parallel)
+[9] if needed -> S5 reduced-set rooting
+[10] node_selection_registry
+[11] AF3 / MD on gated nodes
+[12] manuscript claim-tier lock
+```
+
+---
+
+## 9. 本轮任务完成的标志
+
+- [ ] S4 不再是 provenance 黑箱
+- [ ] S2 不再只是 tree-only scenario
+- [ ] 模块历史不再只有启发式语言
+- [ ] DCA 不再是空白
+- [ ] Phase 5 的启动时点被真实 gate 控制
+- [ ] 主文不再提前写死 deepest-history narrative

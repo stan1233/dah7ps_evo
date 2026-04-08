@@ -1,974 +1,500 @@
-# DAH7PS 变构起源的演化动力学重建：V5.1 标准作业程序（SOP rev6）
+# DAH7PS 变构起源演化项目计划：V6 审计修订版（SOP rev7）
 
-**A FoldMason-Centred, Core–Module Decoupling Framework for Reconstructing the Evolutionary Origin of Allostery in DAH7PS**  
-**版本说明：基于 Phase 4.3 阶段审阅后修订，用于替换当前 `PLAN.md`。**
+**A FoldMason-Centred, Core–Module Decoupling Framework with Audit-Driven Root Control**  
+**修订日期：2026-04-08**  
+**适用范围：替换当前仓库中的 `PLAN.md`，用于审计后路线重排**
 
 ---
 
 ## 摘要
 
-DAH7PS（3-deoxy-D-arabino-heptulosonate 7-phosphate synthase）在保守的 `(β/α)8` TIM-barrel 催化核心之上，于不同亚型中独立演化出多样的变构调控元件——Type Iα 的 β 发夹插入、Type Iβ 的 ACT/铁氧还蛋白样调控域、Type II 的 N 端延伸与 α2β3 插片。V3.1 以来的最大方法学风险一直是：在跨亚型远缘同源（序列一致性进入暮光区）条件下，用全长单一 MSA 同时驱动系统发育、ASR、DCA 和结构解释，会放大比对膨胀与错误同源关系，进而污染整条证据链。
+本项目的科学问题没有改变：我们仍然要重建 DAH7PS 在保守 TIM-barrel 核心之上演化变构调控的历史。  
+真正发生变化的是**优先级**：
 
-V5.0 已经把主线收缩为“结构感知核心 MSA → rooted phylogeny + 模块 trait ASR → core DCA → 少量关键祖先的结构验证”，方向正确；但截至 Phase 4.3，项目的主要瓶颈已从 **tip set consistency** 转移为 **root robustness**。因此，V5.1 的核心调整不是推翻现有路线，而是：
+- 旧瓶颈：全长远缘同源下的 MSA 崩坏与 tip-set mismatch  
+- 新瓶颈：**root scenario 的 provenance、可追溯性与敏感性**
 
-1. **确认 Phase 3.9 已完成**，并把其纳入正式计划状态，而不是继续作为待执行项。  
-2. **把 QC3 从普通 QC 升级为真正的 gate**：在 root robustness 评估完成前，可以继续跑工作树上的 ASR 与 DCA 准备，但不能锁定最深层历史叙事，也不能锁定 Phase 5 的主线祖先节点。  
-3. **引入多 root scenario 框架**：KDOPS+MFP、KDOPS+site-heterogeneous model、outgroup-free midpoint/MAD（可选再加 reduced-set nonreversible/rootstrap）。  
-4. **区分“working tree”与“narrative tree”**：当前 pruned ingroup rooted tree 可以继续用于计算，但只有通过 QC3 的 root-robust 事件才进入主文强结论。  
-5. **收紧 Phase 5 节点选择标准**：不再用“bootstrap ≥ 70”作为主线节点准入；改为支持度、root stability、strict/relaxed stability、full-length ASR 可解释性四重共同门控。  
-6. **新增文档与指标单一真源（single source of truth）**，避免 README / TASKS / PLAN / log 之间数字和状态漂移。  
-7. **论文写作改为 root-robust narrative 优先**：主文强调“保守核心上的重复模块募集”，root-dependent 的最深层极性放入补充或 Discussion 条件性阐释。
+审计表明，Phase 0–3 已经形成足够稳固的基础；因此本次修订**不是返工**，而是把路线改成：
 
-V5.1 的目标是：**不停工、不断线、不硬拗。** 继续推进 Phase 4.4、4.6、6.1 等低耦合步骤，同时把最容易被审稿人质疑的 deep root 问题显式纳入分析设计。
+> **先修 root scenario 与 cross-scenario ASR，再推进模块历史和结构验证。**
 
----
+本计划的核心原则是：
 
-## V5.1 相对 V5.0 的关键修改
-
-| 编号 | 修改 | V5.1 处理 |
-|---|---|---|
-| 1 | Phase 3.9 在 PLAN 中仍写“待执行” | 改为 **已完成**，并列出产物与 QC2b 断言 |
-| 2 | QC3 只是一般性 QC | 升级为 **强制 gate**，决定是否允许锁定历史叙事与 Phase 5 节点 |
-| 3 | 根只依赖 KDOPS outgroup + 两套模型 | 扩展为 **多 root scenario**：KDOPS+MFP、KDOPS+LG+C20、midpoint/MAD，条件允许再加 nonreversible/rootstrap |
-| 4 | 4.2 AA vs 3Di tree 更像补充检查 | 提升为 **高优先级正交证据**，并纳入 QC3 判定 |
-| 5 | 4.3 解决 tip mismatch 后默认可直接进入后续强解释 | 改为：**可继续计算，不可直接写死最深层历史解释** |
-| 6 | Phase 5 节点选择阈值偏松（bootstrap ≥ 70） | 改为：**UFBoot ≥ 95 为主阈值；若可补跑则 SH-aLRT ≥ 80 为优先 corroboration** |
-| 7 | 文档中的状态与数字可能漂移 | 新增 `results/meta/metrics_manifest.tsv` 与 `results/meta/progress_snapshot.md` |
-| 8 | 主文叙事默认单一时间轴 | 改为 **root-robust 主叙事 + root-sensitive 条件性解释** |
+1. **不推翻现有主线**：sequence mining、FoldMason 核心、core MSA、模块注释、core DCA、少量结构验证仍然成立。  
+2. **冻结最深层叙事**：在 QC3 修复前，允许继续计算，不允许把 deepest history 写成唯一故事。  
+3. **以 provenance 为先**：有结果不等于有证据链；没有 treefile / summary / log / md5 一致性，就不能进入 narrative gate。  
+4. **以 scenario 比较替代单根叙事**：S1 / S2 / S3 / S4 修复后共同决定可写结论，必要时上 S5。  
+5. **Phase 5 节点要晚于 QC3**：AF3 / MD 只服务于 root-robust 节点，不再反向“证明”深根。
 
 ---
 
-## 当前状态快照（以 Phase 4.3 审阅时点为准）
+## 一、经过审计后确认的项目状态
 
-### 已完成
-- Phase 0：环境、参数文件、模型文件记录、目录规范。
-- Phase 1：全长挖掘、KDOPS 反向过滤、扩充种子重建 HMM。
-- Phase 2：长度/覆盖度三箱过滤、Type II hit stitching、NR80/seed60 去冗余。
-- Phase 3.1–3.8：结构面板、FoldMason 骨架、LDDT 核心列、全量核心映射、双版本 trim、模块注释。
-- **Phase 3.9：Profile-anchored stitching 已完成**：
-  - `results/03_msa_full/Ib_ACT.ids`
-  - `results/03_msa_full/Ib_ACT_linkers.fasta`
-  - `results/03_msa_full/Ib_ACT_linkers_einsi.afa`
-  - `results/03_msa_full/msa_full_Ib_v4.afa`
-  - `results/03_msa_full/msa_full_Ib_column_map.tsv`
-  - QC2b：core 段 472 列与 `core_asr.afa` 完全一致。
+### 1. 稳定层（不返工）
 
-### 已进入进行中
-- Phase 4.1：
-  - KDOPS 外群并入核心比对完成。
-  - MFP 树完成（集群，Q.PFAM+F+R10，LogL=-2835499.68）。
-  - **LG+C20 抗 LBA 树未完成**（本地 OOM killed，需在集群补跑）。
-- Phase 4.3：
-  - KDOPS 已从 rooted tree 剪除，得到 ingroup rooted working tree。
-  - `assert_tip_match.py` 已通过，`core_asr.afa` 与 pruned ingroup tree 的 tips 严格一致。
+以下层级保持不变，继续作为主线输入：
 
-### 当前真正瓶颈
-- **不是 core MSA 崩坏，也不是 tip mismatch。**
-- **而是 rooted history 的稳健性：KDOPS 在 ML 树中的行为提示根位置仍需敏感性分析。**
+- Phase 0：环境、版本、参数、目录规范
+- Phase 1：全库挖掘、KDOPS 负筛、互斥 subtype 集合
+- Phase 2：长度/覆盖度过滤、Type II stitching、NR80 / seeds60 / stepping-stone
+- Phase 3：FoldMason 骨架、LDDT core columns、全量核心映射、双版本 trim、模块 strict/relaxed 矩阵、Ib-ACT full-length stitching
+- S1 rooted tree 和 S1 core ASR
 
-### 立刻可以并行推进的工作
-- 4.4 嵌套 full-length ASR（优先 Iβ-ACT）
-- 4.6 strict / relaxed 模块 trait ASR 的数据准备
-- 6.1 core DCA 输入准备
-- 5.0 Assembly adjudication 的文献/注释扫描准备
+### 2. 当前阻塞层（必须优先修）
 
-### 暂时不能锁死的工作
-- 最深层模块获得/丢失的唯一历史箭头
-- Phase 5 的主线祖先节点最终名单
-- 主文 Fig.3 的最终 rooted history 叙事
+#### 2.1 S4 provenance 冲突
+当前所谓 S4（legacy filename 含 `MAD`）存在以下问题：
 
----
+- 不同脚本生成过不同 root split
+- treefile、summary、log 之间记录不一致
+- top-500 与 full-search 输出没有被显式区分
+- 在这种状态下，S4 不能被当作正式 root evidence 使用
 
-## 科学问题与工作假设
+#### 2.2 S2 ingroup prune + ASR 缺失
+虽然 S2 rooted tree 已存在，但缺少：
 
-### 核心问题
-DAH7PS 的变构调控元件如何在保守 TIM-barrel 核心之上被重复募集、稳定并与多聚体界面及构象动力学耦合，从而产生可选择的变构表型？
+- KDOPS prune
+- tree / alignment tip-set consistency 断言
+- S2 core ASR state file
+- 与 S1 的 residue-level / node-level 对照
 
-### 工作假设
-1. 跨亚型可可靠比较的演化时间轴主要由 **TIM-barrel core** 提供；模块起源体现为 gain/loss 事件与局部序列—结构整合。
-2. DAH7PS 家族的 allostery 是 **模块化、可重复招募** 的，而不是只在单一路径上发生一次后保守继承。
-3. 核心层 DCA 可以独立提供“长期保守耦联约束”的证据；它不依赖完整 MD 网络才有价值。
-4. 根的不确定性主要影响 **历史极性与 earliest event 的解释**，不必然推翻 subtype-local 或 root-robust 的结论。
-5. 祖先结构预测与有限 MD 在本研究中只承担 **可行性验证** 角色，不承担“闭环证明动力学通信网络”的任务。
+这使得当前无法区分：
 
----
+- model-sensitive 变化
+- root-sensitive 变化
+- 仅仅是 documentation / provenance artifact
 
-## 方法学立场与解释边界
+#### 2.3 模块边界敏感性未文档化
+strict / relaxed 矩阵已经存在，但对于以下模块：
 
-1. **FoldMason 是中枢，不是唯一真理。**  
-   核心列定义依然以结构感知 MSA 和 LDDT 为中心，但系统发育解释必须额外通过 root robustness 与 3Di 交叉验证。
+- `N_ext`
+- `C_tail`
 
-2. **Outgroup rooting 不是唯一根。**  
-   KDOPS 在数据挖掘阶段仍然成功，但在 Phase 4 中不得自动享有“唯一正确根”的地位。V5.1 必须显式比较多个 rooting scenario。
+两种定义差异很大，说明当前模块历史不能直接解释为“真实 gain/loss 时间线”，必须先补：
 
-3. **当前最佳 rooted tree 只是 working tree。**  
-   在 QC3 通过前，它适合做 ASR 计算和后续准备，但不适合直接作为论文中 deepest origin 的唯一时间轴。
+- 阈值规范
+- 边界敏感性表
+- 必要的抽样人工复核
 
-4. **主线证据只保留信息量足够的层。**  
-   Core DCA 进入主线；module/joint DCA 继续作为探索性分析，不抢主线。
-
-5. **结构验证只回答“可不可能”，不回答“全部怎么发生”。**  
-   AF3 + 有限 MD 的任务是验证祖先结构与装配体假设是否可行，而不是完整重建 allosteric communication network。
-
-6. **root-robust claim 优先于全局统一故事。**  
-   如果最深层极性在不同根方案下变化，则主文只写对多个根方案都成立的结论。
+#### 2.4 DCA 尚未进入审计
+DCA 没有任何产物，但输入已经齐备。  
+因此它不是阻塞项，而是**可并行启动的审计分支**。
 
 ---
 
-## 0. 文档同步与单一真源（立即执行，不阻塞）
+## 二、修订后的总路线
 
-> 新增的跨阶段要求。目标：以后所有 Methods、Figure legend、README、TASKS、论文草稿中的数字，只引用同一份 manifest。
+### 路线总纲
 
-### 0.1 新增交付物
+**稳定基础层（已完成）**  
+→ **Phase 4.0 审计热修复：root scenario provenance**  
+→ **Phase 4.1 S2 ingroup ASR 与 cross-scenario sensitivity**  
+→ **Phase 4.2 模块 trait ASR 与 annotation sensitivity**  
+→ **Phase 4.3 DCA 审计并行**  
+→ **Phase 5 仅对通过 gate 的节点做结构验证**  
+→ **Phase 6 论文叙事按 claim tiers 分层**
+
+---
+
+## 三、执行原则与解释边界
+
+### 3.1 working tree ≠ narrative tree
+- 现有 tree 可以继续用来跑计算
+- 但不能因为“能算”就等于“能写结论”
+
+### 3.2 provenance 缺陷优先于统计结果
+- 支持度高但 provenance 混乱的结果，不可用于 gate
+- provenance 清晰但结论敏感的结果，可以进入 `root_sensitive`
+
+### 3.3 S4 在修复前降级命名
+- 旧文件名保留用于兼容
+- 新文档中统一写作 **S4 provisional ingroup reroot scenario**
+- 不再称作正式 MAD，直到方法学标签和输出链条统一
+
+### 3.4 模块历史先看稳定性，再谈极性
+- 没有 `module_origin_stability.tsv`
+- 就没有资格写“某模块先于另一模块获得”
+
+### 3.5 结构验证只服务于 root-robust 节点
+- AF3 / MD 不是用来替代 phylogeny 的
+- 不能拿结构模型反推哪一个 deepest root 更真
+
+---
+
+## 四、分阶段工作包
+
+# Phase 0–3：稳定基础层（已完成，保留不变）
+
+### 已完成的关键产物
+- `results/01_mining/`
+- `results/02_qc/`
+- `results/03_msa_core/`
+- `results/03_msa_modules/`
+- `results/03_msa_full/`
 - `results/meta/metrics_manifest.tsv`
 - `results/meta/progress_snapshot.md`
+
+### 本阶段不再追加返工任务
+- 不返工 sequence mining
+- 不返工 FoldMason skeleton
+- 不返工 core MSA
+- 不返工 full-length stitching
+
+---
+
+# Phase 4.0：审计热修复（新增，最高优先级）
+
+## 4.0.1 冻结并整理现有 S4 产物
+
+### 目标
+把当前混乱的 S4 输出链条变成**可追溯、可复核、不可覆盖**的状态。
+
+### 动作
+1. 冻结现有所有 S4 相关 treefile、summary、log
+2. 用显式文件名区分：
+   - `..._top500...`
+   - `..._fullsearch...`
+   - 如仍保留 legacy 文件，必须在 `root_scenarios.tsv` 注明它实际指向哪一个
+3. 为每个文件记录：
+   - source script
+   - 运行参数
+   - search space
+   - root split
+   - rho / objective value
+   - md5
+   - 生成时间
+4. 重建 `root_scenarios.tsv`
+5. 补写 `log.md` 中缺失的 S3 / S4 条目
+
+### Done 条件
+- 任一 scenario 都不允许“同名不同内容”
+- treefile / summary / log / manifest 四者一致
+- legacy filename 的实际身份可被唯一追溯
+
+## 4.0.2 重新定义 S4 的方法学身份
+
+### 原则
+在正式确认实现前，S4 统一视为：
+
+> **ingroup reroot proxy**
+
+### 允许的两种结局
+- **A.** 若验证后为 formal MAD：恢复 MAD 命名  
+- **B.** 若本质是 clock-balance / root-to-tip variance proxy：保留 proxy 命名，不再冒充 formal MAD
+
+### Done 条件
+- 方法学标签与脚本实现一致
+- 文档不再混用“proxy”与“formal MAD”
+
+---
+
+# Phase 4.1：S2 ingroup prune + model-sensitive core ASR（最高优先级）
+
+## 4.1.1 S2 KDOPS prune
+### 输入
+- `results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile`
+
+### 输出
+- `results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile`
+
+## 4.1.2 tree / alignment tip-set 断言
+### 输入
+- `CoreTree_rooted_LGC20_ingroup.treefile`
+- `results/03_msa_core/core_asr.afa`
+
+### 输出
+- `assert_tip_match` 通过记录
+- 断言结果写入 `log.md`
+
+## 4.1.3 S2 core ASR
+### 输出
+- `results/04_phylogeny_asr/ASR_core_S2.state`
+- `results/04_phylogeny_asr/ASR_core_S2.iqtree`
+- `results/04_phylogeny_asr/ASR_core_S2.treefile`
+- `results/04_phylogeny_asr/ASR_core_S2.log`
+
+## 4.1.4 S1 vs S2 对比摘要
+### 输出
+- `results/04_phylogeny_asr/asr_sensitivity_summary.tsv`
+- `results/04_phylogeny_asr/asr_node_summary.tsv`
+
+### 至少包含
+- 节点映射方式说明
+- 每个 focal node 的 residue disagreement rate
+- 高 PP 位点是否稳定
+- 哪些节点可进入后续 module / structure 评估
+
+### Done 条件
+- 至少有一套 alternative model ASR（S2）
+- 能够把“model-sensitive”与“仅 root-sensitive”粗分出来
+
+---
+
+# Phase 4.2：cross-scenario root / trait sensitivity（审计主线）
+
+## 4.2.1 root scenario matrix
+### 场景集合
+- S1：KDOPS + MFP
+- S2：KDOPS + LG+C20
+- S3：ingroup midpoint
+- S4：repaired provisional reroot
+- S5：仅在必要时触发
+
+### 输出
 - `results/04_phylogeny_asr/root_scenarios.tsv`
-- `results/04_phylogeny_asr/node_selection_registry.tsv`
+- `results/04_phylogeny_asr/qc_root_stability.md`
+- `results/04_phylogeny_asr/root_sensitivity_matrix.tsv`
 
-### 0.2 `metrics_manifest.tsv` 建议字段
-| field | 含义 |
-|---|---|
-| metric_id | 唯一指标名 |
-| value | 数值或字符串 |
-| unit | 单位 |
-| source_file | 来自哪个结果文件 |
-| phase | 所属阶段 |
-| status | final / provisional / exploratory |
-| updated_on | 日期 |
-| note | 备注 |
+### 必须回答的问题
+1. 哪些结论在 S1/S2/S3/S4 下方向一致？
+2. 哪些结论只依赖 S4 或只依赖 outgroup rooting？
+3. 哪些冲突来自 provenance defect，而不是 biological signal？
 
-### 0.3 立即补记的关键指标
-- PASS / NR80 / seed60 数量
-- core MSA 行列数
-- tree trim / ASR trim 列数
-- module counts
-- `msa_full_Ib_v4.afa` 行列数与 column map
-- rooted working tree tip 数
-- QC3 root scenario 列表
-- DCA 的 Meff / L / Meff/L
-- Phase 5 候选节点 registry
+## 4.2.2 S5 触发条件
+满足任一条件时启动：
 
-### 0.4 规则
-- PLAN / TASKS / README / 论文草稿中的数字，一律以 `metrics_manifest.tsv` 为准。
-- 若任一文档与 manifest 冲突，先更新 manifest，再回填其他文档。
-- `progress_snapshot.md` 每次推进阶段时同步更新，不再只靠 `TASKS.md` 口头描述。
+- S1 / S2 / S3 / repaired S4 的深节点方向持续冲突
+- outgroup 与 outgroup-free 场景无法给出最小稳定共识
+- Phase 5 节点选择依然高度依赖单一根位
+
+### S5 目标
+- reduced representative set
+- taxon-balanced
+- nonreversible rooting / rootstrap
+- 给出“可写 / 不可写”的最终边界，而不是执着于唯一根
 
 ---
 
-# ✅ 第零步：计算环境与项目规范 [已完成]
-
-> 状态：已完成。以下内容保留供审计。  
-> V5.1 只新增一个补记要求：把 root-scenario 与 metrics manifest 纳入 `results/meta/` 管理。
-
-### 0.1 环境与版本锁定
-- conda / mamba 环境：`dah7ps_v4`
-- 已安装：HMMER、MAFFT、IQ-TREE 2、MMseqs2、FoldMason、SeqKit、CD-HIT、ClipKIT、PastML、plmc
-- `results/meta/software_versions.tsv` 已存在
-- `results/meta/model_files.tsv` 已存在
-- `meta/params.json` 已初始化
-
-### 0.2 目录规范（补充）
-```text
-results/
-  03_msa_core/
-  03_msa_modules/
-  03_msa_full/
-  04_phylogeny_asr/
-  05_struct_valid/
-  06_dca/
-  meta/
-```
-
-### 0.3 V5.1 新增参数块（写入 `meta/params.json`）
-```json
-{
-  "rooting": {
-    "primary_scenarios": ["MFP_KDOPS", "LGC20_KDOPS", "MIDPOINT_INGROUP", "MAD_INGROUP"],
-    "support_main_min_ufboot": 95,
-    "support_preferred_min_shalrt": 80,
-    "trait_stability_min_scenarios": 2
-  },
-  "manuscript": {
-    "claim_tiers": ["root_robust", "root_sensitive", "exploratory"]
-  },
-  "metrics": {
-    "manifest_path": "results/meta/metrics_manifest.tsv"
-  }
-}
-```
-
----
-
-# ✅ 第一步：全长序列挖掘与 KDOPS 免疫过滤 [已完成]
-
-> 状态：已完成。QC1 通过。  
-> V5.1 不改 Phase 1 的结论，也不要求回滚重做。
-
-### 已确认的要点
-- 扩充种子后重建 HMM 成功提升 Type II 召回。
-- KDOPS 反向过滤在 Phase 1 的角色仍然有效。
-- Ia/II 的 overlap 已通过 best-hit competition 清理为互斥集合。
-- KDOPS borderline 序列已隔离，不需要回流主集合。
-
-### V5.1 解释边界
-- **KDOPS 在 Phase 1 中是成功的负选择工具。**
-- **KDOPS 在 Phase 4 中不再自动等价于唯一可信的深根。**
-
----
-
-# ✅ 第二步：数据驱动 QC 与去冗余 [已完成]
-
-> 状态：已完成。QC2 通过。
-
-### 已完成且继续沿用
-- 2.1 长度 + HMM 覆盖度三箱过滤
-- Type II multi-domain stitching
-- 2.2 NR80 去冗余
-- 2.3 seed60
-- 2.4 stepping-stone 结构候选筛选
-
-### V5.1 不改动
-- 所有 Phase 2 产出继续作为下游标准输入
-- 不因当前 root 问题返工序列挖掘或去冗余
-
----
-
-# ✅ 第三步：结构感知 MSA——核心/模块分治 [已完成]
-
-> 状态：Phase 3.1–3.9 全部完成。  
-> 这是当前项目最稳固的一层，也是 V5.1 继续向前推进的基础。
-
-## 3.1–3.8 已完成摘要
-- 35 结构面板
-- FoldMason 骨架：46 序列
-- core columns：521
-- `core_global_matchonly.afa`：9,393 × 521
-- `core_tree.afa`：436 列
-- `core_asr.afa`：472 列
-- 5 类模块注释 strict / relaxed 双矩阵
-- 模块 MSA：ACT / CM / α2β3 / N_ext / C_tail
-
-## 3.9 Profile-anchored stitching [已完成]
-### 已完成产物
-- `results/03_msa_full/Ib_ACT.ids`
-- `results/03_msa_full/Ib_ACT_linkers.fasta`
-- `results/03_msa_full/Ib_ACT_linkers_einsi.afa`
-- `results/03_msa_full/msa_full_Ib_v4.afa`
-- `results/03_msa_full/msa_full_Ib_column_map.tsv`
-
-### QC2b（已通过）
-1. full-length MSA 的 core 段列数与 `core_asr.afa` 完全一致  
-2. 代表序列的 core 段逐列完全相等  
-3. linker 膨胀未泄漏至 core / module 段  
-
-### V5.1 新解释
-- `msa_full_Ib_v4.afa` 已经足够支持 4.4 Iβ-ACT nested ASR。
-- 因此，4.4 不再需要等待 3.9。
-
----
-
-# 第四步：系统发育与分层 ASR [进行中，V5.1 重点修订]
-
-> **这是当前项目的核心阶段。**  
-> V5.1 的原则是：**计算可以继续，叙事必须分层。**
-
----
-
-## 4.0 Phase 4 的三条总规则
-
-### 规则 A：working tree 与 narrative tree 分离
-- `CoreTree_rooted_ingroup.treefile`（当前默认 working tree）可以用于继续计算。
-- 但只有经过 QC3 判定为 **root-robust** 的事件与节点，才能进入主文主结论。
-
-### 规则 B：多个 root scenario 并行管理
-V5.1 将所有 rooted 分析统一纳入 scenario 框架，至少包含：
-
-| Scenario ID | 描述 | 角色 |
-|---|---|---|
-| S1 | KDOPS + MFP rooted tree → prune outgroup | 当前 working scenario |
-| S2 | KDOPS + LG+C20 rooted tree → prune outgroup | site-heterogeneous 对照 |
-| S3 | ingroup-only midpoint root | outgroup-free 最低成本对照 |
-| S4 | ingroup-only MAD root | 推荐的 outgroup-free robustness 对照 |
-| S5 | reduced representative set nonreversible/rootstrap | 可选高价值 corroboration |
-
-### 规则 C：哪些任务现在就能做，哪些必须等 QC3
-| 任务 | 现在就能做 | 必须等 QC3 |
-|---|---:|---:|
-| 4.3 core ASR 计算 | ✅ | |
-| 4.4 nested ASR | ✅ | |
-| 4.6 trait table / PastML 运行 | ✅ | |
-| 6.1 DCA 输入准备 | ✅ | |
-| Phase 5 节点最终锁定 | | ✅ |
-| deepest module origin 的唯一历史叙事 | | ✅ |
-| 主文 rooted history 图定稿 | | ✅ |
-
----
-
-## 4.1 核心树推断与 root scenario 管理（V5.1 强化版）
-
-### 4.1.1 现有成果沿用
-- `CoreTree_rooted_MFP.treefile`
-- `CoreTree_rooted_LGC20.treefile`
-- `CoreTree_rooted_ingroup.treefile`（作为 S1 alias）
-
-### 4.1.2 V5.1 新要求：支持度与 scenario 统一记录
-若当前 full-tree 结果尚未同时包含 UFBoot 和 SH-aLRT，则补跑支持度版本：
-
-```bash
-# S1: KDOPS + MFP
-iqtree -s results/04_phylogeny_asr/core_with_outgroup.afa \
-  -m Q.PFAM+F+R10 -alrt 1000 -B 1000 -T AUTO \
-  -o "KDOPS_P0A715,KDOPS_Q9ZFK4,KDOPS_O66496" \
-  --prefix results/04_phylogeny_asr/CoreTree_rooted_MFP_support
-
-# S2: KDOPS + LG+C20
-iqtree -s results/04_phylogeny_asr/core_with_outgroup.afa \
-  -m LG+C20+F+G -alrt 1000 -B 1000 -T AUTO \
-  -o "KDOPS_P0A715,KDOPS_Q9ZFK4,KDOPS_O66496" \
-  --prefix results/04_phylogeny_asr/CoreTree_rooted_LGC20_support
-```
-
-> 若 full-tree 补跑成本过高，至少在后续用于 Phase 5 的 focal subtree 上补做 `-alrt 1000 -B 1000`。
-
-### 4.1.3 scenario 产物规范
-在 `results/04_phylogeny_asr/` 下维护：
-
-```text
-CoreTree_rooted_MFP.treefile
-CoreTree_rooted_LGC20.treefile
-CoreTree_rooted_MFP_ingroup.treefile
-CoreTree_rooted_LGC20_ingroup.treefile
-CoreTree_rooted_midpoint_ingroup.treefile
-CoreTree_rooted_MAD_ingroup.treefile
-root_scenarios.tsv
-```
-
-`root_scenarios.tsv` 字段建议：
-- `scenario_id`
-- `source_alignment`
-- `tree_model`
-- `rooting_method`
-- `outgroup_set`
-- `tip_count`
-- `support_status`
-- `status` (`working` / `accepted_for_sensitivity` / `rejected`)
-- `note`
-
-### 4.1.4 outgroup-free rooting（V5.1 新增）
-对 ingroup-only tree 至少构建：
-- S3：midpoint rooted tree
-- S4：MAD rooted tree
-
-> MAD 的价值在于：它不依赖外群，且对分支长度信息更敏感，适合作为当前 KDOPS 根不稳时的对照根。  
-> 如果实现成本高，可先完成 midpoint，再补 MAD；但在论文定稿前，MAD 应尽量完成。
-
-### 4.1.5 可选高价值增强：reduced-set nonreversible/rootstrap
-在 reduced representative set（例如 46 skeleton 或 183/258 representative set）上，执行 nonreversible rooting / rootstrap 作为额外 corroboration：
-
-- 目的：不是替代全树，而是检查 deep split 方向是否与 S1/S2/S3/S4 相冲突。
-- 若该 reduced-set 结果与 S1/S2/S3/S4 中至少一个 outgroup-free scenario 一致，则增强对 root-robust clade 解释的信心。
-
-### 4.1.6 禁止事项
-- 不再以“KDOPS 是外群，所以它给出的根一定对”作为默认前提。
-- 不因 KDOPS 在 ML 树中的异常行为就回滚 Phase 1–3。
-
----
-
-## 4.2 结构系统发育交叉验证：AA 树 vs 3Di 树 [高优先级，纳入 QC3]
-
-> V5.1 将 4.2 从“有益补充”提升为“正交证据”。
-
-```bash
-# AA tree
-iqtree -s results/03_msa_core/skeleton_refined_aa.fa \
-  -m MFP -alrt 1000 -B 1000 -T AUTO \
-  --prefix results/04_phylogeny_asr/SkeletonTree_AA
-
-# 3Di tree
-iqtree -s results/03_msa_core/skeleton_core_3di.fa \
-  -m MFP -mset Q.3Di.AF,Q.3Di.LLM,GTR20 \
-  -mdef meta/models/Q_3Di_models.nex \
-  -alrt 1000 -B 1000 -T AUTO \
-  --prefix results/04_phylogeny_asr/SkeletonTree_3Di
-```
-
-### 4.2 判读规则
-- 4.2 的任务不是证明每一条枝都一致。
-- 只问三个问题：
-  1. 三大亚型的深分化方向是否一致？
-  2. KDOPS / outgroup 分离位置是否与 AA 树大体兼容？
-  3. 与模块 gain/loss 解释相关的 focal deep split 是否发生冲突？
-
-### 4.2 输出
-- `results/04_phylogeny_asr/tree_comparison.md`
-- `results/04_phylogeny_asr/tree_comparison.tsv`
-
----
-
-## 4.3 核心氨基酸 ASR（可继续，解释分层）
-
-> **4.3 已解决 tip-set mismatch；V5.1 的变化在于解释边界，而不是停止执行。**
-
-### 4.3.1 当前 working tree
-- 默认 working tree：`CoreTree_rooted_ingroup.treefile`
-- 建议显式保留 alias：
-  - `CoreTree_rooted_ingroup.treefile` → 当前默认 scenario
-  - `CoreTree_rooted_MFP_ingroup.treefile` → S1 正式文件名
-
-### 4.3.2 运行策略
-**主运行：** 在当前 working scenario 上先完成 core ASR。  
-**敏感性运行：** 至少在一个 alternative root scenario（优先 S2 或 S4）上补跑 focal-node ASR 或整树 ASR。
-
-```bash
-# primary
-iqtree -s results/03_msa_core/core_asr.afa \
-  -te results/04_phylogeny_asr/CoreTree_rooted_MFP_ingroup.treefile \
-  -m MFP -asr \
-  --prefix results/04_phylogeny_asr/ASR_core_S1
-
-# sensitivity
-iqtree -s results/03_msa_core/core_asr.afa \
-  -te results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile \
-  -m MFP -asr \
-  --prefix results/04_phylogeny_asr/ASR_core_S2
-```
-
-### 4.3.3 解释规则
-- 在 QC3 之前，`ASR_core_S1` 可用于：
-  - 下游结构准备
-  - DCA 映射准备
-  - focal residue 的初步检查
-- 在 QC3 之后，只有下列节点可进入 Phase 5 主线：
-  - 节点解释在 ≥2 root scenarios 下不变
-  - 支持度满足 Phase 5.1 门控
-  - 对应的 gain/loss 事件在 strict/relaxed 注释下稳定
-
-### 4.3.4 产物
-- `ASR_core_S1.*`
-- `ASR_core_S2.*`
-- `asr_node_summary.tsv`
-
----
-
-## 4.4 嵌套 ASR（亚型内 full-length local ASR）[立即并行推进]
-
-> 这是 V5.1 推荐的第一优先并行任务之一。  
-> 原因：它依赖 3.9，而 3.9 已经完成；同时它对最深层 root 的依赖比 family-wide story 小得多。
-
-### 4.4.1 主 exemplar
-- **Iβ-ACT architecture** 作为主 exemplar
-- 使用 `msa_full_Ib_v4.afa`
-
-```bash
-iqtree -s results/03_msa_full/msa_full_Ib_v4.afa \
-  -g results/04_phylogeny_asr/Subtree_Ib_topology.nwk \
-  -m MFP -asr \
-  --prefix results/04_phylogeny_asr/ASR_Ib_local
-```
-
-### 4.4.2 V5.1 的新要求
-- 必须对 focal Pre-gain / Post-gain 边界节点导出：
-  - ML 序列
-  - AltAll 序列
-  - 每个位点 PP 概要
-- `msa_full_Ib_column_map.tsv` 必须参与后续结构注释和论文图注，不得只当中间文件。
-
-### 4.4.3 解释定位
-- 4.4 是本项目最可能形成“高可信 exemplar 机制故事”的部分。
-- 若 deepest family root 仍不稳，Iβ-ACT nested ASR 仍然可以独立支撑一段强结果。
-
----
-
-## 4.5 Gap 祖先态重建（非阻塞，继续保留）
-
-### 方案分层
-- **方案 A（主线优先）**：模块 presence/absence 走 PastML（见 4.6）
-- **方案 B（次优先）**：核心连续 gap block 聚合后走 PastML
-- **方案 C（探索性）**：局部 linker/insert 特征只在 focal clade 中解释
-
-### V5.1 修改
-- 所有 gap ASR 默认使用 **pruned ingroup rooted scenario trees**，不直接用含 KDOPS 的原始 rooted tree。
-- 4.5 不阻塞 4.4 / 6.1，也不阻塞 QC3。
-
----
-
-## 4.6 模块获得/丢失的离散性状 ASR（PastML）[V5.1 关键加强]
-
-> 这是最直接决定“模块何时出现/消失”的步骤。  
-> V5.1 规定：**必须在 strict / relaxed × multiple root scenarios 的组合上运行。**
-
-### 4.6.1 运行矩阵
-至少运行以下四组：
+# Phase 4.3：模块 trait ASR 与 annotation sensitivity（高优先级）
+
+## 4.3.1 补模块定义文档
+### 输出
+- `results/03_msa_modules/module_definition_spec.md`
+- `results/03_msa_modules/module_boundary_sensitivity.tsv`
+
+### 至少包括
+- strict / relaxed 的长度阈值、坐标阈值、HMM 规则
+- 每个模块在 strict vs relaxed 下的数量差异
+- 对 `N_ext` 与 `C_tail` 的重点解释
+- 需要时抽样人工复核实例
+
+## 4.3.2 PastML trait ASR
+### 最低运行组合
 - strict × S1
-- strict × S2（或 S4）
+- strict × S2
 - relaxed × S1
-- relaxed × S2（或 S4）
+- relaxed × S2
 
-```bash
-for version in strict relaxed; do
-  for scenario in S1 S2; do
-    pastml \
-      --tree results/04_phylogeny_asr/CoreTree_rooted_${scenario}_ingroup.treefile \
-      --data results/03_msa_modules/module_presence_absence_${version}.tsv \
-      --out_data results/04_phylogeny_asr/module_origins_${version}_${scenario}/ \
-      --html_compressed results/04_phylogeny_asr/module_origins_${version}_${scenario}.html
-  done
-done
-```
-
-> 实际文件名可按你的脚本习惯调整；关键是“版本 × 场景”必须显式保留，不可覆盖写。
-
-### 4.6.2 V5.1 新增稳定性分级
-对于每一种模块事件，输出 `module_origin_stability.tsv`，并分成：
-
-| stability_class | 定义 |
-|---|---|
-| robust | strict/relaxed 一致，且在 ≥2 root scenarios 下指向同一 biological event |
-| semi-robust | strict/relaxed 一致，但 root scenarios 之间 node 略漂移，biological interpretation 仍同向 |
-| root-sensitive | 严重依赖根位置，event polarity 改变 |
-| annotation-sensitive | strict / relaxed 差异过大 |
-| unresolved | 支持或信息不足 |
-
-### 4.6.3 只有哪些事件能进入主线
-仅 `robust` 和部分 `semi-robust` 事件可进入主文。  
-`root-sensitive` 事件只能进入补充或 Discussion，并明确加条件语气。
-
----
-
-## 4.7 AltAll 系综采样（保留，但对准 shortlist 节点）
-
-### V5.1 调整
-- 不再对大量节点“平均用力”
-- 只对下列节点做 AltAll：
-  1. Phase 5 的候选节点
-  2. 模块 gain/loss 边界节点
-  3. 4.4 exemplar 的关键祖先节点
-
-### 默认阈值
-- `PP1 = 0.80`
-- `PP2 = 0.20`
+### S4 修复后可追加
+- strict × S4
+- relaxed × S4
 
 ### 输出
-- `altall_sequences.tsv`
-- `focal_nodes_altall_summary.md`
-
----
-
-## 4.8 模块层局部 ASR（探索性保留）
-
-> 保留，但不再作为主线 gating。
-
-### 定位
-- 用于解释特定模块内部保守位点与已知功能位点
-- 不用于单独支持 deep origin claim
-- 若模块深度过低，结果只能作为定性补充
-
----
-
-## QC3：系统发育 / ASR 统一 gate（V5.1 强制执行）
-
-> **这是 V5.1 的核心。**  
-> QC3 的任务不是问“哪棵树看起来最好”，而是问：  
-> **“哪些结论在合理的 root 变动下仍然成立？”**
-
-### QC3 必须包含的内容
-1. root scenario 列表与对应模型 / 方法  
-2. UFBoot（以及可获得时的 SH-aLRT）  
-3. KDOPS subset sensitivity  
-4. midpoint / MAD 对照  
-5. AA tree vs 3Di tree 对照  
-6. strict vs relaxed 模块事件稳定性  
-7. focal node 的解释是否在多个场景下保持同向  
-8. 对 Phase 5 的推荐：Go / Conditional Go / Hold
-
-### QC3 输出
-- `results/04_phylogeny_asr/qc_phylogeny_asr.md`
-- `results/04_phylogeny_asr/qc_phylogeny_asr.tsv`
-- `results/04_phylogeny_asr/root_scenarios.tsv`
 - `results/04_phylogeny_asr/module_origin_stability.tsv`
+- `results/04_phylogeny_asr/module_trait_asr_summary.md`
 
-### QC3 判定标准
-#### QC3-GREEN（可进入主线）
-- 至少一个 focal event 在 ≥2 root scenarios 下保持同一 biological interpretation
-- 主线节点支持度满足 Phase 5.1 门控
-- AA / 3Di 不发生致命冲突
-- strict / relaxed 不发生 polarity 逆转
+### 稳定性标签
+- `root_robust`
+- `root_sensitive`
+- `annotation_sensitive`
+- `unresolved`
 
-#### QC3-YELLOW（可推进，但需降调）
-- deepest root 仍不稳
-- 但 focal exemplar（如 Iβ-ACT）在 subtype-local 或局部根方案下稳定
-- 允许继续 4.4、6.1、5.0；Phase 5 只选 root-robust 节点
-
-#### QC3-RED（暂停历史锁定）
-- 关键模块事件在不同根方案下方向翻转
-- 3Di 与 AA 对 deep split 出现严重矛盾
-- 则冻结：
-  - Phase 5 主线节点锁定
-  - 主文 rooted history 定稿
-- 但仍可继续：
-  - 4.4 nested ASR
-  - 6.1–6.3 core DCA
-  - 5.0 assembly adjudication
+### Done 条件
+- 不再用启发式语言判断模块历史
+- 所有模块 gain/loss 结论都有稳定性标签
 
 ---
 
-# 第五步：关键祖先节点的结构验证 [待执行，V5.1 更严格门控]
+# Phase 4.4：DCA 审计并行（可立刻启动）
 
-> V5.1 继续坚持：**2–4 节点、Apo-only、native-oligomer 优先。**  
-> 但节点进入 Phase 5 的条件被显著收紧。
-
----
-
-## 5.0 装配体判定（Assembly Adjudication）[保留为硬门控]
-
-### 步骤
-1. 文献 / PDB / UniProt / PDBe PISA 扫描
-2. dimer / tetramer 平行 AF3（Apo）
-3. PISA 界面评分
-4. 写入 `assembly_adjudication.tsv`
+## 4.4.1 输入准备
+### 输入
+- `results/03_msa_core/core_asr.afa`
 
 ### 输出
-- `results/05_struct_valid/assembly_adjudication.tsv`
+- `results/06_dca/core_dca.afa`
+- `results/06_dca/core_dca_stats.tsv`
 
-### 解释规则
-- 不默认四聚体
-- 若装配体状态不清晰，可做短 MD 排除，但不强写机制结论
+### 必须记录
+- 序列数
+- 列数
+- gap 过滤策略
+- Meff
+- L
+- Meff/L
 
----
+## 4.4.2 门控
+- 若 `Meff/L >= 3.0`：允许进入主线 plmc
+- 若 `< 3.0`：停止在审计层，不进入主线解释
 
-## 5.1 候选祖先节点选择（V5.1 关键修改）
-
-> **废止“bootstrap ≥ 70 即可进入主线”的旧标准。**
-
-### 5.1.1 主线节点必须同时满足
-1. **事件稳健性**  
-   对应模块 gain/loss 事件属于 `robust` 或强 `semi-robust`
-2. **支持度**  
-   - 主阈值：UFBoot ≥ 95  
-   - 优先 corroboration：SH-aLRT ≥ 80（若 full-tree 未补跑，则在 focal subtree 上补做）
-3. **root stability**  
-   同一 biological interpretation 在 ≥2 root scenarios 下保持一致
-4. **annotation stability**  
-   strict / relaxed 不改变事件方向
-5. **ASR 可解释性**  
-   focal region 的 PP 分布可接受；若 linker 极低置信，仅做降权，不可硬写
-6. **assembly 不模糊**  
-   装配体判定不能完全 unresolved
-
-### 5.1.2 节点分级
-| class | 进入范围 |
-|---|---|
-| Tier-1 | 主文主图，可进入 AF3 + validation MD 主线 |
-| Tier-2 | 补充或 reserve node，可做结构预测，MD 视资源决定 |
-| Reject | 不进入 Phase 5 主线，仅保留在 trait ASR 表中 |
-
-### 5.1.3 数量控制
-- 默认 **2 个 Tier-1 主线节点**
-- 最多再加 **1–2 个 Tier-2 reserve 节点**
-- 若 QC3 只给出 1 个 truly robust event，则宁可只做 1 个 exemplar，也不要为凑数选弱节点
-
-### 5.1.4 强制记录
-- `results/04_phylogeny_asr/node_selection_registry.tsv`
-
-字段建议：
-- `node_id`
-- `event_type`
-- `scenario_support`
-- `strict_relaxed_stability`
-- `ufboot`
-- `shalrt`
-- `assembly_status`
-- `tier`
-- `decision_note`
-
----
-
-## 5.2 Apo 结构预测（沿用 V5.0，但绑定 tier）
-
-### Tier-1 必做
-- AF3：按 `assembly_adjudication.tsv` 指定拷贝数
-- ESMFold：单体或单链交叉检查
-- 导出：
-  - pLDDT / ipTM
-  - PAE
-  - 接口面积
-  - 催化口袋几何
-
-### Tier-2 可选
-- 仅在资源允许时执行 AF3
-- 不默认进入 MD
-
----
-
-## 5.2b 结构 QC 门控
-
-### 三级门控
-1. AF3 / 结构预测质量  
-   - ipTM ≥ 0.6（多聚体）
-   - 跨链 PAE 合理
-2. 能量最小化 + 分级平衡  
-3. 10 ns short sanity MD（仅作筛选）
-
-### 失败处理
-- 若模型不通过：
-  - 换 ML-best / AltAll 代表序列重跑
-  - 或将该节点降级为 Tier-2 / Reject
-- 不允许为了“保留故事完整性”硬保留低可信模型
-
----
-
-## 5.3 验证性 MD（Apo-only）
-
-### 主分析矩阵
-- Tier-1 节点：
-  - `native-oligomer-apo`：≥200 ns × 2 replicas
-
-### 排除性测试（可选）
-- `alternative-oligomer-apo`：10–20 ns × 1
-- 只用于证明不合理装配体，不用于主机制叙事
-
-### V5.1 强调
-- MD 是 **结构可行性验证**
-- 不是跨证据闭环证明
-- 不再扩张为全因子设计
-
----
-
-## 5.4 有限动力学读出
-
-### 主线读出
-- RMSD / RMSF
-- 界面面积与稳定性
-- 关键口袋体积 / Fpocket
-- 活性位点通道几何
-
-### 可写进主文的前提
-- 只比较 **root-robust、tier-1** 节点
-- 结论写成“与模块整合相容的结构变化”  
-  而不是“已完整证明 allosteric communication path”
-
-### QC4 产物
-- `results/05_struct_valid/qc_struct_validation.md`
-
----
-
-# 第六步：核心层共进化分析（DCA） [待执行，V5.1 继续聚焦]
-
-> V5.1 明确：**不要把 module/joint DCA 拉回主线。**
-
-## 6.1 核心层 DCA 输入准备 [可立即并行]
-```bash
-python scripts/prepare_dca_input.py \
-  --input results/03_msa_core/core_asr.afa \
-  --gap_col_max 0.50 \
-  --gap_row_max 0.50 \
-  --meff_min 3.0 \
-  --output results/06_dca/core_dca.afa \
-  --stats results/06_dca/core_dca_stats.tsv
-```
-
-### V5.1 说明
-- 6.1 可以在 QC3 完成前就启动
-- 因为 DCA 对 deepest root 的依赖很弱
-- 但若要把耦联变化与具体 gain event 绑定，仍需等 QC3 后再写强结论
-
-## 6.2 核心层 DCA 执行
-```bash
-plmc -o results/06_dca/core.params \
-  -c results/06_dca/core_couplings.txt \
-  -le 16.0 -lh 0.01 -m 100 -t 0.8 \
-  -f <focus_seq_id> -g \
-  results/06_dca/core_dca.afa
-```
-
-## 6.3 显著性评估与接触验证
-- Top-L / Top-2L 接触精度
-- 映射到代表性结构（1KFL / 1RZM / 3NV8 等）
-- 催化位点、界面位点、铰链位点富集
-- root-independent 的保守耦联优先解释
-
-### QC5
+## 4.4.3 主线输出
+- `results/06_dca/core_couplings.txt`
 - `results/06_dca/qc_core_dca.md`
 
-## 6.4 可选探索（不入主线）
-- module DCA
-- joint core+module DCA
-- gain 前后耦联比较
-
-### V5.1 解释边界
-- 这些结果最多作为补充或 Discussion 的定性线索
-- 不得反向主导主文叙事
+### Done 条件
+- DCA 有正式 gate，不再停留在 README 口头承诺
 
 ---
 
-# 第七步：论文写作蓝图 [待执行，V5.1 重写主叙事]
+# Phase 5：结构验证（QC3 后置，当前仅做准备）
 
-> **V5.1 的写作核心：从“唯一深根故事”改为“root-robust 主叙事”。**
+## 当前允许的动作
+- 文献与 PDB 装配体注释整理
+- PISA 先验信息表
+- 结构模板盘点
+- 目录与脚本准备
 
-## 7.1 主文主轴（建议标题方向）
-**Conserved catalytic core, recurrent module recruitment, and diversification of allosteric control in DAH7PS**
+## 当前不允许的动作
+- 正式提名 Tier-1 / Tier-2 节点
+- 以未通过 gate 的 deepest node 进入 AF3 / MD 主线
+- 因为“节点看起来有趣”就越过 QC3
 
-### 主叙事
-1. 结构感知核心 MSA 解决了跨亚型 full-length MSA 失真问题
-2. DAH7PS 家族共享保守 core，但反复招募不同 allosteric modules
-3. 模块 gain/loss 的一部分事件对 root 方案稳健，可形成可信的历史解释
-4. Iβ-ACT 的 nested full-length ASR 提供具体 exemplar
-5. core DCA 给出长期保守耦联层
-6. 关键祖先结构验证说明这些推断在结构上可行
+## 进入 Phase 5 的门槛
+某节点必须同时满足：
 
-## 7.2 claim tiers（V5.1 新增）
-| tier | 写作位置 | 允许的结论强度 |
-|---|---|---|
-| root_robust | 主文 Results | 直接陈述 |
-| root_sensitive | Supplement / Discussion | 条件性表述 |
-| exploratory | Supplement / Outlook | 明确降调 |
+1. 支持度门槛  
+2. root stability 门槛  
+3. strict / relaxed annotation stability  
+4. ASR interpretability（关键位点后验概率可解释）
 
-### 写作规则
-- 如果一个事件在不同根方案下 polarity 翻转，则它不属于 `root_robust`
-- 如果一个事件 node 漂移但 biological interpretation 不变，可列为 `semi-robust`，主文需加限定词
-- 如果事件只在单一 scenario 下成立，只能放 Supplement 或 Discussion
-
-## 7.3 核心图表清单（V5.1 建议版）
-| 图号 | 内容 | 备注 |
-|---|---|---|
-| Fig 1 | DAH7PS 家族架构与模块分布 | 基于 3.8 |
-| Fig 2 | FoldMason 骨架与核心列 QC | 基于 3.1–3.7 |
-| Fig 3 | root scenario 比较 + stable / unstable module events | V5.1 新增重点图 |
-| Fig 4 | Iβ-ACT nested full-length ASR exemplar | 4.4 |
-| Fig 5 | core DCA 网络与代表结构映射 | 6.1–6.3 |
-| Fig 6 | Tier-1 ancestral structures / validation MD summary | 5.0–5.4 |
-| Fig S1–Sn | gap ASR、AltAll、补充根方案、exploratory DCA | Supplement |
-
-## 7.4 ICDC 在 Discussion 中的定位
-- 保留为 **Cross-Evidence Convergence Outlook**
-- 只写“定性一致性”
-- 不再宣称已经建立 DCA × MD 的正式闭环
+### 输出
+- `results/05_struct_md/assembly_adjudication.tsv`
+- `results/04_phylogeny_asr/node_selection_registry.tsv`
 
 ---
 
-# 工程风险 Checklist（V5.1）
+# Phase 6：论文叙事与图表
 
-## [CHECK-01] Core 域提取边缘破碎
-- 状态：已通过
-- 不改
+## 主文只写三类内容
+1. 稳定基础层：核心 MSA、FoldMason、家族框架  
+2. `root_robust` 事件：跨场景方向一致  
+3. DCA / 结构验证中与上述事件一致的支持证据  
 
-## [CHECK-02] 祖先全长“弗兰肯斯坦拼接”
-- 缓解：全长祖先必须来自 4.4 nested ASR
-- 不允许手工拼 core + module
-
-## [CHECK-03] DCA 的 Meff/L 门控
-- 主线仅 core DCA
-- module/joint DCA 降为探索
-
-## [CHECK-04] Deep root 过度解释（V5.1 新增重点）
-- 风险：把单一 outgroup rooted tree 当成唯一历史
-- 缓解：QC3 gate + claim tiers
-- 失败处理：冻结 Phase 5 节点锁定与 Fig 3 定稿
-
-## [CHECK-05] 结构预测位阻爆炸 / 装配体错误
-- 关联：5.0 / 5.2 / 5.2b
-- 缓解：assembly adjudication + QC 门控
-
-## [CHECK-06] 文档与数值漂移（V5.1 新增）
-- 风险：PLAN / TASKS / README / 论文草稿数字不一致
-- 缓解：`metrics_manifest.tsv`
-- 失败处理：先修 manifest，再同步全部文档
-
-## [CHECK-07] Phase 4 脚本债拖慢收尾
-- 高优先脚本见下节
-- 任何新结果必须先能复现，再写进主文
+## 补充材料与 Discussion 承担
+- `root_sensitive` 事件
+- `annotation_sensitive` 事件
+- S5 仍无法裁决的 deepest root 争议
+- 探索性 module / structure 观察
 
 ---
 
-# 脚本开发优先级（V5.1）
+## 五、门控体系（Gate System）
 
-## 已有或已被使用
-- `extract_core_domains.py`
-- `define_core_columns.py`
-- `annotate_modules.py`
-- `extract_module_seqs.py`
-- `minimal_trim.py`
-- `extract_struct_subset.py`
-- `extract_linkers.py`
-- `stitch_full_length_msa.py`
-- `select_sequences.py`
-- `prune_tree.py`
-- `assert_tip_match.py`
+### Gate P：provenance gate
+**目标**：scenario 身份清晰  
+**通过条件**：
+- 有且仅有一个官方输出链条
+- treefile / summary / log / md5 一致
+- S3 / S4 写入 `log.md`
 
-## 高优先补齐
-1. `qc_root_stability.py`
-2. `compare_trees.py`
-3. `adjudicate_assembly.py`
-4. `prepare_dca_input.py`
-5. `compute_meff.py`
-6. `dca_significance.py`
-7. `coordinate_mapper.py`
-8. `build_metrics_manifest.py`（V5.1 新增，若无则先手工维护 manifest）
-9. `summarize_module_stability.py`（推荐新增）
+### Gate M：model-sensitivity gate
+**目标**：S2 ASR 到位  
+**通过条件**：
+- S2 prune + assert_tip_match + ASR 完成
+- S1 vs S2 差异摘要完成
 
----
+### Gate T：trait-stability gate
+**目标**：模块历史可分层  
+**通过条件**：
+- strict / relaxed × S1 / S2 完整
+- `module_origin_stability.tsv` 生成
 
-# 里程碑与验收标准（V5.1 修订版）
+### Gate N：node-selection gate
+**目标**：Phase 5 候选节点真实可选  
+**通过条件**：
+- 支持度 + root stability + annotation stability + interpretability 同时通过
 
-| 里程碑 | 交付物 | 验收标准 | 状态 |
-|---|---|---|---|
-| M1 | 结构骨架 + 核心列定义 | core_len 落在可解释范围，结构 QC 通过 | ✅ |
-| M2 | 全量 core MSA | `9,393 × 521` match-only core MSA | ✅ |
-| M2b | 双版本 trim + 模块注释 | `core_tree.afa` / `core_asr.afa` / module matrices | ✅ |
-| M2c | full-length stitched MSA | `msa_full_Ib_v4.afa` + QC2b 断言 | ✅ |
-| M3a | rooted working trees | S1 working tree + tip identity PASS | ✅ |
-| M3b | QC3 root robustness gate | 至少 2 个 scenario 完成并给出 Go / Conditional Go / Hold | ⬜ |
-| M4 | trait ASR stability matrix | `module_origin_stability.tsv` | ⬜ |
-| M5 | core DCA | Meff/L 合格 + contact validation | ⬜ |
-| M6 | Tier-1 ancestral structure validation | 2 个主线节点结构与 MD QC 通过 | ⬜ |
-| M7 | 论文初稿 | claim tiers 落地，Fig 1–6 成形 | ⬜ |
+### Gate R：narrative gate
+**目标**：主文允许写 deepest-history 相关内容  
+**通过条件**：
+- 结论至少达到 `root_robust`
+- provenance 无缺陷
 
 ---
 
-# 立即执行顺序（V5.1 推荐）
+## 六、文件与命名规范
 
-## A. 不停工并行推进
-1. 完成 4.2 AA vs 3Di
-2. 完成 4.4 Iβ-ACT nested ASR
-3. 跑 4.6 strict / relaxed × S1/S2（或 S4）
-4. 启动 6.1 core DCA 输入准备
-5. 开始 5.0 assembly adjudication 文献/数据库扫描
+### 6.1 scenario 文件不可覆盖
+任何 rooting scenario 一旦输出，文件名必须包含其身份信息，例如：
 
-## B. 同步完成 QC3 gate
-1. 整理 S1 / S2 已有 rooted trees
-2. 补建 S3 midpoint
-3. 尽量补建 S4 MAD
-4. 汇总 `module_origin_stability.tsv`
-5. 输出 `qc_phylogeny_asr.md`
-6. 给出 Go / Conditional Go / Hold
+- model / reroot method
+- top500 / fullsearch
+- ingroup / outgroup
+- 日期或 run id（可选）
 
-## C. QC3 之后再做
-1. 锁定 Tier-1 / Tier-2 节点
-2. 进入 5.2–5.4
-3. 定稿 Fig 3 rooted history 叙事
-4. 将 root-sensitive 结果移入 Supplement / Discussion
+### 6.2 必须有 summary + log
+每个 scenario 至少要有：
 
----
+- `.treefile`
+- `.summary.txt` 或 `.summary.tsv`
+- `.log`
+- `root_scenarios.tsv` 记录行
 
-# 参考文献（精简版）
-
-1. Cross PJ, Dobson RCJ, Patchett ML, Parker EJ. The diversity of allosteric controls at the gateway to aromatic amino acid biosynthesis. *Biochem J*. 2013;451(2):127–136.  
-2. Lang EJM, Cross PJ, Sherwood OC, Parker EJ. Quaternary structure is an essential component that contributes to the sophisticated allosteric regulation mechanism in a key enzyme from *Mycobacterium tuberculosis*. *PLoS ONE*. 2016;12(1):e0169601.  
-3. Jiao W, Lang EJM, Bai Y, Fan Y, Parker EJ. Diverse allosteric componentry and mechanisms control entry into aromatic amino acid biosynthesis. *Curr Opin Struct Biol*. 2020;65:159–167.  
-4. Gilchrist CLM, Mirdita M, Steinegger M. Multiple protein structure alignment at scale with FoldMason. *Science*. 2026.  
-5. Steenwyk JL, Buida TJ III, Li Y, Shen XX, Rokas A. ClipKIT: a multiple sequence alignment trimming software for accurate phylogenomic inference. *PLoS Biol*. 2020;18(12):e3001007.  
-6. Minh BQ, Schmidt HA, Chernomor O, et al. IQ-TREE 2: new models and efficient methods for phylogenetic inference in the genomic era. *Mol Biol Evol*. 2020;37(5):1530–1534.  
-7. Tria FDK, Landan G, Dagan T. Phylogenetic rooting using minimal ancestor deviation. *Nat Ecol Evol*. 2017;1:0193.  
-8. Naser-Khdour S, Minh BQ, Lanfear R. Assessing confidence in root placement on phylogenies: an empirical study using nonreversible models. *Syst Biol*. 2022;71(4):959–972.  
-9. Eick GN, Bridgham JT, Anderson DP, Harms MJ, Thornton JW. Robustness of reconstructed ancestral protein functions to statistical uncertainty. *Mol Biol Evol*. 2017;34(2):247–261.  
-10. Muñiz-Trejo R, Park Y, Thornton JW. Robustness of ancestral sequence reconstruction to among-site and among-lineage evolutionary heterogeneity. *Mol Biol Evol*. 2025;42(4):msaf084.  
-11. Ishikawa SA, Zhukova A, Iwasaki W, Gascuel O. A fast likelihood method to reconstruct and visualize ancestral scenarios. *Mol Biol Evol*. 2019;36(9):2069–2085.  
-12. Seffernick JT, Pardo-Avila F, Shen H, et al. A general substitution matrix for structural phylogenetics. *Mol Biol Evol*. 2025;42(6):msaf124.  
-13. Ekeberg M, Lövkvist C, Lan Y, Weigt M, Aurell E. Improved contact prediction in proteins: using pseudolikelihoods to infer Potts models. *Phys Rev E*. 2013;87(1):012707.  
+### 6.3 manifest 单一真源
+- 数字以 `results/meta/metrics_manifest.tsv` 为准
+- 状态以 `results/meta/progress_snapshot.md` 为准
+- README / TASKS / PLAN 只能回显，不能自创数字
 
 ---
 
-## 结论性说明
+## 七、当前优先级排序
 
-V5.1 的核心不是“再找一棵更好看的树”，而是把项目从 **单一 rooted story** 升级为 **可审稿的 root-robust inference framework**。  
-它允许你继续推进大部分工作，同时避免在最脆弱的 deep-root 问题上过度下注。对当前阶段来说，这是最稳、也最容易形成论文的路径。
+### P0（阻塞性）
+1. S4 provenance repair
+2. S2 prune + ASR
+3. `root_scenarios.tsv` 与 `log.md` 修复
+
+### P1（高优先）
+4. S1 vs S2 ASR 差异摘要
+5. 模块定义文档 + boundary sensitivity
+6. strict / relaxed × scenario trait ASR
+
+### P2（并行）
+7. DCA 输入准备 + Meff/L 审计
+8. Assembly adjudication 文献整理
+
+### P3（后置）
+9. Phase 5 节点选择
+10. AF3 / MD
+11. 主文 deepest-history 叙事
+
+---
+
+## 八、非目标（本版明确不做）
+
+- 不重跑 Phase 1–3
+- 不用结构模型替代 phylogeny
+- 不在 QC3 修复前给 deepest history 定唯一箭头
+- 不让 placeholder node registry 伪装成“已筛选节点集”
+
+---
+
+## 九、成功标准
+
+本轮修订成功，不是指“已经找到唯一根”，而是指：
+
+1. **所有 scenario 都可追溯**
+2. **S2 ASR 能与 S1 做正式比较**
+3. **模块历史有稳定性标签**
+4. **DCA 有实际 gate 和实际输出**
+5. **Phase 5 的启动条件被真正执行**
+6. **主文只写 root-robust 结论**
+
+只要做到这一点，项目就从“可能因为深根而失控”转为“即使深根不唯一，也能稳健产出可发表结果”。
+
+---
+
+## 附：建议的最小执行顺序
+
+```text
+S4 provenance repair
+  -> S2 prune + ASR
+  -> S1 vs S2 ASR sensitivity summary
+  -> module_definition_spec + boundary sensitivity
+  -> strict/relaxed × S1/S2 trait ASR
+  -> DCA Meff/L audit
+  -> (if needed) S5 reduced-set rooting
+  -> node selection registry
+  -> assembly adjudication
+  -> AF3 / MD on gated nodes
+```
