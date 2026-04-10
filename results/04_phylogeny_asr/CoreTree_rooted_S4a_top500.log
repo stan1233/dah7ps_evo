@@ -1,0 +1,16 @@
+nohup: ignoring input
+[MAD] Loading tree from results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile ...
+[MAD] Loaded: 9393 tips in 0.1s
+[MAD] 9391 candidate branches total, evaluating top 500 most balanced
+[MAD]   0/500 evaluated, elapsed=0.0s, best_rho=inf
+[MAD]   100/500 evaluated, elapsed=15.1s, best_rho=0.163617
+[MAD]   200/500 evaluated, elapsed=31.9s, best_rho=0.163617
+[MAD]   300/500 evaluated, elapsed=50.4s, best_rho=0.163617
+[MAD]   400/500 evaluated, elapsed=68.2s, best_rho=0.163617
+[MAD] Evaluation complete: 500 branches in 86.6s
+[MAD] Best rho = 0.163617
+[MAD] Root split sizes: [3060, 6333]
+[MAD] Written to: results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup.treefile
+[MAD] Summary written to: results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup_summary.txt
+Done!
+

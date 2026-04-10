@@ -1,0 +1,7 @@
+feature_id	feature_class	orthogonality	trait_asr_role	panel35_calibration	note
+n_ext_len	terminal_extension	primary	main	required	Length-based N-terminal extension feature.
+insert_len	internal_insert	primary	main	required	alpha2beta3 insert should be treated independently.
+act_hmm	domain_hit	primary	main	required	ACT-domain HMM support.
+cm_hmm	domain_hit	primary	main	required	CM-domain HMM support.
+c_ext_len	terminal_extension	primary	main	required	C-terminal extension length irrespective of HMM identity.
+c_residual	residual_bin	secondary	conditional_only	required	Residual no-HMM C-tail bucket; not a primary evolutionary character.

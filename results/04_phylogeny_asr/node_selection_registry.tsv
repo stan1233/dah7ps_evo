@@ -1,12 +1,8 @@
-node_id	event_type	scenario_support	strict_relaxed_stability	ufboot	shalrt	assembly_status	tier	decision_note
-# This registry will be populated after QC3 root robustness gate is completed.
-# Columns:
-#   node_id              - Internal node label from ASR tree
-#   event_type           - module_gain / module_loss / deep_divergence
-#   scenario_support     - Comma-separated scenario IDs where event interpretation is stable
-#   strict_relaxed_stability - concordant / discordant / untested
-#   ufboot               - UFBoot support at this node
-#   shalrt               - SH-aLRT support (if available)
-#   assembly_status      - from assembly_adjudication.tsv: dimer / tetramer / unresolved
-#   tier                 - Tier-1 / Tier-2 / Reject
-#   decision_note        - Free-text justification
+candidate_id	candidate_type	source_scenarios	support_status	asr_sensitivity_status	annotation_status	assembly_status	current_decision	gate_blocker	notes
+# V6.1 registry reset on 2026-04-10.
+# No Phase 5 candidate is eligible before:
+#   1. S2 prune + assert_tip_match + ASR
+#   2. cross-scenario ASR sensitivity
+#   3. QC3 multi-dimensional HOLD is cleared to at least conditional gate
+# Placeholder row retained to make the gate explicit.
+TBD_PENDING_QC3	deep_node_or_module_event	S1,S2,S4A,S4B	not_evaluated	not_evaluated	not_evaluated	not_started	hold	S2_ASR_AND_QC3_PENDING	Do not lock any Phase 5 node from this placeholder.

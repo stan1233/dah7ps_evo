@@ -102,14 +102,47 @@
     },
     "asr": {
         "altall_pp1": 0.80,
-        "altall_pp2": 0.20
+        "altall_pp2": 0.20,
+        "cross_scenario_required_before_phase5": true,
+        "cross_scenario_outputs": [
+            "map_consistency",
+            "posterior_delta",
+            "information_bits"
+        ]
     },
     "rooting": {
-        "primary_scenarios": ["MFP_KDOPS", "LGC20_KDOPS", "MIDPOINT_INGROUP", "MAD_INGROUP"],
-        "optional_scenarios": ["NONREV_REDUCED", "ROOTSTRAP_REDUCED"],
+        "primary_scenarios": [
+            "S1_MFP_KDOPS",
+            "S2_LGC20_KDOPS",
+            "S3_MIDPOINT_INGROUP",
+            "S4A_TOP500_PROXY",
+            "S4B_FULLSEARCH_PROXY"
+        ],
+        "optional_scenarios": ["S5_NONREV_ROOTSTRAP_REDUCED"],
+        "qc3_dimensions": [
+            "provenance",
+            "topology_model_sensitivity",
+            "root_tie_identity",
+            "annotation_sensitivity"
+        ],
         "support_main_min_ufboot": 95,
         "support_preferred_min_shalrt": 80,
-        "trait_stability_min_scenarios": 2
+        "trait_stability_min_scenarios": 2,
+        "phase5_unlock_requires_s2_asr": true,
+        "s5_trigger_after_s2_repaired_s4": true
+    },
+    "module_feature_encoding": {
+        "n_ext_relaxed": 10,
+        "n_ext_strict": 25,
+        "insert_relaxed": 1,
+        "insert_strict": 5,
+        "c_ext_relaxed": 10,
+        "c_ext_strict": 25,
+        "act_relaxed": 0.001,
+        "act_strict": 1e-05,
+        "cm_relaxed": 0.001,
+        "cm_strict": 1e-05,
+        "c_residual_role": "secondary_conditional"
     },
     "manuscript": {
         "claim_tiers": ["root_robust", "root_sensitive", "exploratory"],

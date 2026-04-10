@@ -43,21 +43,10 @@ skeleton_3Di_model	Q.3Di.AF+G4	model	results/04_phylogeny_asr/SkeletonTree_3Di_Q
 skeleton_3Di_logL	-16939.94	logL	results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di.iqtree	P4.2	final	2026-03-19	Skeleton 3Di tree log-likelihood
 tree_comparison_nRF	0.7442	ratio	results/04_phylogeny_asr/tree_comparison.tsv	P4.2	final	2026-03-19	Normalized RF distance AA vs 3Di (high but expected)
 tree_comparison_shared_bip	11	count	results/04_phylogeny_asr/tree_comparison.tsv	P4.2	final	2026-03-19	Shared bipartitions (of 43 each)
-tree_comparison_verdict	QC3-ORTHOGONAL	status	results/04_phylogeny_asr/tree_comparison.md	P4.2	final	2026-03-19	AA vs 3Di remains an orthogonal evidence stream, not the sole QC3 gate
-qc3_verdict	HOLD	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	V6.1 multidimensional QC3 supersedes older YELLOW verdict
-qc3_root_stability	HOLD	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	Topology/model sensitivity, root tie, and annotation calibration remain unresolved
+tree_comparison_verdict	QC3-YELLOW	status	results/04_phylogeny_asr/tree_comparison.md	P4.2	final	2026-03-19	All 3 subtype clades monophyletic in both; no fatal deep conflict
+qc3_verdict	YELLOW	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	final	2026-04-08	root_sensitive; S1/S2 vs S3/S4 root split detected
+qc3_root_stability	root_sensitive	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	final	2026-04-08	2/4 tight agreement; S1-S2 vs S3-S4 disagree on root partition
 qc3_s1_s2_nRF	0.413	ratio	results/04_phylogeny_asr/QC3_root_stability.md	QC3	final	2026-04-08	RF between S1 MFP and S2 LGC20 ingroup trees
 qc3_s1_s3_nRF	0.003	ratio	results/04_phylogeny_asr/QC3_root_stability.md	QC3	final	2026-04-08	RF between S1 MFP and S3 midpoint — nearly identical
-qc3_s3_s4_nRF	0.000	ratio	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	Legacy S3 vs undivided S4 entry retained for continuity; superseded by S4A/S4B split
-s4a_top500_rho	0.163617	ratio	results/04_phylogeny_asr/CoreTree_rooted_S4a_top500.summary.txt	P4.0	provisional	2026-04-10	Top-500 reroot proxy rho
-s4b_fullsearch_rho	0.163617	ratio	results/04_phylogeny_asr/CoreTree_rooted_S4b_fullsearch.summary.txt	P4.0	provisional	2026-04-10	Full-search reroot proxy rho
-s4_rho_tie_count	2	count	results/04_phylogeny_asr/root_scenarios.tsv	P4.0	provisional	2026-04-10	S4A and S4B share the same rho but not the same root identity
-artifact_manifest_rows	15	rows	results/04_phylogeny_asr/artifact_manifest.tsv	P4.0	final	2026-04-10	S1-S4 artifact manifest rows
-qc3_provenance_status	PASS	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	All current formal/provisional scenarios have synchronized artifact triads
-qc3_topology_status	HOLD	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	S1 vs S2 topology/model sensitivity remains substantial
-qc3_root_identity_status	HOLD	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	S4A and S4B form a same-rho different-root tie
-qc3_annotation_status	HOLD	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	Orthogonal feature encoding exists but 35-panel calibration is still pending review
-panel35_calibration_rows	35	rows	results/03_msa_modules/panel35_feature_calibration.tsv	P4.6	final	2026-04-10	30 AFDB representatives plus 5 PDB anchors
-panel35_calibration_reviewed	0	rows	results/03_msa_modules/panel35_feature_calibration.tsv	P4.6	provisional	2026-04-10	No manual structural review completed yet
-phase5_gate_status	HOLD	status	results/04_phylogeny_asr/node_selection_registry.tsv	P5.1	provisional	2026-04-10	S2 ASR and multidimensional QC3 are incomplete
+qc3_s3_s4_nRF	0.000	ratio	results/04_phylogeny_asr/QC3_root_stability.md	QC3	final	2026-04-08	S3 midpoint and S4 MAD essentially identical
 dca_meff_L	NA	ratio	NA	P6.1	pending	2026-03-18	Not yet computed

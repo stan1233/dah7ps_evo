@@ -1,0 +1,14 @@
+Reroot Proxy Summary
+====================
+Scenario: S4B_FULLSEARCH_PROXY
+Status: provisional
+
+Input: results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile
+Output: results/04_phylogeny_asr/CoreTree_rooted_S4b_fullsearch.treefile
+Method label: ingroup reroot proxy (full-search)
+Source script: scripts/mad_root_fast.py
+Candidates evaluated: 9391 / 9391
+Best rho: 0.163617
+Root split sizes: [2820, 6573]
+Tie status: tied with S4A top-500 at the same rho but different root identity
+Interpretation: keep as explicit S4b tie branch; do not promote to a unique deepest root.

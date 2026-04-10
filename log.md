@@ -2906,3 +2906,194 @@ git status --short --branch
 - 把 DCA 明确为可并行但必须先过 `Meff/L` 审计门槛的分支
 - 把 Phase 5 明确限定为 QC3 之后才能锁定节点的后置流程
 - 将项目对外和对内文档的当前版本标签统一提升为 `V6`
+
+---
+
+## 2026-04-10 V6.1 Provenance Repair / QC3 Reshape
+
+---
+
+### 07:46 — V6.1 workflow realignment
+
+**目标：**
+
+按 V6.1 要求完成以下调整：
+
+1. 插入 `provenance repair`
+2. 建立 `artifact_manifest.tsv`
+3. 把 `S2 prune + assert_tip_match + ASR` 提升为绝对第一优先级
+4. 新增 `cross-scenario ASR sensitivity`
+5. 将模块编码改为 `orthogonal features + 35-panel calibration`
+6. 将 QC3 改为四维 gate
+7. 仅在 repaired `S4` 与 `S2 ASR` 之后仍不稳时再触发 `S5`
+
+**保护性备份：**
+
+```bash
+cp results/04_phylogeny_asr/root_scenarios.tsv results/04_phylogeny_asr/root_scenarios.tsv.bak_20260410_v61
+cp results/04_phylogeny_asr/QC3_root_stability.md results/04_phylogeny_asr/QC3_root_stability.md.bak_20260410_v61
+cp results/04_phylogeny_asr/node_selection_registry.tsv results/04_phylogeny_asr/node_selection_registry.tsv.bak_20260410_v61
+cp results/meta/progress_snapshot.md results/meta/progress_snapshot.md.bak_20260410_v61
+cp results/meta/metrics_manifest.tsv results/meta/metrics_manifest.tsv.bak_20260410_v61
+```
+
+---
+
+### 07:48 — S4 tie 显式拆分
+
+**执行：**
+
+```bash
+cp results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup_top500.treefile.bak \
+   results/04_phylogeny_asr/CoreTree_rooted_S4a_top500.treefile
+cp results/04_phylogeny_asr/mad_rooting.log \
+   results/04_phylogeny_asr/CoreTree_rooted_S4a_top500.log
+cp results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup.treefile \
+   results/04_phylogeny_asr/CoreTree_rooted_S4b_fullsearch.treefile
+cp results/04_phylogeny_asr/mad_rooting_biopython.log \
+   results/04_phylogeny_asr/CoreTree_rooted_S4b_fullsearch.log
+```
+
+**结果：**
+
+- `S4A_TOP500_PROXY` 与 `S4B_FULLSEARCH_PROXY` 被正式拆分
+- 两者 `rho` 同为 `0.163617`
+- 但 root split 不同：
+  - `S4a`: `[3060, 6333]`
+  - `S4b`: `[2820, 6573]`
+
+---
+
+### 07:49 — Orthogonal module feature schema
+
+**执行：**
+
+```bash
+python3 scripts/recode_module_features.py \
+  --coords results/03_msa_core/core_domain_coords.tsv \
+  --domtbl results/03_msa_modules/module_hits.domtbl \
+  --panel_manifest results/03_msa_core/panel_manifest.tsv \
+  --outdir results/03_msa_modules
+```
+
+**输出：**
+
+- `results/03_msa_modules/module_feature_registry.tsv`
+- `results/03_msa_modules/module_feature_matrix.tsv`
+- `results/03_msa_modules/panel35_feature_calibration.tsv`
+- `results/03_msa_modules/module_feature_encoding.md`
+
+**关键变化：**
+
+- `C_tail` 被重编码为 `c_residual`
+- 角色被明确降级为 `secondary / conditional`
+- calibration 表包含 `30 AFDB reps + 5 PDB anchors = 35 rows`
+
+---
+
+### 07:50 — Artifact manifest 构建
+
+**执行：**
+
+```bash
+python3 scripts/build_artifact_manifest.py \
+  --spec results/04_phylogeny_asr/artifact_manifest.spec.tsv \
+  --output results/04_phylogeny_asr/artifact_manifest.tsv
+```
+
+**结果：**
+
+- 写入 `15` 行 artifact 记录
+- 覆盖 `S1/S2/S3/S4a/S4b`
+- 每行包含：
+  - output md5
+  - source script
+  - git commit
+  - command
+  - input md5
+  - generated_at
+  - formal / provisional
+
+---
+
+### 07:51 — QC3 改写为四维 gate
+
+**执行：**
+
+```bash
+python3 scripts/qc_root_stability.py \
+  --root_scenarios results/04_phylogeny_asr/root_scenarios.tsv \
+  --artifact_manifest results/04_phylogeny_asr/artifact_manifest.tsv \
+  --feature_registry results/03_msa_modules/module_feature_registry.tsv \
+  --panel_calibration results/03_msa_modules/panel35_feature_calibration.tsv \
+  --tree_comparison results/04_phylogeny_asr/tree_comparison.tsv \
+  --metrics_manifest results/meta/metrics_manifest.tsv \
+  --output_md results/04_phylogeny_asr/QC3_root_stability.md
+```
+
+**QC3 当前结果：**
+
+- provenance: `PASS`
+- topology/model sensitivity: `HOLD`
+- root tie/identity: `HOLD`
+- annotation sensitivity: `HOLD`
+- overall QC3: `HOLD`
+
+**解读：**
+
+- 旧的单一 `root_partition_ratio -> YELLOW` 口径已废止
+- `S1 vs S2` 的模型敏感性仍明显
+- `S4a vs S4b` 的 same-rho different-root tie 已被显式提升为 gate 条目
+- 35-panel calibration 仍待人工 review，因此 annotation 维度不能放行
+
+---
+
+### 07:53 — 文档与状态真源同步
+
+**同步文件：**
+
+- `PLAN.md`
+- `AGENTS.md`
+- `TASKS.md`
+- `README.md`
+- `CLAUDE.md`
+- `meta/params.json`
+- `results/meta/metrics_manifest.tsv`
+- `results/meta/progress_snapshot.md`
+- `results/04_phylogeny_asr/node_selection_registry.tsv`
+
+**新的项目口径：**
+
+- `S2 prune + assert_tip_match + ASR` 是绝对第一优先级
+- 在 `S2 ASR` 出来前：
+  - 禁止 deep-root narrative
+  - 禁止 trait ASR 定稿
+  - 禁止 Phase 5 节点锁定
+- 只有 repaired `S4` 与 `S2` 之后仍不稳时才启动 `S5`
+
+---
+
+### 07:55 — 语法与一致性验证
+
+**执行：**
+
+```bash
+python3 -m py_compile \
+  scripts/build_artifact_manifest.py \
+  scripts/cross_scenario_asr_sensitivity.py \
+  scripts/recode_module_features.py \
+  scripts/qc_root_stability.py
+
+python3 -m json.tool meta/params.json >/dev/null
+
+rg -n "QC3 已通过|YELLOW|Phase 5 可有条件|Phase 5 可条件|单一 S4|MAD ingroup |C_tail.*主要" \
+  README.md PLAN.md AGENTS.md TASKS.md CLAUDE.md \
+  results/meta/progress_snapshot.md \
+  results/04_phylogeny_asr/QC3_root_stability.md -S
+```
+
+**结果：**
+
+- 新增脚本 `py_compile` 通过
+- `meta/params.json` 语法通过
+- 未发现旧版 “QC3 已通过 / YELLOW GO / 单一 S4” 仍作为现口径残留
