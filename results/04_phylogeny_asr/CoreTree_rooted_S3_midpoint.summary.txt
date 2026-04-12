@@ -1,0 +1,11 @@
+Midpoint Rooting Summary
+=======================
+Recovered during provenance repair on 2026-04-10.
+
+Input: results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile
+Output: results/04_phylogeny_asr/CoreTree_rooted_midpoint_ingroup.treefile
+Method: BioPython midpoint rooting via scripts/root_ingroup_tree.py
+Tips: 9393
+Root split sizes: [3060, 6333]
+Status: formal scenario; ASR not yet run on this scenario
+Note: This summary was regenerated from the preserved treefile and prior log notes.

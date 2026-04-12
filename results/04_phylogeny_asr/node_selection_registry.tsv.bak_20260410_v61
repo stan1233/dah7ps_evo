@@ -1,0 +1,12 @@
+node_id	event_type	scenario_support	strict_relaxed_stability	ufboot	shalrt	assembly_status	tier	decision_note
+# This registry will be populated after QC3 root robustness gate is completed.
+# Columns:
+#   node_id              - Internal node label from ASR tree
+#   event_type           - module_gain / module_loss / deep_divergence
+#   scenario_support     - Comma-separated scenario IDs where event interpretation is stable
+#   strict_relaxed_stability - concordant / discordant / untested
+#   ufboot               - UFBoot support at this node
+#   shalrt               - SH-aLRT support (if available)
+#   assembly_status      - from assembly_adjudication.tsv: dimer / tetramer / unresolved
+#   tier                 - Tier-1 / Tier-2 / Reject
+#   decision_note        - Free-text justification

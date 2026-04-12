@@ -1,0 +1,36 @@
+rep_id	subtype	structure_source	seq_len	n_ext_len	insert_len	act_hmm_relaxed	cm_hmm_relaxed	c_ext_len	c_residual_relaxed	calibration_status	panel_note
+UniRef90_A0A7S1N8E1	Ia	AFDB	369	3	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A1G2M3R9	Ia	AFDB	358	5	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A1G2QX84	Ia	AFDB	356	5	0	0	0	0	0	pending_manual_review	
+UniRef90_K2G4Z0	Ia	AFDB	348	0	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A9D1E554	Ia	AFDB	330	0	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A6C0LYK1	Ia	AFDB	330	0	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A1U9RRK3	Ia	AFDB	311	1	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A0P1BF49	Ia	AFDB	883	515	0	0	0	0	0	pending_manual_review	
+UniRef90_A0AAD5YPD5	Ia	AFDB	800	1	0	0	0	491	1	pending_manual_review	
+UniRef90_A0A9W8B222	Ia	AFDB	732	4	0	0	0	338	1	pending_manual_review	
+UniRef90_A0A9W8IGU6	Ia	AFDB	626	0	0	0	0	256	1	pending_manual_review	
+UniRef90_A0AAE9MS66	Ia	AFDB	525	0	0	0	0	157	1	pending_manual_review	
+UniRef90_Q04VK0	Ib	AFDB	380	63	0	0	0	4	0	pending_manual_review	
+UniRef90_A0A2U8E1V4	Ib	AFDB	357	51	0	0	0	3	0	pending_manual_review	
+UniRef90_A0AAU7QSE8	Ib	AFDB	353	2	0	0	1	77	0	pending_manual_review	
+UniRef90_G0EDS9	Ib	AFDB	343	36	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A9D1T3D1	Ib	AFDB	341	41	0	0	0	0	0	pending_manual_review	
+UniRef90_A0AAN6UZ16	II	AFDB	481	7	0	0	0	41	1	pending_manual_review	
+UniRef90_A0A6C0KMJ6	II	AFDB	467	22	0	0	0	0	0	pending_manual_review	
+UniRef90_A0AAD1X4M3	II	AFDB	465	16	0	0	0	2	0	pending_manual_review	
+UniRef90_A0A6C0K4M0	II	AFDB	465	14	10	0	0	0	0	pending_manual_review	
+UniRef90_A0AAU9J3H2	II	AFDB	410	11	0	0	0	2	0	pending_manual_review	
+UniRef90_A0A8S1KPK8	II	AFDB	382	1	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A2K1QM62	II	AFDB	1124	11	1	0	0	637	1	pending_manual_review	
+UniRef90_A0A0C1E1M3	II	AFDB	971	489	0	0	0	1	0	pending_manual_review	
+UniRef90_A0AAF0IM81	II	AFDB	823	340	0	0	0	3	0	pending_manual_review	
+UniRef90_A0A7S4DIG3	II	AFDB	805	1	19	0	0	335	1	pending_manual_review	
+UniRef90_A0A7U9HBN6	II	AFDB	742	290	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A7W7U179	II	AFDB	742	337	0	0	0	0	0	pending_manual_review	
+UniRef90_A0A3R9YGQ0	II	AFDB	615	196	0	0	0	0	0	pending_manual_review	
+PDB-1KFL	Ia	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
+PDB-1RZM	Ib	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
+PDB-3NV8	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
+PDB-5CKV	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
+PDB-2B7O	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.

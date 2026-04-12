@@ -1,0 +1,6 @@
+scenario_id	source_alignment	tree_model	rooting_method	outgroup_set	tip_count	support_status	status	root_partition_ratio	note
+S1_MFP_KDOPS	core_with_outgroup.afa	Q.PFAM+F+R10	outgroup	KDOPS_P0A715,KDOPS_Q9ZFK4,KDOPS_O66496	9405	UFBoot=1000	completed	1.0	MFP rooted tree; KDOPS polyphyletic in ML tree
+S2_LGC20_KDOPS	core_with_outgroup.afa	LG+C20+F+G	outgroup	KDOPS_P0A715,KDOPS_Q9ZFK4,KDOPS_O66496	9405	UFBoot=1000	completed	1.0	LG+C20 rooted tree; LogL=-2820118.09; completed 2026-04-05
+S3_MIDPOINT	CoreTree_rooted_ingroup.treefile	NA	midpoint	none	9393	NA	completed	0.326	BioPython midpoint root; ingroup only
+S4_MAD	CoreTree_rooted_ingroup.treefile	NA	MAD	none	9393	NA	completed	0.3	ete3 MAD full-search; rho=0.163617; root non-unique
+S5_NONREV_REDUCED	TBD	nonreversible	nonreversible	none	TBD	NA	optional	NA	Reduced representative set; resource-dependent

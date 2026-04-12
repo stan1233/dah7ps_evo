@@ -1,0 +1,14 @@
+Reroot Proxy Summary
+====================
+Scenario: S4A_TOP500_PROXY
+Status: provisional
+
+Input: results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile
+Output: results/04_phylogeny_asr/CoreTree_rooted_S4a_top500.treefile
+Method label: ingroup reroot proxy (top-500 search)
+Source script: scripts/mad_root_ete3.py
+Candidates evaluated: 500 / 9391
+Best rho: 0.163617
+Root split sizes: [3060, 6333]
+Tie status: tied with S4B full-search at the same rho but different root identity
+Interpretation: keep as explicit S4a tie branch; do not collapse into a unique S4.

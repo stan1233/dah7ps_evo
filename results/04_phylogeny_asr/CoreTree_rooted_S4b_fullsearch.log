@@ -1,0 +1,54 @@
+nohup: ignoring input
+Using ete3 backend (fast)
+[S4-ete3] Tree loaded: 9393 tips
+[S4-ete3] Evaluated 200 branches, best rho = 0.482129
+[S4-ete3] Evaluated 400 branches, best rho = 0.482129
+[S4-ete3] Evaluated 600 branches, best rho = 0.482129
+[S4-ete3] Evaluated 800 branches, best rho = 0.457910
+[S4-ete3] Evaluated 1000 branches, best rho = 0.439897
+[S4-ete3] Evaluated 1200 branches, best rho = 0.439897
+[S4-ete3] Evaluated 1400 branches, best rho = 0.439897
+[S4-ete3] Evaluated 1600 branches, best rho = 0.439897
+[S4-ete3] Evaluated 1800 branches, best rho = 0.439897
+[S4-ete3] Evaluated 2000 branches, best rho = 0.439897
+[S4-ete3] Evaluated 2200 branches, best rho = 0.439897
+[S4-ete3] Evaluated 2400 branches, best rho = 0.439897
+[S4-ete3] Evaluated 2600 branches, best rho = 0.439897
+[S4-ete3] Evaluated 2800 branches, best rho = 0.429411
+[S4-ete3] Evaluated 3000 branches, best rho = 0.429411
+[S4-ete3] Evaluated 3200 branches, best rho = 0.361874
+[S4-ete3] Evaluated 3400 branches, best rho = 0.354366
+[S4-ete3] Evaluated 3600 branches, best rho = 0.354366
+[S4-ete3] Evaluated 3800 branches, best rho = 0.354366
+[S4-ete3] Evaluated 4000 branches, best rho = 0.354366
+[S4-ete3] Evaluated 4200 branches, best rho = 0.354366
+[S4-ete3] Evaluated 4400 branches, best rho = 0.354366
+[S4-ete3] Evaluated 4600 branches, best rho = 0.354366
+[S4-ete3] Evaluated 4800 branches, best rho = 0.354366
+[S4-ete3] Evaluated 5000 branches, best rho = 0.354366
+[S4-ete3] Evaluated 5200 branches, best rho = 0.354366
+[S4-ete3] Evaluated 5400 branches, best rho = 0.354366
+[S4-ete3] Evaluated 5600 branches, best rho = 0.354366
+[S4-ete3] Evaluated 5800 branches, best rho = 0.354366
+[S4-ete3] Evaluated 6000 branches, best rho = 0.354366
+[S4-ete3] Evaluated 6200 branches, best rho = 0.354366
+[S4-ete3] Evaluated 6400 branches, best rho = 0.354366
+[S4-ete3] Evaluated 6600 branches, best rho = 0.163617
+[S4-ete3] Evaluated 6800 branches, best rho = 0.163617
+[S4-ete3] Evaluated 7000 branches, best rho = 0.163617
+[S4-ete3] Evaluated 7200 branches, best rho = 0.163617
+[S4-ete3] Evaluated 7400 branches, best rho = 0.163617
+[S4-ete3] Evaluated 7600 branches, best rho = 0.163617
+[S4-ete3] Evaluated 7800 branches, best rho = 0.163617
+[S4-ete3] Evaluated 8000 branches, best rho = 0.163617
+[S4-ete3] Evaluated 8200 branches, best rho = 0.163617
+[S4-ete3] Evaluated 8400 branches, best rho = 0.163617
+[S4-ete3] Evaluated 8600 branches, best rho = 0.163617
+[S4-ete3] Evaluated 8800 branches, best rho = 0.163617
+[S4-ete3] Evaluated 9000 branches, best rho = 0.163617
+[S4-ete3] Evaluated 9200 branches, best rho = 0.163617
+[S4-ete3] Evaluated 9391 total branches
+[S4] Best rho = 0.163617
+[S4] Root split sizes: [6573, 2820]
+[S4] MAD rooted tree written to: results/04_phylogeny_asr/CoreTree_rooted_MAD_ingroup_biopython.treefile
+

@@ -1,0 +1,15 @@
+[provenance_repair] 2026-04-10 00:00:00
+Scenario: S3_MIDPOINT_INGROUP
+Recovered artifacts:
+  - treefile: results/04_phylogeny_asr/CoreTree_rooted_midpoint_ingroup.treefile
+  - summary: results/04_phylogeny_asr/CoreTree_rooted_S3_midpoint.summary.txt
+Method source:
+  - scripts/root_ingroup_tree.py
+  - prior execution notes in log.md (Phase 4.1 S3)
+Command identity:
+  python scripts/root_ingroup_tree.py \
+    --input results/04_phylogeny_asr/CoreTree_rooted_ingroup.treefile \
+    --outdir results/04_phylogeny_asr \
+    --midpoint-only
+Recovered root split sizes: [3060, 6333]
+Status: recovered formal metadata; no new rooting computation executed on 2026-04-10.
