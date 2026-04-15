@@ -24,6 +24,7 @@ nohup.out
 
 # Images (generated)
 *.png
+figures/
 
 # Keep important small text files
 !filter_kdops.py

@@ -3097,3 +3097,158 @@ rg -n "QC3 已通过|YELLOW|Phase 5 可有条件|Phase 5 可条件|单一 S4|MAD
 - 新增脚本 `py_compile` 通过
 - `meta/params.json` 语法通过
 - 未发现旧版 “QC3 已通过 / YELLOW GO / 单一 S4” 仍作为现口径残留
+
+---
+
+### 11:14 — figures notebook 与投稿风格图版生成
+
+**新增文件：**
+
+- `figures/project_figures_lib.py`
+- `scripts/build_project_figures_notebook.py`
+- `scripts/render_project_figures.py`
+- `figures/dah7ps_project_figures.ipynb`
+
+**执行：**
+
+```bash
+conda run -n dah7ps_evo python -m py_compile \
+  figures/project_figures_lib.py \
+  scripts/build_project_figures_notebook.py \
+  scripts/render_project_figures.py
+
+conda run -n dah7ps_evo python scripts/build_project_figures_notebook.py
+conda run -n dah7ps_evo python scripts/render_project_figures.py
+```
+
+**结果：**
+
+- notebook 已生成：`figures/dah7ps_project_figures.ipynb`
+- notebook 结构校验通过：`31 cells = 1 setup code + 15 plot code + 15 caption markdown`
+- `F01`–`F15` 已全部导出到 `figures/`
+- 每张图均输出 `PDF + PNG`
+- 图内文本与 caption 统一为英文
+- 对 `F11` 与 `F15` 进行了版式修正，消除标题重叠并收紧多面板布局
+
+**说明：**
+
+- 直接写 `ipynb` JSON，不依赖当前环境中缺失的 `nbformat` / `jupyter`
+- 树图使用自定义 matplotlib 几何绘制，避免当前环境下 `ete3` 不可用与 `toyplot -> png` 依赖 `ghostscript` 的问题
+- 本次工作只实现图表 notebook 与静态图输出，不改变 `S2 ASR / QC3 / Phase 5` 的门控状态
+
+---
+
+### 11:32 — figures 工作流切换为 Markdown 图注并修订 F01 / F02 / F10 / F12
+
+**调整：**
+
+- 放弃 `ipynb` 交付方式
+- 图注统一改为 `figures/FIGURE_CAPTIONS.md`
+- `scripts/render_project_figures.py` 现在在每次渲染后自动刷新 Markdown 图注文件
+- 删除旧的 `figures/dah7ps_project_figures.ipynb`
+- 删除旧的 `scripts/build_project_figures_notebook.py`
+
+**图表修订：**
+
+- `F01`：由小提琴图改为按长度分箱的颜色堆叠柱状图，去除 V3.1 MSA length 信息
+- `F02`：图例移到右侧，避免与主图内容重叠
+- `F10`：模块改为用 marker shape 区分，并在右上角图例说明
+- `F12`：重排面板标题、说明框与 gap burden 注释，避免文字叠压
+- `F08`：在图注中明确 `A0A0P1BF49` 为 Type Ia 但在 guide tree 中落入 Type Ib 邻域，因此该图只用于 coverage 展示，不作为 subtype monophyly 的正式证据
+
+**执行：**
+
+```bash
+conda run -n dah7ps_evo python -m py_compile \
+  figures/project_figures_lib.py \
+  scripts/render_project_figures.py
+
+conda run -n dah7ps_evo python scripts/render_project_figures.py
+```
+
+**结果：**
+
+- `F01`–`F15` 已重新导出
+- `figures/FIGURE_CAPTIONS.md` 已生成并与当前图版同步
+- `F08` 的 outlier 问题确认为底层 guide tree 的局部拓扑现象，不是上色错误
+
+---
+
+### 11:36 — FIGURE_CAPTIONS.md 改为相对路径并内嵌图片
+
+**调整：**
+
+- `figures/FIGURE_CAPTIONS.md` 中的 `PNG/PDF` 路径统一改为相对路径 `./Fxx_*.png|pdf`
+- 每个图注条目下方增加 Markdown 图片嵌入，直接展示当前导出的 PNG
+- 保持图注文本不变，仅调整 Markdown 结构
+
+**执行：**
+
+```bash
+conda run -n dah7ps_evo python -c \
+  "from figures.project_figures_lib import write_caption_markdown; print(write_caption_markdown())"
+```
+
+**结果：**
+
+- `FIGURE_CAPTIONS.md` 已刷新
+- Markdown 现在既包含可点击的相对路径链接，也直接显示各图的输出预览
+
+---
+
+### 19:24 — 新增 Phase 4 实际 tree 渲染脚本与独立 Markdown 索引
+
+**调整：**
+
+- 新增 `scripts/render_phase4_scenario_trees.py`
+- 该脚本直接读取 `results/04_phylogeny_asr/root_scenarios.tsv` 与各 scenario 的 `.treefile`
+- 输出一张包含 `S1` / `S2` / `S3` / `S4a` / `S4b` 实际计算树的多面板图，并将 `S5` 标记为 `pending`
+- 为避免 9k+ tip 树图不可读，正式图中不显示 tip 文本，只保留真实分支几何与右侧 subtype/KDOPS 组成色条
+- 额外生成 `figures/PHASE4_SCENARIO_TREES.md`，用于记录该图而不改写现有 `F11` schematic 的语义
+
+**执行：**
+
+```bash
+python -m py_compile scripts/render_phase4_scenario_trees.py
+
+conda run -n dah7ps_evo python scripts/render_phase4_scenario_trees.py
+```
+
+**结果：**
+
+- 生成 `figures/F16_phase4_actual_root_scenario_trees.png`
+- 生成 `figures/F16_phase4_actual_root_scenario_trees.pdf`
+- 生成 `figures/PHASE4_SCENARIO_TREES.md`
+- 运行环境确认：默认 `python` 与 `dah7ps_v4` 均缺少 `matplotlib`，因此本次渲染使用 `dah7ps_evo`
+
+---
+
+### 19:32 — Phase 4 tree 图改为单场景 circular tree，并为 S1/S2 标注 KDOPS
+
+**调整：**
+
+- 重写 `scripts/render_phase4_scenario_trees.py` 的输出逻辑，不再生成单张 multi-panel 图
+- 改为每个已完成 scenario 单独导出一张 circular rooted tree
+- `S1` / `S2` / `S3` / `S4a` / `S4b` 分别对应 `F16`–`F20`
+- 按 subtype 与 KDOPS 对纯分支扇区添加半透明底色
+- 外圈增加按 leaf 顺序排列的 subtype/KDOPS 色环
+- `S1` 和 `S2` 的 12 个 KDOPS tip 额外用红色星标与 accession 标签显式标出
+- 旧版 `F16_phase4_actual_root_scenario_trees.png|pdf` 已自动备份，不做静默覆盖
+
+**执行：**
+
+```bash
+python -m py_compile scripts/render_phase4_scenario_trees.py
+
+conda run -n dah7ps_evo python scripts/render_phase4_scenario_trees.py
+```
+
+**结果：**
+
+- 生成 `figures/F16_S1_circular_rooted_tree.png|pdf`
+- 生成 `figures/F17_S2_circular_rooted_tree.png|pdf`
+- 生成 `figures/F18_S3_circular_rooted_tree.png|pdf`
+- 生成 `figures/F19_S4a_circular_rooted_tree.png|pdf`
+- 生成 `figures/F20_S4b_circular_rooted_tree.png|pdf`
+- 刷新 `figures/PHASE4_SCENARIO_TREES.md`
+- 旧版多面板文件备份为 `figures/F16_phase4_actual_root_scenario_trees.*.bak_20260414_193141`
