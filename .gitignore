@@ -47,3 +47,6 @@ tmp_foldmason/
 *.contree
 *.splits.nex
 *.uniqueseq.phy
+
+# Local Codex marker/cache
+.codex
