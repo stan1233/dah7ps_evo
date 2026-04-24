@@ -3252,3 +3252,56 @@ conda run -n dah7ps_evo python scripts/render_phase4_scenario_trees.py
 - 生成 `figures/F20_S4b_circular_rooted_tree.png|pdf`
 - 刷新 `figures/PHASE4_SCENARIO_TREES.md`
 - 旧版多面板文件备份为 `figures/F16_phase4_actual_root_scenario_trees.*.bak_20260414_193141`
+
+---
+
+### 16:52 — S2 prune / assert / ASR 实际进度核对并补记
+
+**背景：** `TASKS.md` 与 `log.md` 仍将 `S2 prune + assert_tip_match + ASR` 记为完全未执行；本地文件系统显示该路径已部分推进，需按实际产物回填记录。
+
+**已确认的本地产物：**
+
+- `results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile`
+  - 文件创建时间：2026-04-23 16:08:18 NZST
+  - 状态：已生成，但此前未写入 `log.md`
+- `results/04_phylogeny_asr/ASR_core_S2.log`
+  - IQ-TREE 启动时间：2026-04-23 16:09:38 NZST
+  - 状态：仅有 `.log`，未见对应 `.state / .iqtree / .treefile`
+
+**回填的 prune 命令：**
+
+```bash
+python scripts/prune_tree.py \
+  --input results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile \
+  --remove_prefix KDOPS_ \
+  --output results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile \
+  --assert_rooted
+```
+
+**本次复核执行：**
+
+```bash
+conda run -n dah7ps_v4 python scripts/assert_tip_match.py \
+  --tree results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile \
+  --msa results/03_msa_core/core_asr.afa \
+  --assert_identical
+```
+
+**assert 结果：**
+
+- Tree tips: 9,393
+- MSA seqs: 9,393
+- ✅ PASS: Tree tips and MSA sequence IDs are IDENTICAL (9,393/9,393)
+
+**ASR 现状态：**
+
+- 已确认 `iqtree -s results/03_msa_core/core_asr.afa -te results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile -m LG+C20+F+G -asr -nt 20 -pre results/04_phylogeny_asr/ASR_core_S2` 曾启动
+- `ASR_core_S2.log` 仅记录到参数估计早期阶段，当前无运行中的 `iqtree` 进程
+- 因缺少 `ASR_core_S2.state / .iqtree / .treefile`，`S2 ASR` 仍不得视为完成
+
+**状态更新：**
+
+- `S2 prune`：完成
+- `S2 assert_tip_match`：完成
+- `S2 ASR`：已尝试但未完成，仍为当前 P0 阻塞项
+- `TASKS.md` 已同步到上述真实进度

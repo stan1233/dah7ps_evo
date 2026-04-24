@@ -26,13 +26,13 @@
 
 ### 1.1 S2 prune + assert_tip_match + ASR
 
-- [ ] prune `CoreTree_rooted_LGC20.treefile`
-- [ ] 对 `CoreTree_rooted_LGC20_ingroup.treefile` 运行 `assert_tip_match.py`
-- [ ] 补跑 `ASR_core_S2.state / .iqtree / .treefile / .log`
+- [x] prune `CoreTree_rooted_LGC20.treefile`
+- [x] 对 `CoreTree_rooted_LGC20_ingroup.treefile` 运行 `assert_tip_match.py`
+- [ ] 完成 `ASR_core_S2.state / .iqtree / .treefile / .log`（当前仅有未完成的 `ASR_core_S2.log`）
 - [ ] 将 S2 从 `tree-only` 升级到 `ASR-ready`
 - [ ] 把结果写回 `artifact_manifest.tsv`
 - [ ] 更新 `metrics_manifest.tsv`
-- [ ] 更新 `log.md`
+- [x] 更新 `log.md`
 
 ### 1.2 Cross-scenario ASR sensitivity
 
