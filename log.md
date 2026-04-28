@@ -3305,3 +3305,451 @@ conda run -n dah7ps_v4 python scripts/assert_tip_match.py \
 - `S2 assert_tip_match`：完成
 - `S2 ASR`：已尝试但未完成，仍为当前 P0 阻塞项
 - `TASKS.md` 已同步到上述真实进度
+
+---
+
+### 14:40 — 新建独立 `dah7ps_ggtree` 环境用于 ggtree 绘图
+
+**目的：**
+
+- 为 `ggtree` / `treeio` / `ggtreeExtra` 建立独立 R 绘图环境
+- 不改动当前主分析环境 `dah7ps_v4`
+- 将环境定义固化到仓库内 `envs/dah7ps_ggtree.yml`
+
+**首次求解尝试（失败）：**
+
+```bash
+mamba create -n dah7ps_ggtree -c conda-forge -c bioconda \
+  r-base r-tidyverse r-ape r-phangorn r-optparse r-data.table \
+  bioconductor-ggtree bioconductor-treeio bioconductor-tidytree \
+  bioconductor-ggtreeextra r-svglite r-ragg r-patchwork -y
+```
+
+**失败原因：**
+
+- `bioconductor-tidytree` 不存在，`tidytree` 正确包名应为 `r-tidytree`
+
+**成功执行命令：**
+
+```bash
+mamba create -n dah7ps_ggtree -c conda-forge -c bioconda \
+  r-base r-tidyverse r-ape r-phangorn r-optparse r-data.table r-tidytree \
+  bioconductor-ggtree bioconductor-treeio bioconductor-ggtreeextra \
+  r-svglite r-ragg r-patchwork -y
+```
+
+**结果：**
+
+- 新环境前缀：`/home/luogu/miniforge3/envs/dah7ps_ggtree`
+- 安装成功，事务完成
+- 关键包版本：
+  - `r-base 4.5.3`
+  - `bioconductor-ggtree 4.0.4`
+  - `bioconductor-treeio 1.34.0`
+  - `bioconductor-ggtreeextra 1.20.1`
+  - `r-tidytree 0.4.7`
+  - `r-ape 5.8_1`
+  - `r-phangorn 2.12.1`
+  - `r-svglite 2.2.2`
+  - `r-ragg 1.5.2`
+  - `r-patchwork 1.3.2`
+
+**后续：**
+
+- 待执行两步验证：
+  1. `library(ggtree)` / `library(treeio)` / `library(ape)` 加载与 `sessionInfo()`
+  2. 读取 `results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile` 并输出 `figures/test_ggtree.pdf`
+
+---
+
+### 14:42 — `dah7ps_ggtree` 两步验证完成并更新版本记录
+
+**执行前保护：**
+
+```bash
+cp results/meta/software_versions.tsv \
+  results/meta/software_versions.tsv.bak_20260424_ggtree_setup
+```
+
+**验证 1：环境与核心包加载**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript -e "library(ggtree); library(treeio); library(ape); cat('R=', as.character(getRversion()), '\n', sep=''); cat('ggtree=', as.character(packageVersion('ggtree')), '\n', sep=''); cat('treeio=', as.character(packageVersion('treeio')), '\n', sep=''); cat('ape=', as.character(packageVersion('ape')), '\n', sep=''); sessionInfo()"
+```
+
+**结果：**
+
+- `ggtree` / `treeio` / `ape` 均成功加载
+- 版本确认：
+  - `R 4.5.3`
+  - `ggtree 4.0.4`
+  - `treeio 1.34.0`
+  - `ape 5.8.1`
+- `sessionInfo()` 显示平台为 `x86_64-conda-linux-gnu`
+
+**验证 2：读取正式树并导出 PDF**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript -e "tr<-ape::read.tree('results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile'); cat('tips=', length(tr[['tip.label']]), '\n', sep=''); cat('nodes=', tr[['Nnode']], '\n', sep=''); p<-ggtree::ggtree(tr, layout='circular'); ggplot2::ggsave('figures/test_ggtree.pdf', plot=p, width=10, height=10, units='in', limitsize=FALSE); cat('saved=figures/test_ggtree.pdf\n', sep='')"
+```
+
+**结果：**
+
+- 成功读取 `results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile`
+- 树规模：
+  - `tips = 9405`
+  - `nodes = 9403`
+- 成功导出：`figures/test_ggtree.pdf`（381 KB）
+
+**记录更新：**
+
+- 已新增 `envs/dah7ps_ggtree.yml`
+- 已更新 `results/meta/software_versions.tsv`
+- 已保留备份：`results/meta/software_versions.tsv.bak_20260424_ggtree_setup`
+
+### 2026-04-24 17:00:21 NZST - R/ggtree unrooted radial phylogram render
+
+**Purpose:** Generate one unrooted radial phylogram-style tree per active Phase 4 root scenario with strict branch-length geometry audit.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `42bf496727c1ff3c8be33d808756cfb5568e90c2`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `128`; parallel scenario workers `5`; data.table threads per worker `25`.
+**Reference-style rendering:** black/support-colored branches, translucent subtype clade hulls, outer subtype labels, and `coord_equal()`.
+**Tip rasterization:** `FALSE`; ggrastr version `not_installed`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_midpoint_ingroup.treefile | 52e38f4f7517b4b51cf5b9c09f1e70c3 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_S4a_top500.treefile | 80ade571fcd259353d6b93acb2924cca |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_S4b_fullsearch.treefile | 152cea1a7d89d782538165c938f76cc4 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 743605f0ebe2815e01996d52a510d53d |
+| /home/luogu/dah7ps_evo/scripts/render_unrooted_radial_phylograms.R | 6fdffef0f1526a18fda2546f7caee461 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.png |
+| S3 | /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.png |
+| S4a | /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.png |
+| S4b | /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.pdf | d02a4107f5396575bb152e9dd7a9f448 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.pdf | e92bc2bb5f6465667a7e2589ff4b4e2c |
+| /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.pdf | c0e2e784a7cdc1200cd1d4b1aaa8c8de |
+| /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.pdf | c8d6775231b82e49df2fe22346e2927e |
+| /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.pdf | ee04d42f8a1c66597f2ed9e3f06f883a |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.png | b815ecd9eb188e9df4fa2cb751727be9 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.png | 47674f441eb56cbcbfd93de4f6470e7a |
+| /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.png | 5dc07450793d5fa7b3c545c64acb9a1e |
+| /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.png | 3b18a6957918bea1612675e2d2d18e55 |
+| /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.png | 9ae9eb56681ce24837172011d97175b9 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/unrooted_radial_branch_length_audit.tsv | cf4aa9708f6e62d9e4f022458a702a1d |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S3 | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+| S4a | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+| S4b | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S3 | ape | 18784 | 2.27595720048157e-15 | 4.41390751109654e-13 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S4a | ape | 18784 | 2.3037127760972e-15 | 4.53410650859292e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S4b | ape | 18784 | 2.35922392732846e-15 | 8.42486829912368e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+---
+
+## 2026-04-29 Phase 1 HMM profile visualization
+
+### 09:57 — 绘制 Phase 1 subtype/KDOPS HMM 可视化图
+
+**目的：** 为 Phase 1 的 `model_Ia.hmm`、`model_Ib.hmm`、`model_II.hmm` 与 KDOPS 诱饵模型 `kdo8ps.hmm` 生成可检查的 HMM profile 图，并把 KDOPS negative-selection 的竞争打分结果作为 QC 图展示。
+
+**脚本：** `scripts/render_phase1_hmm_profiles.py`（新建）
+
+**命令：**
+
+```bash
+conda run -n dah7ps_v4 python scripts/render_phase1_hmm_profiles.py
+```
+
+**Repository commit:** `42bf496727c1ff3c8be33d808756cfb5568e90c2`
+
+**输入：**
+
+| path | md5 |
+| --- | --- |
+| `results/01_mining/model_Ia.hmm` | `148b9ec444ddfaf12a242ff05e2aeb65` |
+| `results/01_mining/model_Ib.hmm` | `fa3a7df69d546f66380c553e0b110236` |
+| `results/01_mining/model_II.hmm` | `05aeee4626fc6b8e533578dc9d8dd176` |
+| `results/01_mining/kdo8ps.hmm` | `b453d8266f5eaf24f9017153bd66fa14` |
+| `results/01_mining/kdops_filter_report_v41.tsv` | `dd04909369b9cd6953abb44bea2dfdea` |
+
+**输出：**
+
+| figure | pdf | png |
+| --- | --- | --- |
+| KDOPS profile logo | `figures/F21_phase1_kdops_profile_logo.pdf` | `figures/F21_phase1_kdops_profile_logo.png` |
+| Four-HMM emission heatmap | `figures/F22_phase1_hmm_emission_heatmap.pdf` | `figures/F22_phase1_hmm_emission_heatmap.png` |
+| KDOPS competitive scoring | `figures/F23_phase1_kdops_competitive_scoring.pdf` | `figures/F23_phase1_kdops_competitive_scoring.png` |
+
+**输出 MD5：**
+
+| path | md5 |
+| --- | --- |
+| `scripts/render_phase1_hmm_profiles.py` | `32c7819283d687a5b1282b20da823139` |
+| `figures/F21_phase1_kdops_profile_logo.pdf` | `a7b0bad614b07b9d99a4f4cc87636948` |
+| `figures/F21_phase1_kdops_profile_logo.png` | `be48bb5577285451407950366046f084` |
+| `figures/F22_phase1_hmm_emission_heatmap.pdf` | `902e5f782a3f140d4142b930864a2fac` |
+| `figures/F22_phase1_hmm_emission_heatmap.png` | `c320da7d1b5e30cb95e8958792512f07` |
+| `figures/F23_phase1_kdops_competitive_scoring.pdf` | `4a98005f282c78c071ff45ff88e3c22d` |
+| `figures/F23_phase1_kdops_competitive_scoring.png` | `ce0d606b365dbe8809d6020cff85cc3e` |
+
+### 10:18 — F21/F22 layout 修正并覆盖输出
+
+**原因：** 初版 F21 的分面标签与 x 轴刻度重叠，F22 的氨基酸 y 轴标签和面板布局过密。
+
+**修正：**
+- F21：增加分面行距；仅保留底部分面的 x 轴刻度标签；把 `HMM states` 分面标签放入面板内。
+- F22：改为 2×2 heatmap 布局；加大单面板高度；把 colorbar 改为底部横向色标。
+
+**命令：**
+
+```bash
+conda run -n dah7ps_v4 python scripts/render_phase1_hmm_profiles.py --skip_scoring
+```
+
+**视觉检查：** 已浏览 `F21_phase1_kdops_profile_logo.png` 与 `F22_phase1_hmm_emission_heatmap.png`，未见标题、坐标轴、分面标签或色标文字重叠。
+
+**输出 MD5：**
+
+| path | md5 |
+| --- | --- |
+| `scripts/render_phase1_hmm_profiles.py` | `1f5356b162182f0fe3c5ae231ada82f8` |
+| `figures/F21_phase1_kdops_profile_logo.pdf` | `58d33283baae924369313e94b37411ef` |
+| `figures/F21_phase1_kdops_profile_logo.png` | `25460dac0e3c4cf95d60f769d11c0947` |
+| `figures/F22_phase1_hmm_emission_heatmap.pdf` | `0fa6eab132b9e991111b33433759c63a` |
+| `figures/F22_phase1_hmm_emission_heatmap.png` | `54784fb85ec258d75e75c9faf4e7843b` |
+
+### 2026-04-24 17:01:53 NZST - R/ggtree unrooted radial phylogram render
+
+**Purpose:** Generate one unrooted radial phylogram-style tree per active Phase 4 root scenario with strict branch-length geometry audit.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `42bf496727c1ff3c8be33d808756cfb5568e90c2`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `128`; parallel scenario workers `5`; data.table threads per worker `25`.
+**Reference-style rendering:** black/support-colored branches, translucent subtype clade hulls, outer subtype labels, and `coord_equal()`.
+**Tip rasterization:** `FALSE`; ggrastr version `not_installed`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_midpoint_ingroup.treefile | 52e38f4f7517b4b51cf5b9c09f1e70c3 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_S4a_top500.treefile | 80ade571fcd259353d6b93acb2924cca |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_S4b_fullsearch.treefile | 152cea1a7d89d782538165c938f76cc4 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 743605f0ebe2815e01996d52a510d53d |
+| /home/luogu/dah7ps_evo/scripts/render_unrooted_radial_phylograms.R | f2e1904024f2b6923a34e242334b1f46 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.png |
+| S3 | /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.png |
+| S4a | /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.png |
+| S4b | /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.pdf | b481953676c3aa9ba4fd967d86142879 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.pdf | d08ad6c1456833a831de3935fadc3a0f |
+| /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.pdf | e933055ed525d6e02079ed2a94dc5fda |
+| /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.pdf | f7b13581af229ab97814b4b9748a09fe |
+| /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.pdf | 04c485f00350447d518073fca8429a55 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.png | a49d7cd55c12729dde803e5f13b4e8b4 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.png | cdb2ee4936e4eed423e8a0f35439e38c |
+| /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.png | 9f31dc606b163e6f8deefd51ca7260b8 |
+| /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.png | 11b8da1914f9365cb57cb36975c921b4 |
+| /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.png | 2be8b853492a2f9e4a7e618b25555bd9 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/unrooted_radial_branch_length_audit.tsv | cf4aa9708f6e62d9e4f022458a702a1d |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S3 | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+| S4a | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+| S4b | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S3 | ape | 18784 | 2.27595720048157e-15 | 4.41390751109654e-13 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S4a | ape | 18784 | 2.3037127760972e-15 | 4.53410650859292e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S4b | ape | 18784 | 2.35922392732846e-15 | 8.42486829912368e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-04-28 15:25:06 NZST - R/ggtree unrooted radial phylogram render
+
+**Purpose:** Generate one unrooted radial phylogram-style tree per active Phase 4 root scenario with strict branch-length geometry audit.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `42bf496727c1ff3c8be33d808756cfb5568e90c2`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `128`; parallel scenario workers `5`; data.table threads per worker `25`.
+**Reference-style rendering:** black/support-colored branches, translucent subtype clade hulls, no in-plot group labels, and `coord_equal()`.
+**Tip rasterization:** `FALSE`; ggrastr version `not_installed`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_midpoint_ingroup.treefile | 52e38f4f7517b4b51cf5b9c09f1e70c3 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_S4a_top500.treefile | 80ade571fcd259353d6b93acb2924cca |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_S4b_fullsearch.treefile | 152cea1a7d89d782538165c938f76cc4 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 743605f0ebe2815e01996d52a510d53d |
+| /home/luogu/dah7ps_evo/scripts/render_unrooted_radial_phylograms.R | 74630baec5bd76c0fc0bc9ce21f82ea5 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.png |
+| S3 | /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.png |
+| S4a | /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.png |
+| S4b | /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.pdf | /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.pdf | 44e533d7f94c8cdea5ae0025baa316ab |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.pdf | b7261b4c558f43ab8e0c4d141a7da0c7 |
+| /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.pdf | 043eb553b85ca6b730c3c06ee9577c59 |
+| /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.pdf | c5571aabdc7bdb4ef4e484140b2e1219 |
+| /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.pdf | e6d1a8d0fa823480206bcf803f057a9f |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram.png | f37412a0c164f712e2e8a6ea1f9738bf |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram.png | 29be8c3ae4a88baec9e3d611ef312903 |
+| /home/luogu/dah7ps_evo/figures/S3_unrooted_radial_phylogram.png | cae135cc0a2e9f0a44e6dc5f3b91aa6e |
+| /home/luogu/dah7ps_evo/figures/S4a_unrooted_radial_phylogram.png | 375a7f3f3671eb1e911dbd64029d9eca |
+| /home/luogu/dah7ps_evo/figures/S4b_unrooted_radial_phylogram.png | c37af8eb026dd0e5be861d53d0045874 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/unrooted_radial_branch_length_audit.tsv | cf4aa9708f6e62d9e4f022458a702a1d |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S3 | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+| S4a | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+| S4b | 3513 | 2820 | 3060 | 0 | 0 | 0 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S3 | ape | 18784 | 2.27595720048157e-15 | 4.41390751109654e-13 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S4a | ape | 18784 | 2.3037127760972e-15 | 4.53410650859292e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S4b | ape | 18784 | 2.35922392732846e-15 | 8.42486829912368e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |

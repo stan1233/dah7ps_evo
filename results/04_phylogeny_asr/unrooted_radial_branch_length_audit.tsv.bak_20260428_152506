@@ -1,0 +1,6 @@
+scenario	layout	edge_count	max_abs_error	max_rel_error	pearson_r	audit_status	scale_bar_status	note
+"S1"	"ape"	18807	1.2490009027033e-15	3.79614281259767e-10	1	"PASS"	"added"	"abs_tol=1e-07; rel_tol=1e-05"
+"S2"	"ape"	18807	2.1094237467878e-15	4.83182065676273e-10	1	"PASS"	"added"	"abs_tol=1e-07; rel_tol=1e-05"
+"S3"	"ape"	18784	2.27595720048157e-15	4.41390751109654e-13	1	"PASS"	"added"	"abs_tol=1e-07; rel_tol=1e-05"
+"S4a"	"ape"	18784	2.3037127760972e-15	4.53410650859292e-10	1	"PASS"	"added"	"abs_tol=1e-07; rel_tol=1e-05"
+"S4b"	"ape"	18784	2.35922392732846e-15	8.42486829912368e-10	1	"PASS"	"added"	"abs_tol=1e-07; rel_tol=1e-05"
