@@ -1,0 +1,2 @@
+tip_id	source_group	policy	effective_scope	replacement_root_set	reason	note
+KDOPS_O66496	KDOPS	exclude_from_formal_outgroup_rooting	S1_KDOPS11_noO66496_and_posthoc_legacy_S2	KDOPS_P0A715,KDOPS_Q9ZFK4	Outlier KDOPS tip sits far from the other KDOPS outgroup taxa and adds no useful rooting support.	Retain historical mining/filter records; exclusion applies to formal outgroup-rooting inputs and root scenario provenance.

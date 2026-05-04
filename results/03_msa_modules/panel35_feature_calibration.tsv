@@ -31,6 +31,6 @@ UniRef90_A0A7W7U179	II	AFDB	742	337	0	0	0	0	0	pending_manual_review
 UniRef90_A0A3R9YGQ0	II	AFDB	615	196	0	0	0	0	0	pending_manual_review	
 PDB-1KFL	Ia	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
 PDB-1RZM	Ib	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
-PDB-3NV8	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
-PDB-5CKV	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
-PDB-2B7O	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	Anchor structure retained for manual feature calibration.
+PDB-3NV8	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	O53512_AROG_MYCTU state variant; same M. tuberculosis AroG/DAHP synthase core enzyme as PDB-2B7O and PDB-5CKV.
+PDB-5CKV	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	O53512_AROG_MYCTU state variant; His-tagged/full feedback-inhibited crystal state of the same core enzyme as PDB-2B7O and PDB-3NV8.
+PDB-2B7O	II	PDB	NA	NA	NA	NA	NA	NA	NA	pending_pdb_anchor_mapping	O53512_AROG_MYCTU state variant; same M. tuberculosis AroG/DAHP synthase core enzyme as PDB-3NV8 and PDB-5CKV.

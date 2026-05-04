@@ -43,6 +43,21 @@ PDB_ANCHORS = [
     ("PDB-2B7O", "II"),
 ]
 
+PDB_ANCHOR_NOTES = {
+    "PDB-3NV8": (
+        "O53512_AROG_MYCTU state variant; same M. tuberculosis AroG/DAHP "
+        "synthase core enzyme as PDB-2B7O and PDB-5CKV."
+    ),
+    "PDB-5CKV": (
+        "O53512_AROG_MYCTU state variant; His-tagged/full feedback-inhibited "
+        "crystal state of the same core enzyme as PDB-2B7O and PDB-3NV8."
+    ),
+    "PDB-2B7O": (
+        "O53512_AROG_MYCTU state variant; same M. tuberculosis AroG/DAHP "
+        "synthase core enzyme as PDB-3NV8 and PDB-5CKV."
+    ),
+}
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -238,7 +253,10 @@ def main() -> None:
                 "c_ext_len": "NA",
                 "c_residual_relaxed": "NA",
                 "calibration_status": "pending_pdb_anchor_mapping",
-                "panel_note": "Anchor structure retained for manual feature calibration.",
+                "panel_note": PDB_ANCHOR_NOTES.get(
+                    rep_id,
+                    "Anchor structure retained for manual feature calibration.",
+                ),
             }
         )
 

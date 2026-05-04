@@ -1,0 +1,15 @@
+metric	value	note
+left_label	S2_legacy12_pruned_ingroup	
+right_label	S2_legacy12_posthoc_noO66496_ingroup	
+tips	9393	identical tip set
+rf_distance	0	denominator=18780
+normalized_rf	0.000000	
+left_root_split_sizes	2406,6987	
+right_root_split_sizes	2406,6987	
+left_root_identity	2406[UniRef90_A0A017TFB1,UniRef90_A0A023CY89,UniRef90_A0A024QA01] | 6987[UniRef90_A0A011R1U0,UniRef90_A0A022KZ14,UniRef90_A0A023J9D5]	
+right_root_identity	2406[UniRef90_A0A017TFB1,UniRef90_A0A023CY89,UniRef90_A0A024QA01] | 6987[UniRef90_A0A011R1U0,UniRef90_A0A022KZ14,UniRef90_A0A023J9D5]	
+root_identity_same	True	
+S2_legacy12_pruned_ingroup_root_child_1_group_counts	Ib:2406	n=2406
+S2_legacy12_pruned_ingroup_root_child_2_group_counts	II:3060;Ia:3513;Ib:414	n=6987
+S2_legacy12_posthoc_noO66496_ingroup_root_child_1_group_counts	Ib:2406	n=2406
+S2_legacy12_posthoc_noO66496_ingroup_root_child_2_group_counts	II:3060;Ia:3513;Ib:414	n=6987

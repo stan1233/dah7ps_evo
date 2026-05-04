@@ -3500,6 +3500,123 @@ mamba run -n dah7ps_ggtree Rscript scripts/render_unrooted_radial_phylograms.R
 
 ---
 
+## 2026-04-29 14:54 NZST — F15b AA vs 3Di unrooted radial phylogram
+
+**Purpose:** Recheck the apparent two-part Type II placement in `F15_aa_vs_3di_tanglegram.png` using unrooted radial phylograms on the same 35 logical structure-panel entries.
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_f15b_aa_vs_3di_unrooted_radial_phylogram.R
+```
+
+**Inputs / script MD5:**
+
+| path | md5 |
+| --- | --- |
+| `scripts/render_f15b_aa_vs_3di_unrooted_radial_phylogram.R` | `ec937263983396a57852e6e7615c2832` |
+| `results/04_phylogeny_asr/SkeletonTree_AA.treefile` | `06700a162d2283883a859191f4e5c518` |
+| `results/04_phylogeny_asr/SkeletonTree_3Di_Q3Di.treefile` | `9f4904cae5d3f7ea8665fdd64eb4a702` |
+| `results/03_msa_modules/panel35_feature_calibration.tsv` | `5e51f91b23a307e77fbd395cbae8dd0d` |
+| `results/04_phylogeny_asr/tree_comparison.tsv` | `dcba6d66f550480a6308aa698efb04d1` |
+
+**Outputs:**
+
+| path | md5 |
+| --- | --- |
+| `figures/F15b_aa_vs_3di_unrooted_radial_phylogram.pdf` | `cbc919a4695e742cb80e43281f871f23` |
+| `figures/F15b_aa_vs_3di_unrooted_radial_phylogram.png` | `92ca7edf544acc029c0be45790785b26` |
+| `results/04_phylogeny_asr/aa_vs_3di_unrooted_radial_summary.tsv` | `e747ca52e72fa02b65a93ee6e182775a` |
+
+**Result summary:**
+
+| tree | all Type II unrooted monophyletic | Type II PDB anchors unrooted monophyletic | branch-length audit |
+| --- | --- | --- | --- |
+| AA | TRUE | TRUE | PASS |
+| 3Di | TRUE | TRUE | PASS |
+
+**Interpretation:** The apparent two-block Type II layout in the rooted rectangular tanglegram is a display/rooting-order effect. On an unrooted branch-length phylogram, the 16 Type II panel entries form one branch-defined group in both AA and 3Di trees, while the within-Type-II radial spread remains larger in AA than in 3Di.
+
+**R package versions:** R `4.5.3`; ape `5.8.1`; ggtree `4.0.4`; ggplot2 `4.0.3`; patchwork `1.3.2`; data.table `1.17.8`.
+
+---
+
+### 2026-04-29 14:07:55 NZST - S2 ASR tmux background restart after nohup failure
+
+**Purpose:** Keep the formal S2 ASR rerun alive independently of the Codex tool session.
+
+**Context:**
+
+- The interactive 128-thread S2 ASR run was still progressing but was not safe to leave unattended because it was owned by the Codex sandbox wrapper (`--die-with-parent`).
+- Plain `nohup ... &` and `setsid nohup ... &` were tested and did not survive the tool process cleanup in this execution environment.
+- The failed short `nohup` attempt was backed up before starting the tmux run.
+
+**Backups created:**
+
+- `results/04_phylogeny_asr/ASR_core_S2.log.bak_20260429_140224_interrupted_non_nohup`
+- `results/04_phylogeny_asr/ASR_core_S2.log.bak_20260429_140736_failed_nohup`
+- `results/04_phylogeny_asr/ASR_core_S2.nohup.out.bak_20260429_140736_failed_nohup`
+- `results/04_phylogeny_asr/ASR_core_S2.pid.bak_20260429_140736_failed_nohup`
+
+**tmux session:** `dah7ps_s2_asr`
+
+**Command:**
+
+```bash
+/home/luogu/miniforge3/envs/dah7ps_v4/bin/iqtree3 \
+  -s results/03_msa_core/core_asr.afa \
+  -te results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile \
+  -m LG+C20+F+G \
+  -asr \
+  -T 128 \
+  --prefix results/04_phylogeny_asr/ASR_core_S2 \
+  > results/04_phylogeny_asr/ASR_core_S2.tmux.out 2>&1
+```
+
+**Status at launch check:**
+
+- `tmux list-sessions` confirmed `dah7ps_s2_asr`.
+- `iqtree3` PID `2048638` was running with `-T 128`.
+- Current run outputs are expected under the formal prefix `results/04_phylogeny_asr/ASR_core_S2`.
+- Completion marker planned by the tmux command: `results/04_phylogeny_asr/ASR_core_S2.tmux.done`.
+- `S2 ASR` remains incomplete until `ASR_core_S2.state / .iqtree / .treefile / .log` are present and verified.
+
+---
+
+### 2026-04-29 11:52:17 NZST - S2 ASR thread benchmark and 128-thread run decision
+
+**Purpose:** Choose a faster non-default thread count for the blocking S2 ASR run without using `-1`.
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+
+**Benchmark method:** Temporary IQ-TREE runs under `/tmp`, same S2 ingroup tree, same `core_asr.afa`, same `LG+C20+F+G -asr` command, stopped when `2. Current log-likelihood` appeared.
+
+| threads | status | seconds_to_step2 | note |
+| --- | --- | ---: | --- |
+| 20 | step2 | 148 | default baseline |
+| 32 | step2 | 112 | faster than 20 |
+| 128 | step2 | 107 | fastest tested under the user's decision rule |
+
+**Decision:** Use `-T 128` for the formal S2 ASR rerun because it reached the same likelihood checkpoint faster than the 20-thread baseline.
+
+**Overwrite protection:** Moved the incomplete prior log to `results/04_phylogeny_asr/ASR_core_S2.log.bak_20260429_115217_incomplete` before rerunning with the formal `ASR_core_S2` prefix.
+
+**Formal command to run:**
+
+```bash
+/home/luogu/miniforge3/envs/dah7ps_v4/bin/iqtree3 \
+  -s results/03_msa_core/core_asr.afa \
+  -te results/04_phylogeny_asr/CoreTree_rooted_LGC20_ingroup.treefile \
+  -m LG+C20+F+G \
+  -asr \
+  -T 128 \
+  --prefix results/04_phylogeny_asr/ASR_core_S2
+```
+
+---
+
 ## 2026-04-29 Phase 1 HMM profile visualization
 
 ### 09:57 — 绘制 Phase 1 subtype/KDOPS HMM 可视化图
@@ -3739,6 +3856,1132 @@ mamba run -n dah7ps_ggtree Rscript scripts/render_unrooted_radial_phylograms.R
 | S3 | ape | 18784 | 2.27595720048157e-15 | 4.41390751109654e-13 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
 | S4a | ape | 18784 | 2.3037127760972e-15 | 4.53410650859292e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
 | S4b | ape | 18784 | 2.35922392732846e-15 | 8.42486829912368e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+## 2026-04-29 23:14 NZST — KDOPS11/O66496 interim repair branch started
+
+**Branch:** `kdops11-s1-o66496-o53512`
+
+**Rationale:** `KDOPS_O66496` is excluded from new outgroup-rooting inputs because it is an outlying KDOPS tip and does not improve the outgroup experiment. `PDB-2B7O`, `PDB-3NV8`, and `PDB-5CKV` are registered as one protein-level O53512 / *M. tuberculosis* AroG anchor group, not three independent Type II proteins.
+
+**Files generated or repaired:**
+
+- `results/04_phylogeny_asr/core_with_outgroup_KDOPS11_noO66496.afa`
+  - command: `python3 scripts/drop_fasta_records.py --input results/04_phylogeny_asr/core_with_outgroup.afa --output results/04_phylogeny_asr/core_with_outgroup_KDOPS11_noO66496.afa --remove-id KDOPS_O66496 --expect-input-count 9405 --expect-output-count 9404`
+  - input count: 9405
+  - output count: 9404
+  - output md5: `4f2ab4bc5ff9bc3795e25f3b14429f3b`
+- `results/04_phylogeny_asr/CoreTree_rooted_MFP_legacy12_posthoc_noO66496.treefile`
+- `results/04_phylogeny_asr/CoreTree_rooted_MFP_legacy12_posthoc_noO66496_ingroup.treefile`
+- `results/04_phylogeny_asr/CoreTree_rooted_LGC20_legacy12_posthoc_noO66496.treefile`
+- `results/04_phylogeny_asr/CoreTree_rooted_LGC20_legacy12_posthoc_noO66496_ingroup.treefile`
+- `results/04_phylogeny_asr/S1_legacy12_vs_posthoc_noO66496_ingroup_comparison.tsv`
+- `results/04_phylogeny_asr/S2_legacy12_vs_posthoc_noO66496_ingroup_comparison.tsv`
+- `results/03_msa_modules/pdb_anchor_registry.tsv`
+- `results/04_phylogeny_asr/outgroup_exclusion_registry.tsv`
+
+**Validation:**
+
+- S1 post-hoc noO66496 ingroup `assert_tip_match.py`: PASS, 9393 / 9393 tips matched.
+- S2 post-hoc noO66496 ingroup `assert_tip_match.py`: PASS, 9393 / 9393 tips matched.
+- S1 legacy ingroup vs S1 post-hoc noO66496 ingroup: nRF `0.000000`; root identity unchanged.
+- S2 legacy ingroup vs S2 post-hoc noO66496 ingroup: nRF `0.000000`; root identity unchanged.
+
+**Formal S1 KDOPS11 run:**
+
+Existing legacy S2 ASR was running from `dah7ps_s2_asr` with old `CoreTree_rooted_LGC20_ingroup.treefile` and `-T 128`; it was stopped to match the current interim decision that S2 is deferred and to free resources for S1.
+
+Started tmux session:
+
+```bash
+tmux new-session -d -s s1_kdops11_noO66496 'cd /home/luogu/dah7ps_evo && THREADS=20 scripts/run_s1_kdops11_noO66496.sh > results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.out 2>&1; rc=$?; date "+%Y-%m-%d %H:%M:%S %Z" > results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.done; echo $rc >> results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.done; exit $rc'
+```
+
+The formal S1 command inside the script is:
+
+```bash
+/home/luogu/.local/bin/iqtree3 \
+  -s results/04_phylogeny_asr/core_with_outgroup_KDOPS11_noO66496.afa \
+  -m MFP \
+  -B 1000 \
+  -T 20 \
+  -o KDOPS_P0A715,KDOPS_Q9ZFK4 \
+  --prefix results/04_phylogeny_asr/CoreTree_rooted_MFP_KDOPS11_noO66496
+```
+
+**Gate status:** QC3 remains `HOLD`; Phase 5 remains `HOLD`. The post-hoc S2 tree is not a KDOPS11 S2 rerun and must not be used to claim model sensitivity is closed.
+
+## 2026-04-29 23:21 NZST — S1 KDOPS11 rerun restarted with 128 threads
+
+**Reason:** User requested replacing the initial 20-thread `s1_kdops11_noO66496` run with a 128-thread run.
+
+**Action:**
+
+- Confirmed prior IQ-TREE PID `2209438` was no longer alive.
+- Killed stale tmux session `s1_kdops11_noO66496`.
+- Archived partial 20-thread outputs with suffix `.bak_20260429_2320_threads20_interrupted`:
+  - `results/04_phylogeny_asr/CoreTree_rooted_MFP_KDOPS11_noO66496.log`
+  - `results/04_phylogeny_asr/CoreTree_rooted_MFP_KDOPS11_noO66496.model.gz`
+  - `results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.out`
+
+**Restart command:**
+
+```bash
+tmux new-session -d -s s1_kdops11_noO66496 'cd /home/luogu/dah7ps_evo && THREADS=128 scripts/run_s1_kdops11_noO66496.sh > results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.out 2>&1; rc=$?; date "+%Y-%m-%d %H:%M:%S %Z" > results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.done; echo $rc >> results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.done; exit $rc'
+```
+
+**Active process check:**
+
+- IQ-TREE PID: `2212388`
+- Command includes `-T 128`
+- IQ-TREE emitted: `WARNING: 128 threads for alignment length 436 will slow down analysis`
+
+**Monitoring:**
+
+```bash
+tmux attach -t s1_kdops11_noO66496
+tail -f results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.out
+```
+
+## 2026-04-29 23:34 NZST — S1 KDOPS11 rerun restarted with IQ-TREE `-T AUTO`
+
+**Reason:** IQ-TREE warned that 128 threads were excessive for a 436-column alignment:
+
+```text
+WARNING: 128 threads for alignment length 436 will slow down analysis
+WARNING: Number of threads seems too high for short alignments. Use -T AUTO to determine best number of threads.
+```
+
+**Action:**
+
+- Stopped tmux session `s1_kdops11_noO66496`.
+- Confirmed no remaining `CoreTree_rooted_MFP_KDOPS11_noO66496` IQ-TREE process after stopping.
+- Archived partial 128-thread outputs with suffix `.bak_20260429_2332_threads128_interrupted`.
+- Restarted the same formal S1 KDOPS11 run with `THREADS=AUTO`.
+
+**Restart command:**
+
+```bash
+tmux new-session -d -s s1_kdops11_noO66496 'cd /home/luogu/dah7ps_evo && THREADS=AUTO scripts/run_s1_kdops11_noO66496.sh > results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.out 2>&1; rc=$?; date "+%Y-%m-%d %H:%M:%S %Z" > results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.done; echo $rc >> results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.done; exit $rc'
+```
+
+**Active process check:**
+
+- IQ-TREE PID: `2216474`
+- Command includes `-T AUTO`
+
+**Monitoring:**
+
+```bash
+tmux attach -t s1_kdops11_noO66496
+tail -f results/04_phylogeny_asr/S1_KDOPS11_noO66496.tmux.out
+```
+
+### 2026-04-30 11:03:16 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with direct-match DAH7PS literature abbreviations labelled on terminal tips.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** direct S1/S2 terminal-tip matches only; absent accessions/PDB anchors are recorded in the status TSV and are not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | 765d79f9f6bfedc0b3ff5ebe21922c4c |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | c89fb0c5c08436fa8676fe419ba4377e |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | 3f6955dda504b8998cc95ca0b8feb5e7 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 7e9a9ce1902e8bd1ff6890822c0e9113 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | 3e67a9b64d017fda20c4cf6c2ac87d72 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 274752b122a69bb9d36d81c37081509b |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | plotted_direct_tip | missing_no_direct_tip |
+| --- | --- | --- |
+| S1 | 6 | 9 |
+| S2 | 6 | 9 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-04-30 11:03:44 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with direct-match DAH7PS literature abbreviations labelled on terminal tips.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** direct S1/S2 terminal-tip matches only; absent accessions/PDB anchors are recorded in the status TSV and are not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | 9786bb2dc737ee4772a3ca142ddd7276 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | 9c02d9693f139dc53513fa302db4ffbb |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | 4ba365a0d6555f7614e3c895e8c7bc87 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 7e9a9ce1902e8bd1ff6890822c0e9113 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | 3e67a9b64d017fda20c4cf6c2ac87d72 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 274752b122a69bb9d36d81c37081509b |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | plotted_direct_tip | missing_no_direct_tip |
+| --- | --- | --- |
+| S1 | 6 | 9 |
+| S2 | 6 | 9 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-04-30 11:05:24 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with direct-match DAH7PS literature abbreviations labelled on terminal tips.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** direct S1/S2 terminal-tip matches only; absent accessions/PDB anchors are recorded in the status TSV and are not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | a15b7816749af9fcf7697a8874fab11c |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | 798772d0ffd063f978ffe3dec81e5167 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | f59dc06e2c2584ccc852b286199523b5 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | f1f9c8cfd914a4f4cf5120f6b7b6d239 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | a87587a80a5bc8778fa5cb20eed96b82 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 274752b122a69bb9d36d81c37081509b |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | plotted_direct_tip | missing_no_direct_tip |
+| --- | --- | --- |
+| S1 | 6 | 9 |
+| S2 | 6 | 9 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-04-30 16:17:02 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with direct-match DAH7PS literature abbreviations labelled on terminal tips.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** direct S1/S2 terminal-tip matches only; absent accessions/PDB anchors are recorded in the status TSV and are not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | d5bf6d4bfbabc07e3606951c52603d70 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | ab7ed274fef32f04ec103161ae811def |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | c31fd8868610d3588eeaa7afdb8c5a74 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | f1f9c8cfd914a4f4cf5120f6b7b6d239 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | a87587a80a5bc8778fa5cb20eed96b82 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 2892d755eea8eb50f11d9401e3da086a |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | plotted_direct_tip | missing_no_direct_tip |
+| --- | --- | --- |
+| S1 | 6 | 9 |
+| S2 | 6 | 9 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-04-30 16:31:59 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with DAH7PS literature abbreviations labelled on direct terminal tips or their nr80 CD-HIT representatives.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** prefer exact S1/S2 terminal-tip matches; otherwise plot the nr80 CD-HIT representative when the target clustered before formal-tree construction. Length-filtered and locally absent targets are recorded but not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta.clstr | 6e50378856fa0a979f6f1aed17c6ea7f |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta.clstr | c6ae96e5eabac8915e29e1b9f8812855 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta.clstr | 7019ca9f26f365459e5d5e5223837d6a |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | ad6d9cd4256ed1d7cf211128706fa324 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | 4bb660104c74a6d68755a375e653894f |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | a97f06888b2037cbc08629e6db0f678c |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 445895c5f50fdb827726db926f6c64c7 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | 3c1b41fa771f5d8257bb926b53012ed0 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 392e131dbbc5d8fed2d93a0cbd6284e9 |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | length_filtered_before_cdhit | missing_not_found_in_cdhit_cluster | plotted_cdhit_representative | plotted_direct_tip |
+| --- | --- | --- | --- | --- |
+| S1 | 2 | 1 | 6 | 7 |
+| S2 | 2 | 1 | 6 | 7 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-04-30 16:56:38 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with DAH7PS literature abbreviations labelled on direct terminal tips or their nr80 CD-HIT representatives.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** prefer exact S1/S2 terminal-tip matches; otherwise plot the nr80 CD-HIT representative when the target clustered before formal-tree construction. Length-filtered and locally absent targets are recorded but not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta.clstr | 6e50378856fa0a979f6f1aed17c6ea7f |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta.clstr | c6ae96e5eabac8915e29e1b9f8812855 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta.clstr | 7019ca9f26f365459e5d5e5223837d6a |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | 2a7947e0fcae00ffbb24a943ced428a9 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | b351d37669ad57d4d0d78baeec866ccc |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | 8a248d2206280de0de01470236f0e26f |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | d038dd299c84fa6aaee9ff774b20b65d |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | ead07755ef1b6e5d716708d6c4e61112 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | f5dd2a6b7c1c25738e301483804eaadb |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | length_filtered_before_cdhit | missing_not_found_in_cdhit_cluster | plotted_cdhit_representative | plotted_direct_tip |
+| --- | --- | --- | --- | --- |
+| S1 | 1 | 2 | 6 | 7 |
+| S2 | 1 | 2 | 6 | 7 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-04-30 17:02:08 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with DAH7PS literature abbreviations labelled on direct terminal tips or their nr80 CD-HIT representatives.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** prefer exact S1/S2 terminal-tip matches; otherwise plot the nr80 CD-HIT representative when the target clustered before formal-tree construction. Length-filtered and locally absent targets are recorded but not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta.clstr | 6e50378856fa0a979f6f1aed17c6ea7f |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta.clstr | c6ae96e5eabac8915e29e1b9f8812855 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta.clstr | 7019ca9f26f365459e5d5e5223837d6a |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | 767ad46a682b43d5570a4553ba39e609 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | 25f893d9c03e45306cd3ac3d337cd569 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | 4500011881d533b8c5d40a163a399f43 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 5827a502ace5aa3f49fc7f2e77856097 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | 633e4b83867ef705fc5dce603fe8f64b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 02185bd56f72e49756a66d73af4a47e6 |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | length_filtered_before_cdhit | missing_not_found_in_cdhit_cluster | plotted_cdhit_representative | plotted_direct_tip |
+| --- | --- | --- | --- | --- |
+| S1 | 1 | 2 | 6 | 7 |
+| S2 | 1 | 2 | 6 | 7 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-04-30 17:08:14 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with DAH7PS literature abbreviations labelled on direct terminal tips or their nr80 CD-HIT representatives.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** prefer exact S1/S2 terminal-tip matches; otherwise plot the nr80 CD-HIT representative when the target clustered before formal-tree construction. Length-filtered and locally absent targets are recorded but not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta.clstr | 6e50378856fa0a979f6f1aed17c6ea7f |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta.clstr | c6ae96e5eabac8915e29e1b9f8812855 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta.clstr | 7019ca9f26f365459e5d5e5223837d6a |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | abca62c5e8e7667cec56734544f51ee7 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | f886c3224260ebc95dc6d8ae24b27b04 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | c776cff318387b78eb6bae61adb80e35 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 5827a502ace5aa3f49fc7f2e77856097 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | 633e4b83867ef705fc5dce603fe8f64b |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 6e5de0585835aa45b0b195f70204b62e |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | length_filtered_before_cdhit | missing_not_found_in_cdhit_cluster | plotted_cdhit_representative | plotted_direct_tip |
+| --- | --- | --- | --- | --- |
+| S1 | 1 | 2 | 6 | 7 |
+| S2 | 1 | 2 | 6 | 7 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-05-01 15:08:44 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with DAH7PS literature abbreviations labelled on direct terminal tips or their nr80 CD-HIT representatives.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** prefer exact S1/S2 terminal-tip matches; otherwise plot the nr80 CD-HIT representative when the target clustered before formal-tree construction. Length-filtered and locally absent targets are recorded but not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta.clstr | 6e50378856fa0a979f6f1aed17c6ea7f |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta.clstr | c6ae96e5eabac8915e29e1b9f8812855 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta.clstr | 7019ca9f26f365459e5d5e5223837d6a |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | 47c357726031a90d1428f610abaf3606 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | 9d7d983521fd7beab2310ba3df85e982 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | ef253c5fb69543aeb3201183f36777c8 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 1af7a93f6a912245ce3c715f4e5beb7f |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | 32e34f08fec73af72fdb87c28aa53cd1 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 14d7d25b61455f2b65bc37e761a7ad15 |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | length_filtered_before_cdhit | missing_not_found_in_cdhit_cluster | plotted_cdhit_representative | plotted_direct_tip |
+| --- | --- | --- | --- | --- |
+| S1 | 1 | 2 | 8 | 6 |
+| S2 | 1 | 2 | 8 | 6 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-05-01 15:10:16 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with DAH7PS literature abbreviations labelled on direct terminal tips or their nr80 CD-HIT representatives.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** prefer exact S1/S2 terminal-tip matches; otherwise plot the nr80 CD-HIT representative when the target clustered before formal-tree construction. Length-filtered and locally absent targets are recorded but not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta.clstr | 6e50378856fa0a979f6f1aed17c6ea7f |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta.clstr | c6ae96e5eabac8915e29e1b9f8812855 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta.clstr | 7019ca9f26f365459e5d5e5223837d6a |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | 47c357726031a90d1428f610abaf3606 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | 34d8bc65db22b44779cee95047616b35 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | 15d34edff0da8dcc0504e3f6a34aca14 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 1af7a93f6a912245ce3c715f4e5beb7f |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | 32e34f08fec73af72fdb87c28aa53cd1 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 14d7d25b61455f2b65bc37e761a7ad15 |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | length_filtered_before_cdhit | missing_not_found_in_cdhit_cluster | plotted_cdhit_representative | plotted_direct_tip |
+| --- | --- | --- | --- | --- |
+| S1 | 1 | 2 | 8 | 6 |
+| S2 | 1 | 2 | 8 | 6 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-05-01 15:24:46 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with DAH7PS literature abbreviations labelled on direct terminal tips or their nr80 CD-HIT representatives.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** prefer exact S1/S2 terminal-tip matches; otherwise plot the nr80 CD-HIT representative when the target clustered before formal-tree construction. Length-filtered and locally absent targets are recorded but not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta.clstr | 6e50378856fa0a979f6f1aed17c6ea7f |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta.clstr | c6ae96e5eabac8915e29e1b9f8812855 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta.clstr | 7019ca9f26f365459e5d5e5223837d6a |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | 2b795bae3906dfcfa2aa432566ca5ab9 |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | 14e5f1a40d890961b94e25a187c973a9 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | 47a5729265dcfb9770c6a3e544c29f04 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 75a8aa901df1b82dcca1f3082dacecd6 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | bc023b9af14e191df436404afbf398f7 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 14d7d25b61455f2b65bc37e761a7ad15 |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | length_filtered_before_cdhit | missing_not_found_in_cdhit_cluster | plotted_cdhit_representative | plotted_direct_tip |
+| --- | --- | --- | --- | --- |
+| S1 | 1 | 2 | 8 | 6 |
+| S2 | 1 | 2 | 8 | 6 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+
+**R Package Versions:**
+
+| package | version |
+| --- | --- |
+| R | 4.5.3 |
+| ape | 5.8.1 |
+| ggtree | 4.0.4 |
+| treeio | 1.34.0 |
+| tidytree | 0.4.7 |
+| ggplot2 | 4.0.3 |
+| data.table | 1.17.8 |
+| ggrastr | not_installed |
+| ragg | 1.5.2 |
+
+### 2026-05-01 16:04:01 NZST - R/ggtree S1/S2 literature-labeled unrooted radial phylogram render
+
+**Purpose:** Redraw S1 and S2 unrooted radial phylograms with DAH7PS literature abbreviations labelled on direct terminal tips or their nr80 CD-HIT representatives.
+
+**Command:**
+
+```bash
+mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R
+```
+
+**Repository commit:** `63ce5a6a3d32052366d4cb0e09968a115dbf9580`
+**Layout:** `ape`; `DAYLIGHT_MAX_COUNT=5` when daylight is requested; `STRICT_BRANCH_LENGTH_AUDIT=TRUE`.
+**CPU use:** available cores `128`; requested cores `20`; data.table threads `20`.
+**Label policy:** prefer exact S1/S2 terminal-tip matches; otherwise plot the nr80 CD-HIT representative when the target clustered before formal-tree construction. Length-filtered and locally absent targets are recorded but not plotted.
+**Label status TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv`.
+**Branch audit TSV:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv`.
+
+**Input MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP.treefile | 53be91f25a2a887d3d9948be3772cdf8 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_LGC20.treefile | e2402b2cdd046c6cce58416896e7fdb7 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta | 3ea1abc809d93f378d7cfa912f4daa49 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta | 7f2bd2ec3443b8c07fff23147f1a3e12 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta | ba3ce5161a2826f4f3c9c8fab7536c0b |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ia.fasta.clstr | 6e50378856fa0a979f6f1aed17c6ea7f |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_Ib.fasta.clstr | c6ae96e5eabac8915e29e1b9f8812855 |
+| /home/luogu/dah7ps_evo/results/02_qc/nr80_II.fasta.clstr | 7019ca9f26f365459e5d5e5223837d6a |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/root_scenarios.tsv | 4c6fd3acedd3d8e61c261e69930bcc94 |
+| /home/luogu/dah7ps_evo/scripts/render_s1_s2_literature_labeled_unrooted_radial_phylograms.R | efbc73ea0b1887606fd8324af12efa4a |
+
+**Outputs:**
+
+| scenario | pdf | png |
+| --- | --- | --- |
+| S1 | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png |
+| S2 | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png |
+
+**Output MD5:**
+
+| path | md5 |
+| --- | --- |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.pdf | c23cad0605b855656661c60e205a9f34 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.pdf | 182769fe7bbe50505af37051ae811481 |
+| /home/luogu/dah7ps_evo/figures/S1_unrooted_radial_phylogram_literature_labels.png | 1a6f219ef538937d0ae9a1f0af08dd24 |
+| /home/luogu/dah7ps_evo/figures/S2_unrooted_radial_phylogram_literature_labels.png | 0871d6f6b6ff593eda5dc6100e565785 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_labeled_branch_length_audit.tsv | a9d66a2bbc8aed83eebf60c1b1432d15 |
+| /home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_S2_literature_label_status.tsv | 9ad9a5881b6c4b46c98e4b779cb330b0 |
+
+**Subtype Counts:**
+
+| scenario | Ia | Ib | II | KDOPS | Other | raw_KDOPS |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+| S2 | 3513 | 2820 | 3060 | 12 | 0 | 12 |
+
+**Label Summary:**
+
+| scenario | length_filtered_before_cdhit | missing_not_found_in_cdhit_cluster | plotted_cdhit_representative | plotted_direct_tip |
+| --- | --- | --- | --- | --- |
+| S1 | 2 | 2 | 8 | 5 |
+| S2 | 2 | 2 | 8 | 5 |
+
+**Branch-Length Geometry Audit:**
+
+| scenario | layout | edge_count | max_abs_error | max_rel_error | pearson_r | audit_status | scale_bar_status | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| S1 | ape | 18807 | 1.2490009027033e-15 | 3.79614281259767e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
+| S2 | ape | 18807 | 2.1094237467878e-15 | 4.83182065676273e-10 | 1 | PASS | added | abs_tol=1e-07; rel_tol=1e-05 |
 
 **R Package Versions:**
 

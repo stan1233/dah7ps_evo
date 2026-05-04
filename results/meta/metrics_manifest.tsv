@@ -52,7 +52,7 @@ qc3_s3_s4_nRF	0.000	ratio	results/04_phylogeny_asr/QC3_root_stability.md	QC3	pro
 s4a_top500_rho	0.163617	ratio	results/04_phylogeny_asr/CoreTree_rooted_S4a_top500.summary.txt	P4.0	provisional	2026-04-10	Top-500 reroot proxy rho
 s4b_fullsearch_rho	0.163617	ratio	results/04_phylogeny_asr/CoreTree_rooted_S4b_fullsearch.summary.txt	P4.0	provisional	2026-04-10	Full-search reroot proxy rho
 s4_rho_tie_count	2	count	results/04_phylogeny_asr/root_scenarios.tsv	P4.0	provisional	2026-04-10	S4A and S4B share the same rho but not the same root identity
-artifact_manifest_rows	15	rows	results/04_phylogeny_asr/artifact_manifest.tsv	P4.0	final	2026-04-10	S1-S4 artifact manifest rows
+artifact_manifest_rows	26	rows	results/04_phylogeny_asr/artifact_manifest.tsv	P4.0	interim	2026-04-29	S1-S4 plus KDOPS11/O66496 post-hoc repair artifacts
 qc3_provenance_status	PASS	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	All current formal/provisional scenarios have synchronized artifact triads
 qc3_topology_status	HOLD	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	S1 vs S2 topology/model sensitivity remains substantial
 qc3_root_identity_status	HOLD	status	results/04_phylogeny_asr/QC3_root_stability.md	QC3	provisional	2026-04-10	S4A and S4B form a same-rho different-root tie
@@ -61,3 +61,9 @@ panel35_calibration_rows	35	rows	results/03_msa_modules/panel35_feature_calibrat
 panel35_calibration_reviewed	0	rows	results/03_msa_modules/panel35_feature_calibration.tsv	P4.6	provisional	2026-04-10	No manual structural review completed yet
 phase5_gate_status	HOLD	status	results/04_phylogeny_asr/node_selection_registry.tsv	P5.1	provisional	2026-04-10	S2 ASR and multidimensional QC3 are incomplete
 dca_meff_L	NA	ratio	NA	P6.1	pending	2026-03-18	Not yet computed
+kdops11_outgroup_seqs	11	seqs	results/04_phylogeny_asr/core_with_outgroup_KDOPS11_noO66496.afa	P4.1	interim	2026-04-29	KDOPS outgroup count after excluding KDOPS_O66496
+core_with_outgroup_kdops11_seqs	9404	seqs	results/04_phylogeny_asr/core_with_outgroup_KDOPS11_noO66496.afa	P4.1	interim	2026-04-29	9393 ingroup + 11 KDOPS; columns unchanged from core_with_outgroup.afa
+s1_posthoc_noO66496_nRF	0.000000	ratio	results/04_phylogeny_asr/S1_legacy12_vs_posthoc_noO66496_ingroup_comparison.tsv	P4.1	interim	2026-04-29	Legacy S1 ingroup vs post-hoc noO66496 ingroup comparison
+s2_posthoc_noO66496_nRF	0.000000	ratio	results/04_phylogeny_asr/S2_legacy12_vs_posthoc_noO66496_ingroup_comparison.tsv	P4.1	interim	2026-04-29	Legacy S2 ingroup vs post-hoc noO66496 ingroup comparison
+pdb_anchor_protein_groups	3	groups	results/03_msa_modules/pdb_anchor_registry.tsv	P4.6	interim	2026-04-29	Protein-level PDB anchor groups: PDB-1KFL, PDB-1RZM, O53512_AROG_MYCTU
+pdb_o53512_state_variants	3	entries	results/03_msa_modules/pdb_anchor_registry.tsv	P4.6	interim	2026-04-29	2B7O, 3NV8, and 5CKV are O53512 AroG state variants, not independent proteins

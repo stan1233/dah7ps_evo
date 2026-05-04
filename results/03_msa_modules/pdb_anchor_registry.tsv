@@ -1,0 +1,6 @@
+rep_id	anchor_group_id	protein_level_id	uniprot	organism	ec	core_enzyme_equivalence	entry_sequence_note	assembly_note	ligand_state_note	calibration_role
+PDB-1KFL	PDB-1KFL	PDB-1KFL	NA	NA	NA	unique_pdb_anchor	NA	NA	NA	independent_anchor
+PDB-1RZM	PDB-1RZM	PDB-1RZM	NA	NA	NA	unique_pdb_anchor	NA	NA	NA	independent_anchor
+PDB-2B7O	O53512_AROG_MYCTU	O53512	O53512	Mycobacterium tuberculosis	2.5.1.54	same_core_enzyme_as_3NV8_and_5CKV	464 aa entry with N-terminal GA	homodimer A2	PEP/Mn/SO4/CE1 state	state_variant_anchor
+PDB-3NV8	O53512_AROG_MYCTU	O53512	O53512	Mycobacterium tuberculosis	2.5.1.54	same_core_enzyme_as_2B7O_and_5CKV	464 aa entry with N-terminal GA	homotetramer A4	PEP/Mn/SO4/PO4/glycerol/Cl state	state_variant_anchor
+PDB-5CKV	O53512_AROG_MYCTU	O53512	O53512	Mycobacterium tuberculosis	2.5.1.54	same_core_enzyme_as_2B7O_and_3NV8	472 aa entry with MHHHHHHSSG His-tag	homotetramer A4	Trp/Phe/Tyr feedback-inhibited state	state_variant_anchor

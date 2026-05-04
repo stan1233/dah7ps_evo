@@ -188,7 +188,7 @@ def main():
     mono_results = []
     for label, tips in [("Type_Ia (PDB-1KFL)", ia_tips),
                         ("Type_Ib (PDB-1RZM)", ib_tips),
-                        ("Type_II (PDB-3NV8/5CKV/2B7O)", ii_tips)]:
+                        ("Type_II (O53512 state variants: PDB-3NV8/5CKV/2B7O)", ii_tips)]:
         aa_m = check_monophyly(aa_tree, tips)
         di_m = check_monophyly(di_tree, tips)
         mono_results.append((label, aa_m, di_m))

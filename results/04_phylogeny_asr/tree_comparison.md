@@ -32,9 +32,11 @@
 |---|---|---|---|
 | Type_Ia (PDB-1KFL) | ✅ monophyletic | ✅ monophyletic | ✅ |
 | Type_Ib (PDB-1RZM) | ✅ monophyletic | ✅ monophyletic | ✅ |
-| Type_II (PDB-3NV8/5CKV/2B7O) | ✅ monophyletic | ✅ monophyletic | ✅ |
+| Type_II (O53512 state variants: PDB-3NV8/5CKV/2B7O) | ✅ monophyletic | ✅ monophyletic | ✅ |
 
-> **Conclusion:** 所有三大亚型的 PDB 实验结构在 AA 和 3Di 树中**均保持单系性**。序列信号和结构信号在亚型深分化方向上一致。
+> **PDB anchor note:** `2B7O`, `3NV8`, and `5CKV` are not three independent Type II proteins. They are O53512 / *M. tuberculosis* AroG state variants with the same core enzyme sequence; they remain useful as experimental-state anchors, but protein-level counts must treat them as one anchor group.
+
+> **Conclusion:** 所有三大亚型的 PDB 实验结构锚点在 AA 和 3Di 树中**均保持单系性**。其中 Type II 的 `2B7O/3NV8/5CKV` 应解释为同一 O53512 蛋白的不同晶体状态，而不是三个独立蛋白；序列信号和结构信号在亚型深分化方向上一致。
 
 ## Q2: KDOPS/outgroup separation compatibility
 
