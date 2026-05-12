@@ -1,0 +1,14 @@
+metric	value	notes
+core_input_count	9677	records in results/03_core_len255/all_core_only_len255.fasta
+aligned_sequence_count	9677	records in results/04_msa_len255/core_len255.masked.afa
+alignment_columns_unmasked	4458	columns in results/04_msa_len255/core_len255.sto
+alignment_columns_masked	521	RF-mask columns in results/04_msa_len255/core_len255.masked.afa
+sequence_count_matches_core_input	true	true if aligned sequence count equals core FASTA count
+duplicate_ids_count	0	unique sequence IDs repeated in masked AFA
+duplicate_ids		comma-separated; empty means none
+empty_aligned_sequences_count	0	aligned records with no non-gap residues
+mean_gap_fraction	0.3587	mean per-sequence gap fraction on masked AFA
+median_gap_fraction	0.3397	median per-sequence gap fraction on masked AFA
+max_gap_fraction	0.6180	maximum per-sequence gap fraction on masked AFA
+sequences_gap_fraction_gt_0_50_count	1822	masked AFA records with gap_fraction > 0.50
+sequences_gap_fraction_gt_0_70_count	0	masked AFA records with gap_fraction > 0.70

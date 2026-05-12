@@ -61,7 +61,7 @@ Important Pni rule: do not silently merge legacy `A0A0F2JEB6` with `V8CS59` / `U
 3. Done: rerun Type Ib CD-HIT using unchanged nr80 and seeds60 thresholds.
 4. Done: rebuild versioned `nr80_all_len255` at `results/02_qc_len255/nr80_all_len255.fasta`.
 5. Done: re-extract versioned len255 core domain sequences at `results/03_core_len255/all_core_only_len255.fasta`.
-6. Re-align core sequences.
+6. Done: re-align versioned len255 core sequences at `results/04_msa_len255/core_len255.masked.afa`.
 7. Build the core tree for representation as unrooted or visualization-rooted only.
 8. Done: generate `results/02_qc_len255/target_representation.tsv`.
 9. Update labels and legends according to the target representation policy.
@@ -115,6 +115,9 @@ Expanded target audit list:
 - Done: post-merge target presence audit exists at `results/02_qc_len255/nr80_all_len255_target_presence.tsv`.
 - Done: versioned core extraction exists at `results/03_core_len255/all_core_only_len255.fasta`.
 - Done: post-extraction target carry-through audit exists at `results/03_core_len255/core_len255_target_carrythrough.tsv`.
+- Done: versioned core MSA exists at `results/04_msa_len255/core_len255.masked.afa`.
+- Done: post-MSA alignment QC exists at `results/04_msa_len255/core_len255_alignment_summary.tsv`.
+- Done: post-MSA target carry-through audit exists at `results/04_msa_len255/core_len255_target_carrythrough.tsv`.
 - Done: `Q8U0A9` and `Q9YEJ7` status is verified after the formal rerun.
 - Done: the expanded target list has direct, surrogate, absent, unresolved, curation, or hold status.
 - Done: KDOPS-like and ambiguous len255-rescued hits are flagged in `results/02_qc_len255/len255_rescue_summary.tsv`.

@@ -1,0 +1,4 @@
+subtype_source	aligned_sequence_count	mean_gap_fraction	median_gap_fraction	max_gap_fraction	gap_fraction_gt_0_50_count	gap_fraction_gt_0_70_count	mean_gap_or_ambiguity_fraction	median_gap_or_ambiguity_fraction	notes
+Ia	3513	0.3431	0.3378	0.5259	9	0	0.3431	0.3378	NA
+Ib_len255	3104	0.5095	0.5115	0.6180	1811	0	0.5095	0.5115	Ib_len255 has materially higher gap/ambiguity burden than Ia/II mean.
+II	3060	0.2237	0.2035	0.5681	2	0	0.2237	0.2035	NA

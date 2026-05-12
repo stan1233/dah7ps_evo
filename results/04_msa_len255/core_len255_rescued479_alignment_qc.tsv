@@ -1,0 +1,480 @@
+seq_id	length	cov_best	present_in_nr80	nr80_status	present_in_core	present_in_alignment	gap_fraction	ambiguity_fraction	gap_or_ambiguity_fraction	flag_class	recommended_action	notes
+UniRef90_A0A098B7R7	275	0.7695	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A3A8NEQ7	278	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A4R2JZH9	279	0.7455	true	direct_nr80_representative	true	true	0.5777	0.0000	0.5777			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A285FXG1	270	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A318XLN6	268	0.7844	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABY8PRG3	279	0.8114	true	direct_nr80_representative	true	true	0.5144	0.0000	0.5144			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_J7IVG8	272	0.7874	true	direct_nr80_representative	true	true	0.5106	0.0000	0.5106			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q0AX59	275	0.7725	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABT6NB23	272	0.7305	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1I6CTU0	275	0.7904	true	direct_nr80_representative	true	true	0.5106	0.0000	0.5106			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A494X0X8	273	0.7964	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1G2THV3	279	0.7994	true	direct_nr80_representative	true	true	0.4952	0.0000	0.4952			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A917M197	279	0.7844	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A069ZQA8	279	0.7305	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M5QA49	279	0.7874	true	direct_nr80_representative	true	true	0.5067	0.0000	0.5067			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q2LY30	279	0.7545	true	direct_nr80_representative	true	true	0.5086	0.0000	0.5086			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1H8W4Q4	279	0.7814	true	direct_nr80_representative	true	true	0.5585	0.0000	0.5585			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6N7XS28	279	0.7844	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9X2N2S2	279	0.7874	true	direct_nr80_representative	true	true	0.5566	0.0000	0.5566			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A3A1V3I5	279	0.7814	true	direct_nr80_representative	true	true	0.5624	0.0000	0.5624			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0W8E7R7	279	0.7814	true	direct_nr80_representative	true	true	0.4971	0.0000	0.4971			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0030F5729D	279	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0039A75368	279	0.7605	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003592F40E	279	0.7814	true	direct_nr80_representative	true	true	0.5010	0.0000	0.5010			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001F13C4EE	279	0.7695	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0027E04188	279	0.7814	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0002A01F33	279	0.7904	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0006BB656F	279	0.7874	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAQ0EL83	278	0.7665	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1G9ESV4	278	0.7126	true	direct_nr80_representative	true	true	0.5144	0.0000	0.5144			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_O84386	278	0.7216	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A8J7L0I8	278	0.7695	true	direct_nr80_representative	true	true	0.5106	0.0000	0.5106			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7C0WW33	278	0.7874	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A3Q9HNI8	278	0.7485	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0025BA519E	278	0.7515	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003B5BE7BC	278	0.7365	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00286BE411	278	0.7934	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0E3W3M4	277	0.7994	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413	other/ambiguous	needs_annotation_check	exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A931AY84	277	0.7754	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABT6DEL2	277	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6I6DJ79	277	0.7994	true	direct_nr80_representative	true	true	0.5393	0.0000	0.5393			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABY4C7S9	277	0.7605	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A5R9G6I7	277	0.7814	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_W8JZ58	277	0.7156	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1T4JPI8	277	0.7754	true	direct_nr80_representative	true	true	0.5182	0.0000	0.5182			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A4J3M8	277	0.7784	true	direct_nr80_representative	true	true	0.5144	0.0000	0.5144			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2T2WDT5	277	0.8024	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003211E5BB	277	0.7904	true	direct_nr80_representative	true	true	0.5470	0.0000	0.5470			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0021D35B3C	277	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0020CD1049	277	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000D5618BF	277	0.7515	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0039BD1346	277	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002600500B	277	0.7934	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0035A940DF	277	0.7605	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000BE438D2	277	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00404AD48F	277	0.7754	true	direct_nr80_representative	true	true	0.5010	0.0000	0.5010			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1A9HTV4	266	0.7156	true	direct_nr80_representative	true	true	0.5681	0.0000	0.5681			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00345644EC	277	0.7036	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336	hypothetical/uncharacterized	manual_review_before_final_tree	exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002B206616	277	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A160T0Q5	276	0.7365	true	direct_nr80_representative	true	true	0.5816	0.0000	0.5816			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7W9W900	276	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A173DZF2	276	0.7096	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABX8BBZ1	276	0.7844	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M4VYT9	276	0.7964	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_R4KU13	276	0.7814	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1G5B9V5	276	0.7754	true	direct_nr80_representative	true	true	0.5029	0.0000	0.5029			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_D7CP69	276	0.7874	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q9YEJ7	270	0.7814	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00069E3280	276	0.7275	true	direct_nr80_representative	true	true	0.5835	0.0000	0.5835			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001D22BA6C	276	0.7365	true	direct_nr80_representative	true	true	0.5797	0.0000	0.5797			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_C8VZ18	273	0.7784	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003B434C02	276	0.7275	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0013E9EA03	276	0.7695	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00041CC834	276	0.7934	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003D357FE3	276	0.7904	true	direct_nr80_representative	true	true	0.4894	0.0000	0.4894			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003D1E1CAC	276	0.7784	true	direct_nr80_representative	true	true	0.5029	0.0000	0.5029			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_I3DTV8	275	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS2N346	275	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A371AYM9	275	0.7216	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_K8E0E5	275	0.7754	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AA45HJE0	275	0.7725	true	direct_nr80_representative	true	true	0.5624	0.0000	0.5624			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1T4RUP9	275	0.7904	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABV6YTX4	275	0.7425	true	direct_nr80_representative	true	true	0.4914	0.0000	0.4914			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A5S4ZV97	275	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1B7LIM7	275	0.7874	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1H9V3C5	275	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A5Q2TRM0	275	0.7874	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2S0L578	275	0.7904	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_X0T2I3	275	0.7994	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0029C90D26	275	0.7695	true	direct_nr80_representative	true	true	0.5797	0.0000	0.5797			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0026F16738	275	0.7096	true	direct_nr80_representative	true	true	0.5048	0.0000	0.5048	hypothetical/uncharacterized	manual_review_before_final_tree	exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_E0E4N6	274	0.7246	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001F114E26	275	0.7904	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00195CC185	275	0.7814	true	direct_nr80_representative	true	true	0.4971	0.0000	0.4971			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00024975D1	275	0.7695	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002D7F606E	275	0.7126	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003593E582	275	0.7126	false	absorbed_by_nr80_surrogate	false	false				hypothetical/uncharacterized	manual_review_before_final_tree	exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00082D9C59	275	0.7725	true	direct_nr80_representative	true	true	0.5010	0.0000	0.5010			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_C8W339	274	0.7844	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS2NNN4	274	0.7784	true	direct_nr80_representative	true	true	0.5854	0.0000	0.5854			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A414SBX0	274	0.7186	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1I2QF27	274	0.7994	true	direct_nr80_representative	true	true	0.4875	0.0000	0.4875			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M7L704	274	0.7814	true	direct_nr80_representative	true	true	0.5854	0.0000	0.5854			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0F9UVL4	274	0.7934	true	direct_nr80_representative	true	true	0.5163	0.0000	0.5163			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00196046DF	274	0.7754	true	direct_nr80_representative	true	true	0.6123	0.0000	0.6123			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00061F66CC	272	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00082EBAA0	274	0.7814	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00101265DC	274	0.7096	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0035B05A75	274	0.7365	true	direct_nr80_representative	true	true	0.5720	0.0000	0.5720			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6J5PDE9	273	0.7066	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0Q9YQW8	273	0.7305	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A953IBS9	273	0.7126	true	direct_nr80_representative	true	true	0.5547	0.0000	0.5547			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0E4GCI3	273	0.7784	true	direct_nr80_representative	true	true	0.5393	0.0000	0.5393			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_H3KDR7	273	0.7246	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2S6G0E4	273	0.7844	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABR6TLY3	273	0.7665	true	direct_nr80_representative	true	true	0.5086	0.0000	0.5086			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6I6DGF5	273	0.7964	true	direct_nr80_representative	true	true	0.5067	0.0000	0.5067			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2G6KAQ6	273	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A498D287	273	0.7814	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1G1YTP8	273	0.7844	true	direct_nr80_representative	true	true	0.5144	0.0000	0.5144			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_H2J2R6	273	0.7934	true	direct_nr80_representative	true	true	0.5086	0.0000	0.5086			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A317L7W7	273	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABT1SBV1	273	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS4JT80	273	0.7216	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1I6CQR8	273	0.7814	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003464E1BA	273	0.7216	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00332E787E	273	0.7665	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0031E55CE3	273	0.7754	true	direct_nr80_representative	true	true	0.5528	0.0000	0.5528			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0039B99224	273	0.7964	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00189DB5FA	273	0.7814	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6N7WZF2	268	0.7575	true	direct_nr80_representative	true	true	0.5163	0.0000	0.5163			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001C0D11E3	273	0.7784	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003D79A8FA	273	0.7096	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0003708EDF	273	0.7874	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00404B9D80	273	0.7874	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0P0N276	272	0.7335	true	direct_nr80_representative	true	true	0.5144	0.0000	0.5144			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A938YTR8	272	0.7874	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0V8RWQ9	272	0.7545	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A3M8QZB6	272	0.7036	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2P5PA89	272	0.7695	true	direct_nr80_representative	true	true	0.5029	0.0000	0.5029			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9J6PAI8	272	0.7395	true	direct_nr80_representative	true	true	0.5489	0.0000	0.5489			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0M9UCR8	272	0.7395	true	direct_nr80_representative	true	true	0.5182	0.0000	0.5182			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A927ZJR6	268	0.7754	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A8J6MZ64	272	0.7455	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_K4LIZ0	272	0.7964	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A415E0L1	272	0.7725	true	direct_nr80_representative	true	true	0.5739	0.0000	0.5739			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1H3QUI8	272	0.7515	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M4XFV7	272	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9E7IWA9	272	0.7844	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_D9QSE0	272	0.7665	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0001F55049	272	0.7964	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001F55847F	272	0.7246	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00268C908D	272	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00195F4CD2	272	0.7695	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0008DA6859	272	0.7605	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002555FC48	272	0.7545	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q0B001	270	0.7725	true	direct_nr80_representative	true	true	0.4933	0.0000	0.4933			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00295B25BF	272	0.7216	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003556FB61	272	0.7635	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0004B25499	272	0.7754	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0008208F9B	272	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000E80B92D	272	0.7874	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00092DFB5C	272	0.7665	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A8T4L799	271	0.7754	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABW8T2E9	271	0.7665	true	direct_nr80_representative	true	true	0.5873	0.0000	0.5873			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9D5JX10	271	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABU0JRV4	271	0.7665	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1G9RP79	271	0.7754	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABT1NAJ8	271	0.7455	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A942ZAE8	271	0.7605	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1Q8QSH8	271	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M4YED5	271	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_R1AX99	271	0.7635	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A419TA45	271	0.7814	true	direct_nr80_representative	true	true	0.5125	0.0000	0.5125			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_G7WAM1	271	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7R6PNY5	271	0.7635	true	direct_nr80_representative	true	true	0.5125	0.0000	0.5125			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A081C9H9	271	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_D9QS83	271	0.7784	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A532V300	271	0.7365	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_X0RMM2	271	0.7904	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A3B0V708	271	0.7605	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A644URZ5	271	0.7934	true	direct_nr80_representative	true	true	0.5624	0.0000	0.5624			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00236026E8	271	0.7096	true	direct_nr80_representative	true	true	0.5701	0.0000	0.5701			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00200A0876	271	0.7605	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0010121B6C	271	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0006BB78B8	271	0.7695	true	direct_nr80_representative	true	true	0.5106	0.0000	0.5106			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0006E3534A	271	0.7335	true	direct_nr80_representative	true	true	0.5777	0.0000	0.5777			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A401UH99	268	0.7814	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI004027FD76	271	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAU9EXE2	262	0.7485	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00352B870C	271	0.7725	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A5E4LPI9	270	0.7515	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355	KDOPS-like	manual_review_before_final_tree	exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6G8QBC8	270	0.7425	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6J4QN83	270	0.7395	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6P1YC40	270	0.7635	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_E5BHP6	270	0.7754	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A845QXL2	270	0.7605	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2T4UE66	270	0.7485	true	direct_nr80_representative	true	true	0.5566	0.0000	0.5566			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7X9FTJ5	270	0.7485	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A971M3C0	270	0.7575	true	direct_nr80_representative	true	true	0.5451	0.0000	0.5451			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1T4JQN3	270	0.7695	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A938XN61	270	0.7695	true	direct_nr80_representative	true	true	0.5509	0.0000	0.5509			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q3ABR7	270	0.7006	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6I0FGA9	270	0.7665	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0006D46E3F	270	0.7665	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00047AA5F7	270	0.7754	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003F97CF3C	270	0.7545	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0008914F07	270	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0007828669	270	0.7425	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00082BF248	270	0.7216	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003565B96F	270	0.7754	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00068B9DA3	270	0.7844	true	direct_nr80_representative	true	true	0.4971	0.0000	0.4971			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001CF5B2DB	270	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A934KA69	263	0.7395	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAU7VHQ5	269	0.7844	true	direct_nr80_representative	true	true	0.4933	0.0000	0.4933			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAU8HWQ1	269	0.7904	true	direct_nr80_representative	true	true	0.4990	0.0000	0.4990			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_L0KAP9	269	0.7635	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2X1XZL1	262	0.7635	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A4U9RAP4	269	0.7784	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7G1GBE2	269	0.7754	true	direct_nr80_representative	true	true	0.5029	0.0000	0.5029			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABR7JS28	269	0.7156	true	direct_nr80_representative	true	true	0.5451	0.0000	0.5451			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_E3PTA6	269	0.7695	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1H8TV69	269	0.7066	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1T4Q1G0	269	0.7545	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6M0R9M5	269	0.7754	true	direct_nr80_representative	true	true	0.5182	0.0000	0.5182			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A140L5Z4	269	0.7635	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS3APJ4	269	0.7545	true	direct_nr80_representative	true	true	0.5681	0.0000	0.5681			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A841KU68	269	0.7635	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A833M9C6	269	0.7754	true	direct_nr80_representative	true	true	0.5182	0.0000	0.5182			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ACD1A9G7	269	0.7545	true	direct_nr80_representative	true	true	0.5393	0.0000	0.5393			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A645BIV5	269	0.7515	true	direct_nr80_representative	true	true	0.5509	0.0000	0.5509	other/ambiguous	needs_annotation_check	exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A151AQ74	267	0.7784	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000C7AC263	269	0.7784	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00398410C5	269	0.7605	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0025B9F9E9	269	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0033F783BF	269	0.7365	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0040275F29	269	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00041483F6	269	0.7754	true	direct_nr80_representative	true	true	0.4990	0.0000	0.4990			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002FC598AD	269	0.7665	true	direct_nr80_representative	true	true	0.5067	0.0000	0.5067			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0039EE7711	269	0.7635	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1V1I250	259	0.7006	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAX4NE47	268	0.7156	true	direct_nr80_representative	true	true	0.5163	0.0000	0.5163			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_D3MQ99	268	0.7635	true	direct_nr80_representative	true	true	0.5010	0.0000	0.5010			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A4U9R079	268	0.7605	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1I0WIY9	268	0.7814	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1H8G7F3	268	0.7725	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6N6NPZ6	268	0.7066	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_R4KH62	268	0.7814	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A3N0AB06	266	0.7365	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7Y0EE18	268	0.7784	true	direct_nr80_representative	true	true	0.5624	0.0000	0.5624			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0008340A37	268	0.7695	true	direct_nr80_representative	true	true	0.5106	0.0000	0.5106			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000D0EE320	268	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003C712ADA	268	0.7066	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00115878A9	268	0.7635	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003D6D2FAF	268	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00193B51C7	268	0.7605	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000685C771	268	0.7814	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q3ADA1	266	0.7006	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001159CE3F	268	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0035A37FCF	268	0.7754	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1F7JGJ4	267	0.7246	true	direct_nr80_representative	true	true	0.5086	0.0000	0.5086			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7C8BQ98	266	0.7216	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7X5SX88	266	0.7844	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6M8IWH8	267	0.7186	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABP3VNX4	267	0.7635	true	direct_nr80_representative	true	true	0.5605	0.0000	0.5605			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABT4D0Z8	267	0.7695	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAE4JX71	267	0.7754	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A537LGT7	267	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q3AAT5	267	0.7695	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A4Z0W2Z9	267	0.7335	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M5T1L5	267	0.7485	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1L8CTR0	267	0.7695	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6I6F3D2	267	0.7515	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_X1ECR8	267	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_X0UIQ2	267	0.7814	true	direct_nr80_representative	true	true	0.5662	0.0000	0.5662			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_X1MVX4	267	0.7934	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00289E3F4A	267	0.7156	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0005586E07	267	0.7754	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00192B9451	267	0.7485	true	direct_nr80_representative	true	true	0.5489	0.0000	0.5489			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003642B78D	267	0.7695	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00227BA0F6	267	0.7754	true	direct_nr80_representative	true	true	0.5758	0.0000	0.5758			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_B6YX08	266	0.7605	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_L0A7T9	266	0.7814	true	direct_nr80_representative	true	true	0.5048	0.0000	0.5048			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A8T5GER2	266	0.7515	true	direct_nr80_representative	true	true	0.5393	0.0000	0.5393			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6N7RQG8	266	0.7096	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9E6MQK5	266	0.7246	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A3N0ITC6	266	0.7096	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6N8IFQ6	266	0.7096	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABP3U3Y1	266	0.7395	true	direct_nr80_representative	true	true	0.5758	0.0000	0.5758			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A4V2NXD1	266	0.7305	true	direct_nr80_representative	true	true	0.5720	0.0000	0.5720			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A8J6NJ86	266	0.7156	true	direct_nr80_representative	true	true	0.5144	0.0000	0.5144			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_C0GDL3	266	0.7515	true	direct_nr80_representative	true	true	0.5662	0.0000	0.5662			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A449BD33	266	0.7216	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABT4DEN6	266	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABP3UZT7	266	0.7455	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABU4JN87	266	0.7754	true	direct_nr80_representative	true	true	0.5547	0.0000	0.5547			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A949X3P7	266	0.7665	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9D2VL86	266	0.7066	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS6ECQ2	266	0.7305	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABQ5NB01	266	0.7605	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS1THW4	266	0.7665	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A923IZG2	266	0.7515	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABR8YQG1	266	0.7605	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABT4CMQ4	266	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1E8F1P0	266	0.7635	true	direct_nr80_representative	true	true	0.5758	0.0000	0.5758			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS4K3D7	266	0.7695	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0G0G1W4	266	0.7395	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS9WHV0	266	0.7126	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A923NF72	266	0.7665	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0C1RA09	266	0.7515	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A934M3I8	266	0.7485	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000689754A	266	0.7665	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0013ED2BCA	266	0.7246	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002073D0FC	266	0.7814	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002FCA5859	266	0.7545	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002A4FADCE	266	0.7156	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002042012E	266	0.7126	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00202FE997	266	0.7575	true	direct_nr80_representative	true	true	0.5182	0.0000	0.5182			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000FFE19D3	266	0.7725	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00058F5709	266	0.7784	true	direct_nr80_representative	true	true	0.5835	0.0000	0.5835			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0013EA65A7	266	0.7066	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003216E187	266	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0004853765	266	0.7814	true	direct_nr80_representative	true	true	0.5393	0.0000	0.5393			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003059DD76	266	0.7575	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0032180898	266	0.7455	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0010FD54CE	266	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000B37749A	266	0.7066	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q9V1I0	265	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A4Q0VCP8	265	0.7545	true	direct_nr80_representative	true	true	0.5893	0.0000	0.5893			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A097AS67	260	0.7545	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A354YYB1	265	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0P8YAI7	265	0.7455	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M6KJP5	265	0.7695	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1T5ILA0	265	0.7575	true	direct_nr80_representative	true	true	0.5393	0.0000	0.5393			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7G9W4C7	265	0.7814	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2T0B4F2	265	0.7545	true	direct_nr80_representative	true	true	0.5336	0.0000	0.5336			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6S6QS27	265	0.7126	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002260E331	265	0.7246	true	direct_nr80_representative	true	true	0.5643	0.0000	0.5643			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000488D22D	265	0.7515	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0006B4583A	265	0.7545	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001A409149	265	0.7784	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002260CE6E	265	0.7365	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00204253EE	265	0.7066	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00052C69B0	265	0.7575	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003EEF4B9A	265	0.7605	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI004047F47E	265	0.7275	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000F63E3E9	265	0.7545	true	direct_nr80_representative	true	true	0.5605	0.0000	0.5605			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00082337CC	265	0.7216	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002FC638CE	265	0.7066	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003AB0CBE8	265	0.7036	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A4R7KR38	262	0.7036	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000D729CBF	265	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7J3ZIS4	264	0.7784	true	direct_nr80_representative	true	true	0.5106	0.0000	0.5106			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M6H6I8	264	0.7485	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6M0H032	264	0.7695	true	direct_nr80_representative	true	true	0.5182	0.0000	0.5182			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9W5YFU9	264	0.7485	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A510HIH2	262	0.7216	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M6KNN7	264	0.7246	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A939HAI8	264	0.7186	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A941CQA9	264	0.7006	true	direct_nr80_representative	true	true	0.5393	0.0000	0.5393			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A508YR29	264	0.7605	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A151B6W4	264	0.7425	true	direct_nr80_representative	true	true	0.5797	0.0000	0.5797			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1I4YHU1	264	0.7365	true	direct_nr80_representative	true	true	0.5317	0.0000	0.5317			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_X1D0I0	264	0.7695	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0008A9EF83	264	0.7096	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0025C69A65	264	0.7814	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M4YIT2	261	0.7305	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q8U0A9	262	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A5D4Y4	263	0.7425	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A381J7W7	263	0.7725	true	direct_nr80_representative	true	true	0.5528	0.0000	0.5528			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M6P276	263	0.7515	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000209A8F1	263	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003D7FE1AB	263	0.7515	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0005903142	263	0.7665	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001442A617	263	0.7096	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_C5A788	262	0.7605	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A848RFQ1	262	0.7455	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M5N890	262	0.7126	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABT7EBU7	260	0.7126	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1H3SCA0	262	0.7455	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A419SV88	262	0.7455	true	direct_nr80_representative	true	true	0.5451	0.0000	0.5451			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A8MH70	262	0.7725	true	direct_nr80_representative	true	true	0.5163	0.0000	0.5163			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0003C63EC4	262	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0007861BEA	262	0.7485	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0002894186	262	0.7485	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000AA7D772	262	0.7455	true	direct_nr80_representative	true	true	0.5662	0.0000	0.5662			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000C086D9C	262	0.7545	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7C1GT97	258	0.7365	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00248A9CA3	262	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A218P1W0	261	0.7635	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0S1X9G3	261	0.7635	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A6N2ZCX0	261	0.7425	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q18BX3	261	0.7275	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M6NQ25	261	0.7455	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1V4IAN3	261	0.7066	true	direct_nr80_representative	true	true	0.5470	0.0000	0.5470			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2P2BSX5	261	0.7126	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M6PGP5	261	0.7485	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M5P3X3	261	0.7455	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1F7RNS8	261	0.7365	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAW9MUP7	261	0.7455	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABV1IYX0	261	0.7365	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS6G4P0	261	0.7725	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0F9C755	261	0.7605	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0010124C64	261	0.7485	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0Q0WK48	260	0.7395	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_S0ASN2	260	0.7455	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS4E8S1	260	0.7036	true	direct_nr80_representative	true	true	0.5393	0.0000	0.5393			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_F7NNK6	260	0.7575	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A7Y2PN90	260	0.7545	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9X2MB01	260	0.7066	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1H2YSQ2	260	0.7455	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_R7RRD9	260	0.7096	true	direct_nr80_representative	true	true	0.5509	0.0000	0.5509			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABV2JCB9	260	0.7515	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0F3GR21	260	0.7485	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS6EZF4	260	0.7754	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_M4V5R4	260	0.7365	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A267MEQ4	260	0.7455	true	direct_nr80_representative	true	true	0.5470	0.0000	0.5470			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A4R3KXF0	260	0.7455	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0039171841	260	0.7395	true	direct_nr80_representative	true	true	0.5182	0.0000	0.5182			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003D6BFED2	260	0.7455	true	direct_nr80_representative	true	true	0.5470	0.0000	0.5470			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0026310FCC	260	0.7425	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003F2AD221	260	0.7246	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001F00A3E0	260	0.7425	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002616B9C3	260	0.7126	true	direct_nr80_representative	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002BDE02F9	260	0.7305	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00307EDB2D	260	0.7395	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001F012B8A	260	0.7485	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M6T4V2	259	0.7425	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0C7G669	259	0.7006	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAX2ZD00	259	0.7006	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_K9ERA9	259	0.7485	true	direct_nr80_representative	true	true	0.5912	0.0000	0.5912			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001CC1B2D1	259	0.7395	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001ABBC24D	259	0.7126	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI001F0DD1D4	259	0.7485	true	direct_nr80_representative	true	true	0.5470	0.0000	0.5470			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAC9RGX3	258	0.7395	true	direct_nr80_representative	true	true	0.5528	0.0000	0.5528			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0G3W944	258	0.7395	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A6TQ55	258	0.7365	true	direct_nr80_representative	true	true	0.5681	0.0000	0.5681			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A371IVX1	258	0.7006	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABR7K144	258	0.7006	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A2M7YFC8	258	0.7096	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1I0DM38	258	0.7365	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A5C0S8N7	258	0.7425	true	direct_nr80_representative	true	true	0.5451	0.0000	0.5451			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABX8RGY6	258	0.7425	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A239JCM5	258	0.7425	true	direct_nr80_representative	true	true	0.5489	0.0000	0.5489			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1C7IIK6	258	0.7066	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1G9DW26	258	0.7365	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00080C3DB4	258	0.7126	true	direct_nr80_representative	true	true	0.6065	0.0000	0.6065			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003CCB80CB	258	0.7455	true	direct_nr80_representative	true	true	0.5585	0.0000	0.5585			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00359C6ED2	258	0.7216	true	direct_nr80_representative	true	true	0.5202	0.0000	0.5202			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AA35W277	257	0.7365	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A150FRT3	257	0.7335	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_T4VLS4	257	0.7126	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_I7KU72	257	0.7066	true	direct_nr80_representative	true	true	0.5298	0.0000	0.5298			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A0R3JSS0	257	0.7126	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAE4AM46	257	0.7156	true	direct_nr80_representative	true	true	0.5854	0.0000	0.5854			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS4KD50	257	0.7335	true	direct_nr80_representative	true	true	0.5873	0.0000	0.5873			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS4KF45	257	0.7006	true	direct_nr80_representative	true	true	0.5470	0.0000	0.5470			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A415H0Z0	257	0.7036	true	direct_nr80_representative	true	true	0.5374	0.0000	0.5374			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1T4ZWN7	257	0.7006	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1M5XVT4	257	0.7485	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A069REG3	257	0.7096	true	direct_nr80_representative	true	true	0.5489	0.0000	0.5489			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003D91C93A	257	0.7455	true	direct_nr80_representative	true	true	0.5432	0.0000	0.5432			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI000987515B	257	0.7305	true	direct_nr80_representative	true	true	0.5240	0.0000	0.5240			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002FCA2BB7	257	0.7126	true	direct_nr80_representative	true	true	0.5701	0.0000	0.5701			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_Q6L278	256	0.7096	true	direct_nr80_representative	true	true	0.5278	0.0000	0.5278			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_H8GZA8	256	0.7425	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A9X2S3C4	256	0.7485	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS0LNM8	256	0.7335	true	direct_nr80_representative	true	true	0.5816	0.0000	0.5816			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0ABS2MTA6	256	0.7485	true	direct_nr80_representative	true	true	0.5816	0.0000	0.5816			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1G7RXT8	256	0.7335	true	direct_nr80_representative	true	true	0.5835	0.0000	0.5835			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI00271C3FD5	256	0.7156	true	direct_nr80_representative	true	true	0.5221	0.0000	0.5221			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI003FD0E892	256	0.7156	true	direct_nr80_representative	true	true	0.5451	0.0000	0.5451			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI002ED58183	256	0.7455	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0008532A4D	256	0.7395	true	direct_nr80_representative	true	true	0.5835	0.0000	0.5835			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0AAX4HKR4	255	0.7036	true	direct_nr80_representative	true	true	0.5413	0.0000	0.5413			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A564TWQ3	255	0.7036	true	direct_nr80_representative	true	true	0.5566	0.0000	0.5566			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_A0A1L8CUR8	255	0.7186	false	absorbed_by_nr80_surrogate	false	false						exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0004BC29FB	255	0.7186	true	direct_nr80_representative	true	true	0.5259	0.0000	0.5259			exact rescued set reconstructed from old/new Ib QC tables
+UniRef90_UPI0004AEEFDF	255	0.7515	true	direct_nr80_representative	true	true	0.5355	0.0000	0.5355			exact rescued set reconstructed from old/new Ib QC tables
