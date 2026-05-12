@@ -4996,3 +4996,18 @@ mamba run -n dah7ps_ggtree Rscript scripts/render_s1_s2_literature_labeled_unroo
 | data.table | 1.17.8 |
 | ggrastr | not_installed |
 | ragg | 1.5.2 |
+
+### 2026-05-12 16:06:25 NZST - R/ggtree S1 KDOPS11 noO66496 unrooted radial phylogram
+
+**Command:** `mamba run -n dah7ps_ggtree Rscript scripts/render_s1_kdops11_noO66496_unrooted_radial_phylogram.R`
+**Commit:** `681750aa853f62e768f1f3a295247b214bef0cfc`
+**Input tree:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP_KDOPS11_noO66496.treefile`
+**Outputs:** `/home/luogu/dah7ps_evo/figures/S1_KDOPS11_noO66496_unrooted_radial_phylogram.pdf`, `/home/luogu/dah7ps_evo/figures/S1_KDOPS11_noO66496_unrooted_radial_phylogram.png`
+**Audit:** `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_KDOPS11_noO66496_unrooted_radial_phylogram_branch_length_audit.tsv`; status=PASS; scale_bar=added
+**Note:** IQ-TREE UFBoot support did not converge; branch support colors are retained for visual QC and should be interpreted cautiously.
+
+**MD5:**
+- `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/CoreTree_rooted_MFP_KDOPS11_noO66496.treefile`: `f3ec2cd66f9d49aa7c371450975b80ef`
+- `/home/luogu/dah7ps_evo/figures/S1_KDOPS11_noO66496_unrooted_radial_phylogram.pdf`: `69bd76ee268c844f51a2b5d0bfa383fe`
+- `/home/luogu/dah7ps_evo/figures/S1_KDOPS11_noO66496_unrooted_radial_phylogram.png`: `541f1dbad2bebb572249557e238a6b2a`
+- `/home/luogu/dah7ps_evo/results/04_phylogeny_asr/S1_KDOPS11_noO66496_unrooted_radial_phylogram_branch_length_audit.tsv`: `bc762b83ab7785a857b2d9d66bc174a3`
