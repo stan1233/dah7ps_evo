@@ -11,7 +11,7 @@
                 "canonical_max": 450
             },
             "Ib": {
-                "canonical_min": 280,
+                "canonical_min": 255,
                 "canonical_max": 450
             },
             "II": {
