@@ -2,13 +2,13 @@
 
 ## Current branch purpose
 
-This branch implements Strategy A: Type Ib short-diversity representation using a planned formal Type Ib `canonical_min=255` sampling policy.
+This branch implements Strategy A: Type Ib short-diversity representation using a formal Type Ib `canonical_min=255` sampling policy.
 
 Strategy A moves the main project direction away from treating `noO66496 formal S1` as the current release blocker. It preserves the O66496 and replacement-outgroup provenance, keeps rooting-sensitive claims on `HOLD`, and keeps the nr80-based final core phylogeny as the main final-tree route.
 
 ## What this branch does
 
-- Plans a formal Type Ib lower canonical length change from 280 aa to 255 aa.
+- Applies a formal Type Ib lower canonical length change from 280 aa to 255 aa.
 - Treats the len255 change as a broad Type Ib sampling/QC policy trial, not a one-off target rescue.
 - Preserves nr80 as the final core-tree representation layer.
 - Uses seeds60 only for diversity panels or structure-candidate preselection.
@@ -31,18 +31,19 @@ O66496 is nearest to Ib-labelled ingroup tips in the original MFP/LGC20 O66496-c
 
 | Target | Strategy A status | Reporting policy |
 |---|---|---|
-| `Q8U0A9` / `UniRef90_Q8U0A9` | Passes diagnostic len255 QC, but is absorbed at nr80 by `UniRef90_UPI0002AF51CE` at 95.04%. | Do not force-retain in round 1. Label/report `UniRef90_UPI0002AF51CE` as representing PfuDAH7PS / `Q8U0A9`, pending formal rerun confirmation. |
-| `Q9YEJ7` / `UniRef90_Q9YEJ7` | Passes diagnostic len255 QC and is expected to be a direct nr80 representative because the final core tree uses nr80. | Label as ApeDAH7PS only if the formal rerun confirms direct nr80 tip status. |
-| legacy `A0A0F2JEB6` | Deleted/unresolved accession; absent from the len255 CD-HIT diagnostic trial. | Do not claim rescued or represented. Keep as unresolved unless replaced by a validated current sequence/accession. |
-| expanded literature/anchor targets | Not yet formally audited on this branch. | Generate `target_representation.tsv` before reporting direct-tip, surrogate, absent, unresolved, or curation status. |
+| `Q8U0A9` / `UniRef90_Q8U0A9` | Formal len255 QC status is `PASS_CANONICAL`; formal nr80 status is represented by `UniRef90_UPI0002AF51CE` at 95.04%. | Label/report `UniRef90_UPI0002AF51CE` as representing PfuDAH7PS / `Q8U0A9`; do not force-retain exact tips in this round. |
+| `Q9YEJ7` / `UniRef90_Q9YEJ7` | Formal len255 QC status is `PASS_CANONICAL`; formal nr80 status is direct representative. | Label as a direct ApeDAH7PS nr80 tip. |
+| `V8CS59` / `UniRef90_F9DH16` | Formal len255 QC status is `PASS_CANONICAL`; formal nr80 status is represented by `UniRef90_A0A379DXQ3` at 81.92%. | Track as the current PniDAH7PS candidate via nr80 surrogate; do not merge with legacy `A0A0F2JEB6`. |
+| legacy `A0A0F2JEB6` | Unresolved accession; no formal exact sequence/accession adjudication in this round. | Do not claim represented. Keep as unresolved unless replaced by a validated current sequence/accession. |
+| expanded literature/anchor targets | Formally audited in `results/02_qc_len255/target_representation.tsv`. | Use direct-tip, surrogate, absent, unresolved, curation, or hold status from that table. |
 
 Important Pni distinction: legacy `A0A0F2JEB6` remains unresolved, while `V8CS59` / `UniRef90_F9DH16` is the current PniDAH7PS candidate to audit.
 
 ## Provenance status
 
-Diagnostic cache outputs support the Strategy A decision, but formal outputs must be regenerated on this branch. The diagnostic len255 evidence reports 479 sequences moving from previously `FRAG` to `PASS_CANONICAL`; 301 of those enter len255 nr80 representatives and 60 enter len255 seeds60 representatives.
+Ib len255 is now formally applied for the Type Ib QC/CD-HIT rerun on this branch. Formal outputs are under `results/02_qc_len255/`, including `input_staging_manifest.tsv`, `target_representation.tsv`, and `len255_rescue_summary.tsv`.
 
-The one KDOPS-like len255 hit and the small hypothetical, uncharacterized, other, or ambiguous set must be flagged for adjudication during the formal rerun.
+The formal len255 rescue summary reports 479 sequences moving from previously `FRAG` to `PASS_CANONICAL`; 301 of those enter len255 nr80 representatives and 60 enter len255 seeds60 representatives. The KDOPS-like, hypothetical/uncharacterized, and other/ambiguous records are flagged for manual adjudication and are not silently filtered.
 
 ## Next steps
 

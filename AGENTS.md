@@ -2,7 +2,7 @@
 
 ## Branch purpose
 
-This branch prioritizes Type Ib short-diversity representation using a planned Type Ib len255 policy and an nr80-based final core-tree path.
+This branch prioritizes Type Ib short-diversity representation using a formal Type Ib len255 policy and an nr80-based final core-tree path.
 
 Strategy A stops treating `noO66496 formal S1` as the current release blocker. It preserves O66496 and replacement-outgroup provenance while keeping rooting, QC3, and root-sensitive ASR claims unresolved or `HOLD`.
 
@@ -12,7 +12,7 @@ Strategy A stops treating `noO66496 formal S1` as the current release blocker. I
 2. Diagnostic cache summaries that motivated Strategy A.
 3. Legacy or posthoc outputs.
 
-Do not promote diagnostic cache outputs to formal results. The len255 diagnostic supports a formal policy trial, but formal outputs must be regenerated on this branch.
+Do not promote diagnostic cache outputs to formal results. Ib len255 is now formally applied for the Type Ib QC/CD-HIT rerun on this branch, with formal outputs under `results/02_qc_len255/`.
 
 ## Required behavior
 
@@ -56,7 +56,7 @@ Q8U0A9 is represented by an acceptable nr80 surrogate unless exact-tip forced re
 Use:
 
 ```text
-Q9YEJ7 is expected as a direct nr80 representative under len255, pending formal rerun confirmation.
+Q9YEJ7 is confirmed as a direct nr80 representative under the formal len255 rerun.
 ```
 
 Use:
@@ -114,7 +114,7 @@ len255 rescues Pfu, Ape, and Pni.
 Use:
 
 ```text
-len255 rescues Q8U0A9 and Q9YEJ7 at the QC layer; Q8U0A9 is represented by an nr80 surrogate, Q9YEJ7 is a direct nr80 representative pending confirmation, legacy A0A0F2JEB6 remains unresolved, and V8CS59 / UniRef90_F9DH16 is the current Pni candidate to audit.
+Ib len255 is now formally applied for the Type Ib QC/CD-HIT rerun on this branch; Q8U0A9 is represented by an nr80 surrogate, Q9YEJ7 is a direct nr80 representative, legacy A0A0F2JEB6 remains unresolved, and V8CS59 / UniRef90_F9DH16 is tracked as the current Pni candidate.
 ```
 
 Incorrect:

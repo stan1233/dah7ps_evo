@@ -1,0 +1,14 @@
+metric	value
+255_279_pass_canonical_previously_frag_count	479
+rescued_entering_nr80_representatives_count	301
+rescued_entering_seeds60_representatives_count	60
+rescued_length_min_median_max	min=255;median=268;max=279
+rescued_cov_best_min_median_max	min=0.7006;median=0.7575;max=0.8114
+annotation_class_count:DAH7PS plus chorismate mutase	27
+annotation_class_count:DAH7PS-like	446
+annotation_class_count:KDOPS-like	1
+annotation_class_count:hypothetical/uncharacterized	3
+annotation_class_count:other/ambiguous	2
+flagged_ids:KDOPS-like	UniRef90_A0A5E4LPI9
+flagged_ids:hypothetical/uncharacterized	UniRef90_UPI00345644EC,UniRef90_UPI0026F16738,UniRef90_UPI003593E582
+flagged_ids:other/ambiguous	UniRef90_A0A0E3W3M4,UniRef90_A0A645BIV5

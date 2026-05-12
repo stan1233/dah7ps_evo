@@ -2,7 +2,7 @@
 
 ## Rationale
 
-The current Type Ib 280 aa lower bound excludes short but HMM-covered Type Ib candidates. Diagnostic cache runs show that a Type Ib `canonical_min=255` trial materially changes short-sequence representation while remaining mostly DAH7PS-consistent.
+The current Type Ib 280 aa lower bound excludes short but HMM-covered Type Ib candidates. Strategy A formally applies a Type Ib `canonical_min=255` policy for the branch-local Type Ib QC/CD-HIT rerun while keeping nr80 as the final core-tree representation layer.
 
 Diagnostic len255 evidence motivating the formal trial:
 
@@ -13,7 +13,7 @@ Diagnostic len255 evidence motivating the formal trial:
 - `cov_best` median is 0.7575.
 - Annotation classes among the 479: 446 DAH7PS-like, 27 DAH7PS plus chorismate mutase, 3 hypothetical/uncharacterized, 1 KDOPS-like, and 2 other/ambiguous.
 
-The len255 diagnostic supports a formal policy trial, but formal outputs must be regenerated on this branch. The formal core phylogeny continues to use the nr80 route, not seeds60. The goal is to represent Type Ib diversity by direct nr80 tips or explicit nr80 surrogates.
+The formal core phylogeny continues to use the nr80 route, not seeds60. The goal is to represent Type Ib diversity by direct nr80 tips or explicit nr80 surrogates.
 
 ## Policy decisions
 
@@ -29,7 +29,7 @@ The len255 diagnostic supports a formal policy trial, but formal outputs must be
 
 ### P2. Ib length policy
 
-- Planned formal change: Type Ib `canonical_min` 280 -> 255.
+- Applied formal change: Type Ib `canonical_min` 280 -> 255.
 - Type Ib `canonical_max` remains unchanged.
 - `cov_min` remains unchanged.
 - CD-HIT thresholds remain unchanged.
@@ -48,22 +48,22 @@ Key Strategy A cases:
 
 | Target | Desired label | Current Strategy A status | Policy |
 |---|---|---|---|
-| `Q8U0A9` / `UniRef90_Q8U0A9` | PfuDAH7PS | Passes len255 diagnostic QC, but is absorbed at nr80 by `UniRef90_UPI0002AF51CE` at 95.04%. The representative is an acceptable nr80 surrogate. | Do not force-retain in round 1. Label/report `UniRef90_UPI0002AF51CE` as representing PfuDAH7PS / `Q8U0A9`, pending formal rerun confirmation. |
-| `Q9YEJ7` / `UniRef90_Q9YEJ7` | ApeDAH7PS | Passes len255 diagnostic QC and is expected to be an nr80 representative. Because the final core tree uses nr80, it is expected to appear as a direct nr80 tip. | Label direct nr80 tip as ApeDAH7PS if confirmed by formal rerun. |
+| `Q8U0A9` / `UniRef90_Q8U0A9` | PfuDAH7PS | Formal len255 QC status is `PASS_CANONICAL`; formal nr80 status is represented by `UniRef90_UPI0002AF51CE` at 95.04%. The representative is an acceptable nr80 surrogate. | Do not force-retain in round 1. Label/report `UniRef90_UPI0002AF51CE` as representing PfuDAH7PS / `Q8U0A9`. |
+| `Q9YEJ7` / `UniRef90_Q9YEJ7` | ApeDAH7PS | Formal len255 QC status is `PASS_CANONICAL`; formal nr80 status is direct representative. Because the final core tree uses nr80, it is expected to appear as a direct nr80 tip. | Label direct nr80 tip as ApeDAH7PS. |
 | legacy `A0A0F2JEB6` | legacy PniDAH7PS accession | Deleted/unresolved accession; absent from the len255 CD-HIT diagnostic trial. | Do not claim rescued or represented. Keep as unresolved legacy accession unless replaced by a validated current sequence/accession. |
 
 Important Pni rule: do not silently merge legacy `A0A0F2JEB6` with `V8CS59` / `UniRef90_F9DH16`. Treat `A0A0F2JEB6` as a legacy unresolved/deleted accession. Treat `V8CS59` / `UniRef90_F9DH16` as the current PniDAH7PS target to audit.
 
 ## Formal rerun stages
 
-1. Update `meta/params.json` after the documentation reset.
-2. Rerun Type Ib QC with `canonical_min=255`.
-3. Rerun Type Ib CD-HIT using unchanged nr80 and seeds60 thresholds.
+1. Done: update `meta/params.json` after the documentation reset.
+2. Done: rerun Type Ib QC with `canonical_min=255`.
+3. Done: rerun Type Ib CD-HIT using unchanged nr80 and seeds60 thresholds.
 4. Rebuild `nr80_all`.
 5. Re-extract core domain sequences.
 6. Re-align core sequences.
 7. Build the core tree for representation as unrooted or visualization-rooted only.
-8. Generate `target_representation.tsv`.
+8. Done: generate `results/02_qc_len255/target_representation.tsv`.
 9. Update labels and legends according to the target representation policy.
 10. Update QC notes while keeping root-sensitive claims `HOLD`.
 
@@ -108,10 +108,10 @@ Expanded target audit list:
 
 ## Release criteria
 
-- New Type Ib QC report exists on this branch.
-- New nr80 representative tables exist on this branch.
-- New `target_representation.tsv` exists on this branch.
-- `Q8U0A9` and `Q9YEJ7` status is verified after the formal rerun.
-- The expanded target list has direct, surrogate, absent, unresolved, curation, or hold status.
-- KDOPS-like and ambiguous len255-rescued hits are adjudicated or flagged.
+- Done: new Type Ib QC output exists at `results/02_qc_len255/qc_classification_Ib.tsv`.
+- Done: new Type Ib nr80/seeds60 outputs exist under `results/02_qc_len255/`.
+- Done: new `target_representation.tsv` exists on this branch.
+- Done: `Q8U0A9` and `Q9YEJ7` status is verified after the formal rerun.
+- Done: the expanded target list has direct, surrogate, absent, unresolved, curation, or hold status.
+- Done: KDOPS-like and ambiguous len255-rescued hits are flagged in `results/02_qc_len255/len255_rescue_summary.tsv`.
 - Root-sensitive claims are absent or explicitly marked `HOLD`.
