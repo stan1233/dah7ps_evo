@@ -1,214 +1,117 @@
-# DAH7PS 变构起源演化计划：V6.1
+# Strategy A plan: Ib len255 representation
 
-> 修订日期：2026-04-10  
-> 本版目标不是“硬找唯一真根”，而是把哪些结论可以进主文、哪些只能保留为条件性结论明确分层。
+## Rationale
 
----
+The current Type Ib 280 aa lower bound excludes short but HMM-covered Type Ib candidates. Diagnostic cache runs show that a Type Ib `canonical_min=255` trial materially changes short-sequence representation while remaining mostly DAH7PS-consistent.
 
-## 一、V6.1 的核心变化
+Diagnostic len255 evidence motivating the formal trial:
 
-### 1. 插入 provenance repair 小阶段
+- 479 sequences move from previously `FRAG` to `PASS_CANONICAL`.
+- 301 of those 479 enter len255 nr80 representatives.
+- 60 of those 479 enter len255 seeds60 representatives.
+- The recovered length range is 255-279 aa, with median 268 aa.
+- `cov_best` median is 0.7575.
+- Annotation classes among the 479: 446 DAH7PS-like, 27 DAH7PS plus chorismate mutase, 3 hypothetical/uncharacterized, 1 KDOPS-like, and 2 other/ambiguous.
 
-在解释任何 S1–S4 root scenario 之前，先要求：
+The len255 diagnostic supports a formal policy trial, but formal outputs must be regenerated on this branch. The formal core phylogeny continues to use the nr80 route, not seeds60. The goal is to represent Type Ib diversity by direct nr80 tips or explicit nr80 surrogates.
 
-- `artifact_manifest.tsv`
-- 每个 scenario 的 `treefile + summary + log`
-- md5 / script / commit / command / input md5 / generated_at / formal-or-provisional
+## Policy decisions
 
-### 2. S2 ASR 上升为绝对第一优先级
+### P1. Rooting policy
 
-在以下步骤完成前，禁止锁定深根叙事：
+- `KDOPS_O66496` remains excluded from formal outgroup-rooting inputs.
+- Do not write that O66496 falls inside Type Ia.
+- Supported wording: O66496 is nearest to Ib-labelled ingroup tips in the original MFP/LGC20 O66496-containing trees.
+- `noO66496 formal S1` is not the Strategy A release blocker.
+- This does not mean rooting is solved.
+- Rooting remains unresolved because branch-local formal noO66496 S1 is not released as a completed gate; the diagnostic status to carry forward is that `S1_KDOPS11_noO66496` lacks a final branch-local `.iqtree`, UFBoot was not converged in the captured log with latest correlation 0.911, replacement outgroup `KDOPS_P0A715,KDOPS_Q9ZFK4` does not form a clean two-tip outgroup clade, and the IQ-TREE warning "branch separating outgroup not found" maps to the noO66496 MFP run using outgroup string `KDOPS_P0A715,KDOPS_Q9ZFK4`.
+- QC3, root stability, and root-sensitive ASR claims remain `HOLD` and are out of scope for Strategy A.
 
-1. prune `S2`
-2. `assert_tip_match`
-3. `ASR_core_S2`
+### P2. Ib length policy
 
-### 3. 新增 cross-scenario ASR sensitivity
+- Planned formal change: Type Ib `canonical_min` 280 -> 255.
+- Type Ib `canonical_max` remains unchanged.
+- `cov_min` remains unchanged.
+- CD-HIT thresholds remain unchanged.
+- The one KDOPS-like hit and the small hypothetical, uncharacterized, other, or ambiguous len255-rescued set must be adjudicated or explicitly flagged in the formal rerun.
 
-不再只比较一条祖先序列。  
-必须输出：
+### P3. Representative policy
 
-- 每个节点
-- 每个位点
-- MAP 一致性
-- posterior 差值
-- 信息量
+- Final core phylogeny uses nr80, not seeds60.
+- seeds60 may support diversity panels or structure candidate preselection, but seeds60 does not determine final core-tree tip presence.
+- CD-HIT cluster representatives are expected behavior, not a pipeline error.
+- Do not change CD-HIT thresholds just to make a literature target visible.
+- Short literature targets may be direct nr80 tips, represented by acceptable nr80 surrogates, unresolved/absent, or requiring curation.
+- If exact accession visibility is required later, define a separate curated forced-retain policy. It is not part of this first documentation reset.
 
-比较对象至少包括：
+Key Strategy A cases:
 
-- `S1`
-- `S2`
-- `S4a`
-- `S4b`
+| Target | Desired label | Current Strategy A status | Policy |
+|---|---|---|---|
+| `Q8U0A9` / `UniRef90_Q8U0A9` | PfuDAH7PS | Passes len255 diagnostic QC, but is absorbed at nr80 by `UniRef90_UPI0002AF51CE` at 95.04%. The representative is an acceptable nr80 surrogate. | Do not force-retain in round 1. Label/report `UniRef90_UPI0002AF51CE` as representing PfuDAH7PS / `Q8U0A9`, pending formal rerun confirmation. |
+| `Q9YEJ7` / `UniRef90_Q9YEJ7` | ApeDAH7PS | Passes len255 diagnostic QC and is expected to be an nr80 representative. Because the final core tree uses nr80, it is expected to appear as a direct nr80 tip. | Label direct nr80 tip as ApeDAH7PS if confirmed by formal rerun. |
+| legacy `A0A0F2JEB6` | legacy PniDAH7PS accession | Deleted/unresolved accession; absent from the len255 CD-HIT diagnostic trial. | Do not claim rescued or represented. Keep as unresolved legacy accession unless replaced by a validated current sequence/accession. |
 
-### 4. 模块 trait 改为 orthogonal feature 编码
+Important Pni rule: do not silently merge legacy `A0A0F2JEB6` with `V8CS59` / `UniRef90_F9DH16`. Treat `A0A0F2JEB6` as a legacy unresolved/deleted accession. Treat `V8CS59` / `UniRef90_F9DH16` as the current PniDAH7PS target to audit.
 
-trait ASR 不应再围绕 legacy 5-module 黑箱直接展开。  
-尤其：
+## Formal rerun stages
 
-- `C_tail` 只保留为 residual secondary character
-- 不得再把它当主要 evolutionary character
-- 必须用 35 个结构面板做校准
+1. Update `meta/params.json` after the documentation reset.
+2. Rerun Type Ib QC with `canonical_min=255`.
+3. Rerun Type Ib CD-HIT using unchanged nr80 and seeds60 thresholds.
+4. Rebuild `nr80_all`.
+5. Re-extract core domain sequences.
+6. Re-align core sequences.
+7. Build the core tree for representation as unrooted or visualization-rooted only.
+8. Generate `target_representation.tsv`.
+9. Update labels and legends according to the target representation policy.
+10. Update QC notes while keeping root-sensitive claims `HOLD`.
 
-### 5. QC3 改为四维 gate
+## Target representation table
 
-QC3 至少包含：
+Create a formal `target_representation.tsv` covering the expanded literature and anchor target list. Do not assume direct nr80 tip status until the formal audit verifies it.
 
-1. provenance
-2. topology / model sensitivity
-3. root tie / identity
-4. annotation sensitivity
+Required columns:
 
-### 6. S5 是条件触发，不是默认下一步
+`abbrev`, `primary_accession`, `uniref_id`, `length`, `subtype_or_expected_group`, `current_qc_status`, `len255_qc_status`, `nr80_status`, `nr80_representative`, `nr80_identity_if_absorbed`, `nr80_local_target_coverage`, `seeds60_status`, `final_core_tree_expected_status`, `label_policy`, `evidence_source`, `curation_call`, `notes`
 
-只有在补完 `S2` 与 repaired `S4` 后，最深层结论仍不稳时，才触发：
+Allowed `final_core_tree_expected_status` values:
 
-- nonreversible rooting
-- rootstrap
+- `direct_nr80_tip`
+- `represented_by_nr80_surrogate`
+- `absent_from_input`
+- `unresolved_accession`
+- `needs_curation`
+- `hold`
 
----
+Expanded target audit list:
 
-## 二、当前状态
-
-- Phase 0–3.9：完成
-- S1 rooted tree + ASR：完成
-- S2 rooted tree：完成
-- S2 prune + assert_tip_match + ASR：未完成
-- S3 midpoint：完成，provenance 已修
-- S4：已拆分为 `S4a_top500` 与 `S4b_fullsearch`
-- QC3：`HOLD`
-- Phase 5：`HOLD`
-
----
-
-## 三、当前执行顺序
-
-### P0
-
-1. `provenance repair`
-2. `S2 prune + assert_tip_match + ASR`
-3. `cross-scenario ASR sensitivity`
-
-### P1
-
-4. orthogonal feature calibration
-5. trait ASR 改为 feature-based
-6. 四维 QC3 重评估
-
-### P2
-
-7. core DCA 准备与 `Meff/L`
-8. nested ASR 准备
-9. assembly adjudication 准备
-
-### P3
-
-10. 若仍不稳，触发 `S5`
-11. 之后才讨论 Phase 5 节点
-
----
-
-## 四、当前正式 root scenario 集
-
-| Scenario | 说明 | 状态 |
+| Abbrev | Accession / target | Length |
 |---|---|---|
-| `S1_MFP_KDOPS` | KDOPS outgroup + MFP | formal |
-| `S2_LGC20_KDOPS` | KDOPS outgroup + LG+C20 | formal |
-| `S3_MIDPOINT_INGROUP` | midpoint reroot | formal |
-| `S4A_TOP500_PROXY` | top-500 reroot proxy | provisional |
-| `S4B_FULLSEARCH_PROXY` | full-search reroot proxy | provisional |
-| `S5_NONREV_ROOTSTRAP_REDUCED` | reduced nonreversible/rootstrap | conditional |
+| PfuDAH7PS | `Q8U0A9` / `UniRef90_Q8U0A9` | 262 aa |
+| ApeDAH7PS | `Q9YEJ7` / `UniRef90_Q9YEJ7` | 270 aa |
+| TmaDAH7PS | `Q9WYH8` / `UniRef90_Q9WYH8` | 338 aa |
+| GspDAH7PS | `A0ACD6B8N4` | 360 aa |
+| LmoDAH7PS | `Q8Y6T2` / `UniRef90_Q8Y6T2` | 361 aa |
+| PniDAH7PS | `V8CS59` / `UniRef90_F9DH16` | 354 aa |
+| FtuDAH7PS | `Q5NG89` / `UniRef90_Q5NG89` | 370 aa |
+| NmeDAH7PS | `Q9K169` / `UniRef90_Q9K169` | 351 aa |
+| SceDAH7PS ARO3 | `P14843` / `UniRef90_P14843` | 370 aa |
+| SceDAH7PS ARO4 | `P32449` / `UniRef90_P32449` | 370 aa |
+| EcoDAH7PS AroF | `P00888` / `UniRef90_P00888` | 356 aa |
+| EcoDAH7PS AroG | `P0AB91` / `UniRef90_P0AB91` | 350 aa |
+| MtuDAH7PS | `O53512` / `UniRef90_O53512` | 462 aa |
+| HpyDAH7PS | `O24947` / `UniRef90_O24947` | 449 aa |
+| CglDAH7PS | `P35170` / `UniRef90_P35170` | 366 aa |
+| PaeDAH7PS PA2843 | `Q9I000` / `UniRef90_Q9I000` | 448 aa |
+| PaeDAH7PS PA1901 | `Q7DC82` / `UniRef90_Q7DC82` | 405 aa |
 
-**关键说明：**
+## Release criteria
 
-- `S4a` 与 `S4b` 当前 `rho` 相同
-- 但根身份不同
-- 因此必须并列存在
-
----
-
-## 五、Gate System
-
-### Gate P: Provenance
-
-通过条件：
-
-- `artifact_manifest.tsv` 完整
-- S1–S4 当前正式/暂定场景有 triad
-- legacy 文件的身份已写清
-
-### Gate M: Model / ASR sensitivity
-
-通过条件：
-
-- `S2` 已完成 prune + assert + ASR
-- `S1/S2/S4a/S4b` 已完成 site-level 与 node-level sensitivity 输出
-
-### Gate A: Annotation sensitivity
-
-通过条件：
-
-- orthogonal features 取代 legacy 5-module 直推
-- 35-panel calibration 有明确人工复核
-- `C_tail` residual 不再承担主结论
-
-### Gate R: Root identity
-
-通过条件：
-
-- repaired S4 的 root tie 已被显式处理
-- 不再把同 rho 不同 identity 强行归并
-
-### Gate N: Narrative
-
-通过条件：
-
-- 只有 `root_robust` 结论进主文
-- `root_sensitive` / `annotation_sensitive` 仅保留为条件性结论
-
----
-
-## 六、Phase 5 开放条件
-
-以下全部满足前，Phase 5 保持关闭：
-
-1. `S2 ASR` 已完成
-2. cross-scenario ASR sensitivity 已完成
-3. QC3 不再是 `HOLD`
-4. 节点在多场景下至少具备最小一致性
-5. assembly adjudication 有明确 oligomer decision
-
----
-
-## 七、必备输出
-
-### Root / Provenance
-
-- `results/04_phylogeny_asr/artifact_manifest.tsv`
-- `results/04_phylogeny_asr/root_scenarios.tsv`
-- `results/04_phylogeny_asr/QC3_root_stability.md`
-
-### ASR
-
-- `results/04_phylogeny_asr/ASR_core_S2.state`
-- `results/04_phylogeny_asr/asr_cross_scenario_site.tsv`
-- `results/04_phylogeny_asr/asr_cross_scenario_node.tsv`
-
-### Trait encoding
-
-- `results/03_msa_modules/module_feature_registry.tsv`
-- `results/03_msa_modules/module_feature_matrix.tsv`
-- `results/03_msa_modules/panel35_feature_calibration.tsv`
-
----
-
-## 八、成功标准
-
-本轮修订成功的定义是：
-
-1. provenance 不再漂移
-2. `S2` 从 tree-only 变成 ASR-ready
-3. S4 tie 被显式分拆而非隐藏
-4. trait ASR 建立在 orthogonal features 上
-5. QC3 变成真正 gate
-6. 若 deepest root 仍不稳，项目仍能给出分层、可写、可审稿的结论
+- New Type Ib QC report exists on this branch.
+- New nr80 representative tables exist on this branch.
+- New `target_representation.tsv` exists on this branch.
+- `Q8U0A9` and `Q9YEJ7` status is verified after the formal rerun.
+- The expanded target list has direct, surrogate, absent, unresolved, curation, or hold status.
+- KDOPS-like and ambiguous len255-rescued hits are adjudicated or flagged.
+- Root-sensitive claims are absent or explicitly marked `HOLD`.

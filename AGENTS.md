@@ -1,171 +1,154 @@
-# AGENTS.md — DAH7PS V6.1 执行契约
+# Agent instructions for Strategy A branch
 
-> **唯一真相源**：`PLAN.md`  
-> 本文件只负责把 V6.1 计划翻译成执行顺序、门控规则和禁止事项。
+## Branch purpose
 
----
+This branch prioritizes Type Ib short-diversity representation using a planned Type Ib len255 policy and an nr80-based final core-tree path.
 
-## 0. 文档层级
+Strategy A stops treating `noO66496 formal S1` as the current release blocker. It preserves O66496 and replacement-outgroup provenance while keeping rooting, QC3, and root-sensitive ASR claims unresolved or `HOLD`.
 
-1. `PLAN.md`
-2. `results/meta/metrics_manifest.tsv`
-3. `results/meta/progress_snapshot.md`
-4. `AGENTS.md`
-5. `TASKS.md`
-6. `log.md`
+## Evidence hierarchy
 
----
+1. Formal rerun outputs generated on this branch.
+2. Diagnostic cache summaries that motivated Strategy A.
+3. Legacy or posthoc outputs.
 
-## 1. 当前状态
+Do not promote diagnostic cache outputs to formal results. The len255 diagnostic supports a formal policy trial, but formal outputs must be regenerated on this branch.
 
-- Phase 0–3.9：完成
-- 已新增 `provenance repair`
-- S1 rooted tree + ASR：完成
-- S2 rooted tree：完成
-- S2 prune + assert_tip_match + ASR：未完成
-- `S4` 已正式拆成 `S4a` / `S4b`
-- QC3：`HOLD`
-- Phase 5：`HOLD`
+## Required behavior
 
----
+- Keep rooting, QC3, root stability, and root-sensitive ASR claims `HOLD`.
+- Treat `noO66496 formal S1` as incomplete unless final formal branch-local artifacts exist and the gate is explicitly released.
+- Use nr80 as the final core-tree representation layer.
+- Treat seeds60 as diversity-panel or preselection support, not final-tree tip presence.
+- Maintain an explicit `target_representation.tsv` table.
+- Separate direct nr80 tips from nr80 surrogate representation.
+- Distinguish legacy `A0A0F2JEB6` from current Pni candidate `V8CS59` / `UniRef90_F9DH16`.
+- Keep CD-HIT thresholds unchanged unless a later explicit task approves a separate policy change.
+- Record formal rerun policy and result provenance in the appropriate manifests or representation tables, not as a strategy reset in `log.md`.
 
-## 2. 总原则
+## Do not do
 
-### 2.1 S2 ASR 之前冻结三件事
+- Do not modify `log.md` for the strategy reset unless explicitly instructed.
+- Do not claim O66496 falls inside Type Ia.
+- Do not claim noO66496 solves rooting.
+- Do not release QC3 or root stability.
+- Do not make root-sensitive ASR claims.
+- Do not change CD-HIT thresholds to force target visibility.
+- Do not claim all literature targets are direct tree tips.
+- Do not claim legacy `A0A0F2JEB6` / Pni is rescued.
+- Do not silently merge legacy `A0A0F2JEB6` with `V8CS59` / `UniRef90_F9DH16`.
+- Do not promote cache-only len255 diagnostics to formal branch results.
 
-在 `S2 prune + assert_tip_match + ASR` 完成前：
+## Required wording
 
-- 不写 deep-root narrative
-- 不定稿 trait ASR
-- 不锁定 Phase 5 节点
+Use:
 
-### 2.2 provenance 先于解释
+```text
+O66496 is nearest to Ib-labelled ingroup tips in the original MFP/LGC20 O66496-containing trees and remains excluded from formal outgroup-rooting.
+```
 
-若没有：
+Use:
 
-- artifact manifest
-- explicit triad
-- md5 / commit / command / input md5
+```text
+Q8U0A9 is represented by an acceptable nr80 surrogate unless exact-tip forced retain is separately approved.
+```
 
-则该 scenario 不得进入 narrative gate。
+Use:
 
-### 2.3 S4 tie 不得合并
+```text
+Q9YEJ7 is expected as a direct nr80 representative under len255, pending formal rerun confirmation.
+```
 
-如果 `S4a` 与 `S4b`：
+Use:
 
-- rho 相同
-- root identity 不同
+```text
+legacy A0A0F2JEB6 remains unresolved; V8CS59 / UniRef90_F9DH16 is the current Pni candidate to audit.
+```
 
-则必须保留为两个 scenario。
+Use:
 
-### 2.4 模块 trait 不再以 residual bin 为主
+```text
+QC3/root stability/root-sensitive ASR claims remain HOLD and are out of scope for Strategy A.
+```
 
-- trait ASR 应基于 orthogonal features
-- `C_tail` 仅允许保留为 `secondary / conditional`
+## File hygiene
 
-### 2.5 QC3 不是单指标
+- `cache/` remains diagnostic.
+- `results/` formal outputs must not be overwritten without an explicit task entry.
+- `log.md` should not be used as the strategy reset mechanism.
+- The first docs-only commit must modify only `README.md`, `PLAN.md`, `TASKS.md`, and `AGENTS.md`.
+- Do not modify `meta/params.json`, `scripts/`, `results/`, `data/`, or `cache/` in the docs-only reset.
 
-QC3 至少要分成：
+## Wording to avoid
 
-1. provenance
-2. topology/model sensitivity
-3. root tie/identity
-4. annotation sensitivity
+Incorrect:
 
-### 2.6 S5 仅条件触发
+```text
+O66496 falls inside Type Ia.
+```
 
-只在 repaired S4 + S2 ASR 完成后仍不稳时才启动。
+Use:
 
----
+```text
+O66496 is nearest to Ib-labelled ingroup tips in the original MFP/LGC20 O66496-containing trees.
+```
 
-## 3. 当前执行顺序
+Incorrect:
 
-### P0
+```text
+noO66496 solves rooting.
+```
 
-1. `artifact_manifest.tsv`
-2. `root_scenarios.tsv`
-3. `S2 prune + assert_tip_match + ASR`
-4. `cross_scenario_asr_sensitivity.py`
+Use:
 
-### P1
+```text
+O66496 exclusion is justified, but replacement outgroup rooting remains unresolved; QC3 remains HOLD.
+```
 
-5. orthogonal feature calibration
-6. QC3 重评估
+Incorrect:
 
-### P2
+```text
+len255 rescues Pfu, Ape, and Pni.
+```
 
-7. DCA 准备
-8. nested ASR 准备
-9. assembly adjudication 准备
+Use:
 
-### P3
+```text
+len255 rescues Q8U0A9 and Q9YEJ7 at the QC layer; Q8U0A9 is represented by an nr80 surrogate, Q9YEJ7 is a direct nr80 representative pending confirmation, legacy A0A0F2JEB6 remains unresolved, and V8CS59 / UniRef90_F9DH16 is the current Pni candidate to audit.
+```
 
-10. 必要时触发 `S5`
-11. 之后才讨论 Phase 5 节点
+Incorrect:
 
----
+```text
+Change CD-HIT thresholds to keep the targets.
+```
 
-## 4. 硬约束
+Use:
 
-1. 仍然禁止用 `hmmalign --outformat afa` 直接导出核心 AFA。
-2. 全长祖先序列仍然只能来自正式 nested ASR。
-3. `assert_tip_match.py` 仍然是 ASR 前硬门槛。
-4. 默认 20 线程，不使用 `-1`。
-5. 每次关键运行必须即时写入 `log.md`。
-6. 正式结果不得静默覆盖；需要 `.bak` 或新显式文件名。
-7. 需要绘制进化树及相关树图时，统一使用 `dah7ps_ggtree` 环境中的 R / `ggtree` 工作流。
-8. 树图绘制脚本统一保存在 `scripts/`，不得把正式绘图脚本放在 `figures/` 或其他临时目录。
-9. 正式绘图输出统一保存在 `figures/`，且每次正式出图必须同时生成 `PDF` 和 `PNG` 各一份。
+```text
+Keep CD-HIT thresholds unchanged; use explicit target-representation policy.
+```
 
----
+Incorrect:
 
-## 5. 当前必备文件
+```text
+All literature targets will appear as direct tree tips.
+```
 
-### Root / Provenance
+Use:
 
-- `results/04_phylogeny_asr/artifact_manifest.tsv`
-- `results/04_phylogeny_asr/root_scenarios.tsv`
-- `results/04_phylogeny_asr/QC3_root_stability.md`
+```text
+Literature targets may be direct nr80 tips, represented by nr80 surrogates, absent, unresolved, or held for curation.
+```
 
-### Trait encoding
+Incorrect:
 
-- `results/03_msa_modules/module_feature_registry.tsv`
-- `results/03_msa_modules/module_feature_matrix.tsv`
-- `results/03_msa_modules/panel35_feature_calibration.tsv`
+```text
+Posthoc noO66496 supports formal release.
+```
 
-### Node gate
+Use:
 
-- `results/04_phylogeny_asr/node_selection_registry.tsv`
-
----
-
-## 6. 必须具备的脚本接口
-
-- `prune_tree.py`
-- `assert_tip_match.py`
-- `build_artifact_manifest.py`
-- `cross_scenario_asr_sensitivity.py`
-- `recode_module_features.py`
-- `qc_root_stability.py`
-
----
-
-## 7. Phase 5 门控
-
-任何候选节点在满足以下全部条件前，一律 `hold`：
-
-1. `S2 ASR` 已完成
-2. cross-scenario ASR sensitivity 已完成
-3. QC3 不再是 `HOLD`
-4. annotation sensitivity 可解释
-5. assembly adjudication 明确
-
----
-
-## 8. 最终提醒
-
-V6.1 的成功标准不是找到唯一真根，而是：
-
-- 让 provenance 可追溯
-- 让不确定性可量化
-- 让主文只承诺可支撑的结论
+```text
+Posthoc noO66496 is diagnostic/provenance only and does not release QC3.
+```
