@@ -57,10 +57,20 @@ Status tags: `[ ]` pending, `[HOLD]` held, `[BLOCKED]` blocked, `[DONE]` done.
 - [DONE] Prepare Round 4 core-extraction handoff in `results/02_qc_len255/round3B_core_extraction_handoff.md`.
 - [DONE] Keep MSA, IQ-TREE, final tree inference, QC3/rooting release, and ASR out of Round 3B.
 
+## Round 4 - versioned len255 core extraction
+
+- [DONE] Stage `results/03_msa_core/core_global.hmm` as the core-extraction HMM only.
+- [DONE] Extract versioned core sequences to `results/03_core_len255/all_core_only_len255.fasta`.
+- [DONE] Record extraction summary in `results/03_core_len255/core_extraction_len255_summary.tsv`.
+- [DONE] Audit target carry-through in `results/03_core_len255/core_len255_target_carrythrough.tsv`.
+- [DONE] Audit flagged rescue carry-through in `results/03_core_len255/core_len255_flagged_carrythrough.tsv`.
+- [DONE] Prepare Round 5 MSA handoff in `results/03_core_len255/round4_msa_handoff.md`.
+- [DONE] Keep MSA, IQ-TREE, final tree inference, QC3/rooting release, and ASR out of Round 4.
+
 ## Phase 4 - final core-tree path
 
 - [DONE] Rebuild versioned `nr80_all_len255`.
-- [ ] Re-extract core domain sequences.
+- [DONE] Re-extract versioned len255 core domain sequences.
 - [ ] Re-align core sequences.
 - [ ] Build final core tree for representation.
 - [ ] Display as unrooted/radial or visualization-rooted only.

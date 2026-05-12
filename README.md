@@ -45,7 +45,9 @@ Ib len255 is now formally applied for the Type Ib QC/CD-HIT rerun on this branch
 
 The formal len255 rescue summary reports 479 sequences moving from previously `FRAG` to `PASS_CANONICAL`; 301 of those enter len255 nr80 representatives and 60 enter len255 seeds60 representatives. The KDOPS-like, hypothetical/uncharacterized, and other/ambiguous records are flagged for manual adjudication and are not silently filtered.
 
-Round 3B adds the versioned all-subtype nr80 handoff at `results/02_qc_len255/nr80_all_len255.fasta`, with target presence recorded in `results/02_qc_len255/nr80_all_len255_target_presence.tsv`. Round 4 core extraction remains pending; QC3, rooting, and root-sensitive ASR remain `HOLD`.
+Round 3B adds the versioned all-subtype nr80 handoff at `results/02_qc_len255/nr80_all_len255.fasta`, with target presence recorded in `results/02_qc_len255/nr80_all_len255_target_presence.tsv`.
+
+Round 4 adds versioned core extraction at `results/03_core_len255/all_core_only_len255.fasta`, with target carry-through recorded in `results/03_core_len255/core_len255_target_carrythrough.tsv`. Round 5 MSA remains pending; QC3, rooting, and root-sensitive ASR remain `HOLD`.
 
 ## Next steps
 

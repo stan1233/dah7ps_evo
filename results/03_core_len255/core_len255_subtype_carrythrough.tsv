@@ -1,0 +1,4 @@
+subtype_source	nr80_input_count	core_extracted_count	core_failed_or_missing_count	core_extracted_fraction
+Ia	3521	3513	8	0.9977
+Ib_len255	3374	3104	270	0.9200
+II	3079	3060	19	0.9938

@@ -1,0 +1,11 @@
+metric	value	notes
+nr80_all_len255_input_count	9974	records in results/02_qc_len255/nr80_all_len255.fasta
+core_extracted_count	9677	records in results/03_core_len255/all_core_only_len255.fasta
+core_failed_or_missing_count	297	input records absent from core FASTA after HMM hit/coverage filters
+core_extracted_fraction	0.9702	core_extracted_count / nr80_all_len255_input_count
+min_core_length	245	minimum extracted core sequence length
+median_core_length	358	median extracted core sequence length
+max_core_length	946	maximum extracted core sequence length
+empty_core_sequences_count	0	core FASTA records with zero residues
+duplicate_core_ids_count	0	unique sequence IDs observed more than once in core FASTA
+duplicate_core_ids		comma-separated; empty means none
