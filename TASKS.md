@@ -39,6 +39,15 @@ Status tags: `[ ]` pending, `[HOLD]` held, `[BLOCKED]` blocked, `[DONE]` done.
 - [DONE] Produce `target_representation.tsv`.
 - [DONE] Do not change CD-HIT thresholds.
 
+## Round 3A - len255 QA handoff
+
+- [DONE] Verify tracked Round 2 len255 outputs and validation scripts.
+- [DONE] Record ignored/generated artifact provenance in `results/02_qc_len255/generated_artifacts_manifest.tsv`.
+- [DONE] Review representative acceptability in `results/02_qc_len255/representative_acceptability_round3A.tsv`.
+- [DONE] Flag rescued-risk records in `results/02_qc_len255/len255_flagged_rescue_adjudication.tsv`.
+- [DONE] Prepare downstream handoff in `results/02_qc_len255/round3A_downstream_handoff.md`.
+- [DONE] Keep final MSA/tree, IQ-TREE, QC3/rooting, and root-sensitive ASR out of Round 3A.
+
 ## Phase 4 - final core-tree path
 
 - [ ] Rebuild `nr80_all`.
