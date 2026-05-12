@@ -1,0 +1,13 @@
+metric	value	notes
+nr80_Ia_count	3521	records in results/02_qc/nr80_Ia.fasta
+nr80_Ib_len255_count	3374	records in results/02_qc_len255/nr80_Ib.fasta
+nr80_II_count	3079	records in results/02_qc/nr80_II.fasta
+nr80_all_len255_count	9974	records in results/02_qc_len255/nr80_all_len255.fasta
+expected_sum	9974	Ia + Ib_len255 + II
+count_matches_expected_sum	true	true if concatenated count equals component sum
+duplicate_sequence_ids_count	0	unique sequence IDs observed more than once
+duplicate_sequence_ids		comma-separated; empty means none
+empty_sequences_count	0	records with zero residues after parsing
+min_length	255	minimum parsed sequence length
+median_length	363	median parsed sequence length
+max_length	2931	maximum parsed sequence length

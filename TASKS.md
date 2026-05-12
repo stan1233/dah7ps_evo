@@ -48,9 +48,18 @@ Status tags: `[ ]` pending, `[HOLD]` held, `[BLOCKED]` blocked, `[DONE]` done.
 - [DONE] Prepare downstream handoff in `results/02_qc_len255/round3A_downstream_handoff.md`.
 - [DONE] Keep final MSA/tree, IQ-TREE, QC3/rooting, and root-sensitive ASR out of Round 3A.
 
+## Round 3B - all-subtype nr80 len255 handoff
+
+- [DONE] Build versioned all-subtype nr80 FASTA at `results/02_qc_len255/nr80_all_len255.fasta`.
+- [DONE] Audit counts, duplicate IDs, subtype composition, and target presence in `results/02_qc_len255/nr80_all_len255_target_presence.tsv`.
+- [DONE] Carry forward flagged len255 rescue presence in `results/02_qc_len255/nr80_all_len255_flagged_presence.tsv`.
+- [DONE] Record handoff provenance in `results/02_qc_len255/nr80_all_len255_handoff_manifest.tsv`.
+- [DONE] Prepare Round 4 core-extraction handoff in `results/02_qc_len255/round3B_core_extraction_handoff.md`.
+- [DONE] Keep MSA, IQ-TREE, final tree inference, QC3/rooting release, and ASR out of Round 3B.
+
 ## Phase 4 - final core-tree path
 
-- [ ] Rebuild `nr80_all`.
+- [DONE] Rebuild versioned `nr80_all_len255`.
 - [ ] Re-extract core domain sequences.
 - [ ] Re-align core sequences.
 - [ ] Build final core tree for representation.

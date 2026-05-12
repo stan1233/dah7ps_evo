@@ -59,7 +59,7 @@ Important Pni rule: do not silently merge legacy `A0A0F2JEB6` with `V8CS59` / `U
 1. Done: update `meta/params.json` after the documentation reset.
 2. Done: rerun Type Ib QC with `canonical_min=255`.
 3. Done: rerun Type Ib CD-HIT using unchanged nr80 and seeds60 thresholds.
-4. Rebuild `nr80_all`.
+4. Done: rebuild versioned `nr80_all_len255` at `results/02_qc_len255/nr80_all_len255.fasta`.
 5. Re-extract core domain sequences.
 6. Re-align core sequences.
 7. Build the core tree for representation as unrooted or visualization-rooted only.
@@ -111,6 +111,8 @@ Expanded target audit list:
 - Done: new Type Ib QC output exists at `results/02_qc_len255/qc_classification_Ib.tsv`.
 - Done: new Type Ib nr80/seeds60 outputs exist under `results/02_qc_len255/`.
 - Done: new `target_representation.tsv` exists on this branch.
+- Done: versioned all-subtype nr80 handoff exists at `results/02_qc_len255/nr80_all_len255.fasta`.
+- Done: post-merge target presence audit exists at `results/02_qc_len255/nr80_all_len255_target_presence.tsv`.
 - Done: `Q8U0A9` and `Q9YEJ7` status is verified after the formal rerun.
 - Done: the expanded target list has direct, surrogate, absent, unresolved, curation, or hold status.
 - Done: KDOPS-like and ambiguous len255-rescued hits are flagged in `results/02_qc_len255/len255_rescue_summary.tsv`.
