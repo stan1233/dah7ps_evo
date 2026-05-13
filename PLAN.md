@@ -20,7 +20,7 @@ The formal core phylogeny continues to use the nr80 route, not seeds60. The goal
 ### P1. Rooting policy
 
 - `KDOPS_O66496` remains excluded from formal outgroup-rooting inputs.
-- Do not write that O66496 falls inside Type Ia.
+- Do not write a Type Ia placement claim for O66496.
 - Supported wording: O66496 is nearest to Ib-labelled ingroup tips in the original MFP/LGC20 O66496-containing trees.
 - `noO66496 formal S1` is not the Strategy A release blocker.
 - This does not mean rooting is solved.
@@ -62,10 +62,11 @@ Important Pni rule: do not silently merge legacy `A0A0F2JEB6` with `V8CS59` / `U
 4. Done: rebuild versioned `nr80_all_len255` at `results/02_qc_len255/nr80_all_len255.fasta`.
 5. Done: re-extract versioned len255 core domain sequences at `results/03_core_len255/all_core_only_len255.fasta`.
 6. Done: re-align versioned len255 core sequences at `results/04_msa_len255/core_len255.masked.afa`.
-7. Build the core tree for representation as unrooted or visualization-rooted only.
-8. Done: generate `results/02_qc_len255/target_representation.tsv`.
-9. Update labels and legends according to the target representation policy.
-10. Update QC notes while keeping root-sensitive claims `HOLD`.
+7. Done: run the Round 6 pre-tree curation gate under `results/05_curation_len255/`.
+8. Pending user approval: build the core tree for representation as unrooted or visualization-rooted only.
+9. Done: generate `results/02_qc_len255/target_representation.tsv`.
+10. Update labels and legends according to the target representation policy.
+11. Update QC notes while keeping root-sensitive claims `HOLD`.
 
 ## Target representation table
 
@@ -118,6 +119,8 @@ Expanded target audit list:
 - Done: versioned core MSA exists at `results/04_msa_len255/core_len255.masked.afa`.
 - Done: post-MSA alignment QC exists at `results/04_msa_len255/core_len255_alignment_summary.tsv`.
 - Done: post-MSA target carry-through audit exists at `results/04_msa_len255/core_len255_target_carrythrough.tsv`.
+- Done: Round 6 pre-tree curation exists under `results/05_curation_len255/`, with advisory sequence calls and tree readiness handoff.
+- Done: Round 6 confirms candidate exclusions are advisory only and were not applied; tree inference remains pending user approval.
 - Done: `Q8U0A9` and `Q9YEJ7` status is verified after the formal rerun.
 - Done: the expanded target list has direct, surrogate, absent, unresolved, curation, or hold status.
 - Done: KDOPS-like and ambiguous len255-rescued hits are flagged in `results/02_qc_len255/len255_rescue_summary.tsv`.

@@ -1,0 +1,25 @@
+metric	value	notes
+alignment_used	results/04_msa_len255/core_len255.masked.afa	Round 5 masked AFA
+alignment_is_masked	true	RF-masked alignment
+alignment_sequence_count	9677	records parsed from masked AFA
+alignment_column_count	521	columns parsed from masked AFA
+total_sequences_reviewed	9677	all alignment rows received a Round 6 curation call
+gap_or_ambiguity_gt_0_50_count	1822	input high-gap file rows=1822; Round 5 summary gap>0.50=1822; Round 5 summary gap>0.70=0
+gap_or_ambiguity_gt_0_70_count	0	confirmed from per-sequence alignment QC
+candidate_exclude_before_tree_count	0	advisory only; no sequence removals applied
+manual_review_before_tree_count	373	manual review rows in sequence-level calls
+keep_for_tree_count	9303	kept for future tree input if user approves curation
+Ib_len255_high_gap_count	1811	Ib_len255 rows with gap_or_ambiguity_fraction > 0.50
+Ia_high_gap_count	9	Ia rows with gap_or_ambiguity_fraction > 0.50
+II_high_gap_count	2	II rows with gap_or_ambiguity_fraction > 0.50
+rescued479_present_in_alignment_count	285	exact rescued set from Round 5 rescued479 table
+rescued479_high_gap_count	274	present rescued479 rows with gap_or_ambiguity_fraction > 0.50
+Q8U0A9_representative_status	represented_by_nr80_surrogate; alignment_seq_id=UniRef90_UPI0002AF51CE; present_in_alignment=true; gap_fraction=0.4798; round6_call=keep_for_tree	surrogate label policy remains PfuDAH7PS-like / represents Q8U0A9
+Q9YEJ7_status	direct_nr80_tip; alignment_seq_id=UniRef90_Q9YEJ7; present_in_alignment=true; gap_fraction=0.5355; round6_call=manual_review_before_tree	direct nr80 tip, but high gap triggers manual review
+Pni_candidate_representative_status	represented_by_nr80_surrogate; alignment_seq_id=UniRef90_A0A379DXQ3; present_in_alignment=true; gap_fraction=0.5470; round6_call=needs_curation	V8CS59 / UniRef90_F9DH16 remains needs_curation
+legacy_A0A0F2JEB6_status	unresolved_accession	not rescued, represented, solved, or merged with current Pni candidate
+KDOPS_like_flagged_hit_status	KDOPS-like; present_in_alignment=true; alignment_seq_id=UniRef90_A0A5E4LPI9; gap_fraction=0.5355; round6_call=manual_review_before_tree	manual review before final tree; not called clean DAH7PS
+round6_tree_readiness_call	proceed_to_user_review_before_tree	IQ-TREE should wait for user approval of advisory curation decisions
+rescued479_mean_gap_fraction	0.5353	present rescued479 alignment rows only
+rescued479_median_gap_fraction	0.5317	present rescued479 alignment rows only
+rescued479_max_gap_fraction	0.6123	present rescued479 alignment rows only

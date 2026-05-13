@@ -49,7 +49,9 @@ Round 3B adds the versioned all-subtype nr80 handoff at `results/02_qc_len255/nr
 
 Round 4 adds versioned core extraction at `results/03_core_len255/all_core_only_len255.fasta`, with target carry-through recorded in `results/03_core_len255/core_len255_target_carrythrough.tsv`.
 
-Round 5 adds the versioned RF-masked core MSA at `results/04_msa_len255/core_len255.masked.afa`, with alignment QC in `results/04_msa_len255/core_len255_alignment_summary.tsv` and target carry-through in `results/04_msa_len255/core_len255_target_carrythrough.tsv`. Round 6 tree inference remains pending behind a pre-tree curation gate; QC3, rooting, and root-sensitive ASR remain `HOLD`.
+Round 5 adds the versioned RF-masked core MSA at `results/04_msa_len255/core_len255.masked.afa`, with alignment QC in `results/04_msa_len255/core_len255_alignment_summary.tsv` and target carry-through in `results/04_msa_len255/core_len255_target_carrythrough.tsv`.
+
+Round 6 adds the pre-tree curation gate under `results/05_curation_len255/`, including `round6_curation_summary.tsv`, `round6_sequence_curation_calls.tsv`, and `round6_tree_readiness_handoff.md`. Candidate exclusions are advisory and were not applied; no filtered final alignment was created. Tree inference remains pending user approval, and QC3, rooting, and root-sensitive ASR remain `HOLD`.
 
 ## Next steps
 

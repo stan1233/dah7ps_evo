@@ -77,11 +77,22 @@ Status tags: `[ ]` pending, `[HOLD]` held, `[BLOCKED]` blocked, `[DONE]` done.
 - [DONE] Prepare Round 6 tree handoff in `results/04_msa_len255/round5_tree_handoff.md`.
 - [DONE] Keep IQ-TREE, final tree inference, QC3/rooting release, and ASR out of Round 5.
 
+## Round 6 - pre-tree curation gate
+
+- [DONE] Generate Round 6 curation outputs under `results/05_curation_len255/`.
+- [DONE] Record sequence-level curation calls in `results/05_curation_len255/round6_sequence_curation_calls.tsv`.
+- [DONE] Record high-gap, subtype, target, flagged rescue, and Pni surrogate reviews in Round 6 TSV outputs.
+- [DONE] Prepare tree readiness handoff in `results/05_curation_len255/round6_tree_readiness_handoff.md`.
+- [DONE] Keep candidate exclusions advisory only; no sequence removals or filtered final alignment were applied.
+- [DONE] Keep IQ-TREE, final tree inference, QC3/rooting release, and ASR out of Round 6.
+
 ## Phase 4 - final core-tree path
 
 - [DONE] Rebuild versioned `nr80_all_len255`.
 - [DONE] Re-extract versioned len255 core domain sequences.
 - [DONE] Re-align versioned len255 core sequences.
+- [DONE] Complete Round 6 pre-tree curation gate.
+- [ ] Obtain user approval for Round 6 advisory curation decisions before tree inference.
 - [ ] Build final core tree for representation.
 - [ ] Display as unrooted/radial or visualization-rooted only.
 - [ ] Do not release root-sensitive ASR or QC3.

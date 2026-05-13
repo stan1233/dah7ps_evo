@@ -29,7 +29,7 @@ Do not promote diagnostic cache outputs to formal results. Ib len255 is now form
 ## Do not do
 
 - Do not modify `log.md` for the strategy reset unless explicitly instructed.
-- Do not claim O66496 falls inside Type Ia.
+- Do not claim a Type Ia placement for O66496.
 - Do not claim noO66496 solves rooting.
 - Do not release QC3 or root stability.
 - Do not make root-sensitive ASR claims.
@@ -84,7 +84,7 @@ QC3/root stability/root-sensitive ASR claims remain HOLD and are out of scope fo
 Incorrect:
 
 ```text
-O66496 falls inside Type Ia.
+O66496 has a Type Ia placement.
 ```
 
 Use:
