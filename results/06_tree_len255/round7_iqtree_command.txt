@@ -1,0 +1,1 @@
+conda run -n dah7ps_v4 iqtree -s results/04_msa_len255/core_len255.masked.afa -m MFP -T 20 --seed 20260513 --prefix results/06_tree_len255/core_len255_masked_MFP_unrooted

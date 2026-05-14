@@ -1,0 +1,12 @@
+metric	value	notes
+alignment_tip_count	9677	Confirmed from results/04_msa_len255/core_len255.masked.afa.
+tree_tip_count	not_evaluated_no_treefile	No .treefile was produced before interruption.
+tip_count_matches	not_evaluated_no_treefile	No .treefile was produced before interruption.
+duplicate_alignment_ids_count	0	Confirmed from alignment FASTA headers.
+duplicate_tree_ids_count	not_evaluated_no_treefile	No .treefile was produced before interruption.
+missing_from_tree_count	not_evaluated_no_treefile	No .treefile was produced before interruption.
+extra_in_tree_count	not_evaluated_no_treefile	No .treefile was produced before interruption.
+missing_from_tree_ids	not_evaluated_no_treefile	No .treefile was produced before interruption.
+extra_in_tree_ids	not_evaluated_no_treefile	No .treefile was produced before interruption.
+KDOPS_O66496_present	not_evaluated_no_treefile	No tree tip set exists; alignment header check found zero KDOPS_O66496 entries.
+any_KDOPS_tip_present	not_evaluated_no_treefile	No tree tip set exists; alignment header check found zero headers containing KDOPS.

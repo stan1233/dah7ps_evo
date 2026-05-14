@@ -1,0 +1,27 @@
+metric	value	notes
+alignment_used	results/04_msa_len255/core_len255.masked.afa	Round 5 masked nr80-based len255 core alignment approved for Round 7A as-is.
+alignment_is_masked	true	No filtered alignment was created.
+alignment_sequence_count	9677	Confirmed from the alignment and IQ-TREE log.
+alignment_columns	521	Confirmed from the IQ-TREE log.
+tree_prefix	results/06_tree_len255/core_len255_masked_MFP_unrooted	IQ-TREE prefix used for the attempted unrooted MFP run.
+iqtree_binary	conda run -n dah7ps_v4 iqtree	IQ-TREE 3.0.1 was used via the project conda environment.
+iqtree_command	conda run -n dah7ps_v4 iqtree -s results/04_msa_len255/core_len255.masked.afa -m MFP -T 20 --seed 20260513 --prefix results/06_tree_len255/core_len255_masked_MFP_unrooted	No -o option and no outgroup tips were used.
+iqtree_completed	false	The process was interrupted with SIGINT after prolonged ModelFinder runtime.
+iqtree_exit_status	130	Conda reported the interrupted IQ-TREE command failed with exit status 130.
+iqtree_run_status	blocked_or_pending_iqtree_completion	No completed tree inference is available from this round.
+model_selected	not_available_interrupted_during_modelfinder	ModelFinder had not completed when the run was interrupted.
+tree_tip_count	not_evaluated_no_treefile	No .treefile was produced.
+tipset_matches_alignment	not_evaluated_no_treefile	No .treefile was produced.
+KDOPS_O66496_present	not_evaluated_no_treefile	No tree tip set exists; no KDOPS/O66496 outgroup was added to the command.
+any_KDOPS_tip_present	not_evaluated_no_treefile	No tree tip set exists; no KDOPS outgroup was added to the command.
+Q8U0A9_representative_tree_status	pending_no_treefile	Expected tree tip would be UniRef90_UPI0002AF51CE, but no treefile was produced.
+Q9YEJ7_tree_status	pending_no_treefile	Expected direct tip would be UniRef90_Q9YEJ7, but no treefile was produced.
+Pni_candidate_representative_tree_status	pending_no_treefile_needs_curation	Expected representative would be UniRef90_A0A379DXQ3; Pni surrogate acceptance remains HOLD.
+legacy_A0A0F2JEB6_tree_status	unresolved_accession_not_used	No treefile was produced; legacy A0A0F2JEB6 remains unresolved_accession.
+KDOPS_like_UniRef90_A0A5E4LPI9_tree_status	pending_no_treefile_manual_review_before_final_tree	Expected flagged hit would need manual review if a completed tree is produced.
+manual_review_before_tree_tip_count	not_evaluated_no_treefile	Round 6 manual-review calls remain active interpretation flags.
+candidate_exclude_before_tree_applied_count	0	No candidate exclusions were applied.
+sequence_removals_applied	false	No sequences were removed.
+filtered_alignment_created	false	No filtered alignment was created.
+round7_interpretation_scope	no_completed_tree_inference	Command/log handoff only; no placement or evolutionary interpretation is released.
+next_recommended_action	user_decision_required_before_next_tree_action	Decide whether to resume/continue the interrupted MFP run or approve a revised tree-inference strategy.
